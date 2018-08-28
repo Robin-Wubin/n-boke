@@ -5,12 +5,14 @@ const path = require('path');
 const koaBody = require('koa-bodyparser');
 const views = require('koa-views');
 const mysql = require('mysql');
+const install = require('./install');
 
 
 module.exports = (app) => {
     return new Promise(function(resolve, reject) {
         "use strict";
         app.context.db = {};
+        app.context.render = require('vue-server-renderer').createRenderer();
 
         app.use(async (ctx, next) => {
             try {
@@ -33,6 +35,10 @@ module.exports = (app) => {
                 html: 'nunjucks'
             }
         }));
+
+        const route = install();
+        app.use(route.routes()).use(route.allowedMethods());
+
         resolve(app);
     });
 };
