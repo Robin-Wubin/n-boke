@@ -1,0 +1,34 @@
+{
+  "name": "n-boke",
+  "version": "1.0.0",
+  "description": "a blog app write withe KOA and Bootstrap Vue",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Robin-Wubin/n-boke.git"
+  },
+  "keywords": [
+    "Blog"
+  ],
+  "author": "Robin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Robin-Wubin/n-boke/issues"
+  },
+  "homepage": "https://github.com/Robin-Wubin/n-boke#readme",
+  "dependencies": {
+    "bootstrap-vue": "^2.0.0-rc.11",
+    "js-yaml": "^3.12.0",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "koa-session": "^5.8.3",
+    "koa-static": "^5.0.0",
+    "koa-views": "^6.1.4",
+    "mysql": "^2.16.0",
+    "nunjucks": "^3.1.3"
+  }
+}
