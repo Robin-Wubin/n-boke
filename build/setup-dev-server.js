@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const MFS = require('memory-fs');
-const webpack = require('webpack');
-const chokidar = require('chokidar');
-const clientConfig = require('./webpack.client.config');
-const serverConfig = require('./webpack.server.config');
+const fs = require('fs')
+const path = require('path')
+const MFS = require('memory-fs')
+const webpack = require('webpack')
+const chokidar = require('chokidar')
+const clientConfig = require('./webpack.client.config')
+const serverConfig = require('./webpack.server.config')
 
 const readFile = (fs, file) => {
   try {
@@ -51,7 +51,11 @@ module.exports = function setupDevServer (app, templatePath, cb) {
     publicPath: clientConfig.output.publicPath,
     noInfo: true
   })
-  app.use(devMiddleware)
+  app.use(async (ctx, next)=>{
+    let isNext = await devMiddleware(ctx);
+    console.log("dev-middleware isNext", isNext);
+    if(isNext) await next();
+  })
   clientCompiler.plugin('done', stats => {
     stats = stats.toJson()
     stats.errors.forEach(err => console.error(err))
@@ -65,7 +69,18 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   })
 
   // hot middleware
-  app.use(require('webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 }))
+
+    app.use(async (ctx, next)=>{
+        let isNext = await require('webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 })(ctx.req, ctx.res);
+        console.log("hot-middleware isNext", isNext);
+        if(isNext){
+          await next();
+        } else {
+          await new Promise((resolve, reject)=>{
+            setTimeout(()=>{resolve}, 5000)
+          })
+        }
+    })
 
   // watch and update server renderer
   const serverCompiler = webpack(serverConfig)
