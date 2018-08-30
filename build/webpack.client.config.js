@@ -1,8 +1,11 @@
-const webpack = require('webpack')
-const merge = require('webpack-merge')
-const base = require('./webpack.base.config')
-const SWPrecachePlugin = require('sw-precache-webpack-plugin')
-const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const base = require('./webpack.base.config');
+const SWPrecachePlugin = require('sw-precache-webpack-plugin');
+const VueSSRClientPlugin = require('vue-server-renderer/client-plugin');
+const WebpackOnBuildPlugin = require('on-build-webpack');
+const fs = require("fs");
+const path = require("path");
 
 const config = merge(base, {
   entry: {
@@ -68,7 +71,22 @@ if (process.env.NODE_ENV === 'production') {
           handler: 'networkFirst'
         }
       ]
-    })
+    }),
+      new WebpackOnBuildPlugin(function(stats) {
+          const newlyCreatedAssets = stats.compilation.assets;
+          const unlinked = [];
+          fs.readdir(path.resolve(__dirname, '../public/dist'), (err, files) => {
+              files.forEach(file => {
+                  if (!newlyCreatedAssets[file]) {
+                      fs.unlink(path.resolve(__dirname, '../public/dist/' + file));
+                      unlinked.push(file);
+                  }
+              });
+              if (unlinked.length > 0) {
+                  console.log('删除文件: ', unlinked);
+              }
+          });
+      })
   )
 }
 
