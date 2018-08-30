@@ -3,3 +3,4 @@ node_modules
 package-lock.json
 config.yml
 public/dist
+public/service-worker.js
