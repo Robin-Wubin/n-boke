@@ -47,13 +47,12 @@ module.exports = function setupDevServer (app, templatePath, cb) {
 
   // dev middleware
   const clientCompiler = webpack(clientConfig)
-  const devMiddleware = require('webpack-dev-middleware')(clientCompiler, {
+  const devMiddleware = require('../lib/webpack-dev-middleware')(clientCompiler, {
     publicPath: clientConfig.output.publicPath,
     noInfo: true
   })
   app.use(async (ctx, next)=>{
     let isNext = await devMiddleware(ctx);
-    console.log("dev-middleware isNext", isNext);
     if(isNext) await next();
   })
   clientCompiler.plugin('done', stats => {
@@ -71,8 +70,7 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   // hot middleware
 
     app.use(async (ctx, next)=>{
-        let isNext = await require('webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 })(ctx.req, ctx.res);
-        console.log("hot-middleware isNext", isNext);
+        let isNext = await require('../lib/webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 })(ctx.req, ctx.res);
         if(isNext){
           await next();
         } else {
