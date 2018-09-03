@@ -8,6 +8,8 @@ const Home = () => import('../views/home.vue');
 const HomeView = () => import('../views/home/default.vue');
 const List = () => import('../views/list/index.vue');
 const InstallIndex = () => import('../views/install/index.vue');
+const InstallDefault = () => import('../views/install/default.vue');
+const InstallMongoDB = () => import('../views/install/mongo.vue');
 
 export function createRouter () {
   return new Router({
@@ -15,7 +17,12 @@ export function createRouter () {
     fallback: false,
     scrollBehavior: () => ({ y: 0 }),
     routes: [
-        { path: '/install', component: InstallIndex },
+        { path: '/install', component: InstallIndex ,
+            children:[
+                {path: '', component:InstallDefault},
+                {path: 'mongo', component:InstallMongoDB},
+            ]
+        },
         { path: '/', component: Home,
             children:[
                 {path: '', component:HomeView},

@@ -91,7 +91,7 @@ module.exports = (app) => {
                 };
 
                 const context = {
-                    title: 'Vue HN 2.0', // default title
+                    title: 'N-Boke 1.0', // default title
                     url: ctx.path
                 };
                 renderer.renderToString(context, (err, html) => {
