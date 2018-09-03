@@ -5,6 +5,7 @@ const path = require('path');
 const koaBody = require('koa-bodyparser');
 const LRU = require('lru-cache');
 const views = require('koa-views');
+const api = require('./api');
 const mysql = require('mysql');
 // const install = require('./install');
 const { createBundleRenderer } = require('vue-server-renderer');
@@ -31,6 +32,7 @@ module.exports = (app) => {
     return new Promise(function(resolve, reject) {
         "use strict";
         app.context.db = {};
+        app.context.renderComponents = {};
 
         // app.use(async (ctx, next) => {
         //     try {
@@ -58,7 +60,8 @@ module.exports = (app) => {
             gzip: true,
         }));
 
-        readyPromise = require('./build/setup-dev-server')(
+
+        app.context.renderComponents.readyPromise = require('./build/setup-dev-server')(
             app,
             templatePath,
             (bundle, options) => {
@@ -66,7 +69,7 @@ module.exports = (app) => {
             }
         );
 
-        function render (ctx) {
+        app.context.renderComponents.render = (ctx) => {
             return new Promise((resolve, reject)=>{
                 const s = Date.now();
                 ctx.set("Content-Type", "text/html");
@@ -102,13 +105,9 @@ module.exports = (app) => {
                     resolve(null);
                 })
             });
-        }
-
-        app.use(async ctx => {
-
-            await readyPromise;
-            await render(ctx);
-        });
+        };
+        const route = api();
+        app.use(route.routes()).use(route.allowedMethods());
         resolve(app);
     });
 };

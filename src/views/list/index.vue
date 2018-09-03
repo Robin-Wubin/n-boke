@@ -26,12 +26,8 @@ import { mapGetters, mapActions } from 'vuex'
             ...mapActions([
             'setCategory',
             ]),
-            link(obj){
-                this.$router.push(obj.name)
-            }
-        },
-        methods: {
             link(obj) {
+                console.log(this.category);
                 this.$router.push('/')
             }
         },

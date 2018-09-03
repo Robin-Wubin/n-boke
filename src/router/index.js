@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-Vue.use(Router)
+Vue.use(Router);
 
 // route-level code splitting
-const Home = () => import('../views/home.vue')
-const List = () => import('../views/list.vue')
+const Home = () => import('../views/home.vue');
+const HomeView = () => import('../views/home/default.vue');
+const List = () => import('../views/list/index.vue');
+const InstallIndex = () => import('../views/install/index.vue');
 
 export function createRouter () {
   return new Router({
@@ -13,8 +15,13 @@ export function createRouter () {
     fallback: false,
     scrollBehavior: () => ({ y: 0 }),
     routes: [
-      { path: '/list', component: List },
-      { path: '/', component: Home },
+        { path: '/install', component: InstallIndex },
+        { path: '/', component: Home,
+            children:[
+                {path: '', component:HomeView},
+                {path:'list', component: List}
+            ]
+        },
     ]
   })
 }

@@ -35,7 +35,7 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -45,6 +45,10 @@ module.exports = {
           name: '[name].[ext]?[hash]'
         }
       },
+        {
+            test: /\.css/,
+            use: ['vue-style-loader', 'css-loader', 'stylus-loader']
+        },
       {
         test: /\.styl(us)?$/,
         use: isProd

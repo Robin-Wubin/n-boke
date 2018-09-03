@@ -4,10 +4,10 @@
   </div>
 </template>
 <script>
-
 </script>
-<style lang="stylus">
-@import './style/base';
+<style lang="css">
+  @import '../node_modules/bootstrap/dist/css/bootstrap.css';
+  @import '../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
 </style>
 
 
