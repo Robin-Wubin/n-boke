@@ -1,35 +1,15 @@
 <template>
-    <b-jumbotron border-variant="dark"  header="Install N-Boke" lead=" Set Up Your MongoDB" class="pad">
+    <b-jumbotron border-variant="dark"  header="Install N-Boke" lead=" Set Up Your Admin Account" class="pad">
         <hr class="my-4">
         <b-form @submit="onSubmit" @reset="onReset" v-if="show">
             <b-form-group id="exampleInputGroup1"
-                          label="Host/Port:"
-                          label-for="url">
-                <b-form-input id="url"
+                          label="User Name:"
+                          label-for="user_name">
+                <b-form-input id="user_name"
                               type="text"
-                              v-model="form.url"
+                              v-model="form.name"
                               required
-                              placeholder="Enter Host/Port. exp:db.mongo.com:27017">
-                </b-form-input>
-            </b-form-group>
-            <b-form-group id="exampleInputGroup2"
-                          label="Database Name:"
-                          label-for="dbName">
-                <b-form-input id="dbName"
-                              type="text"
-                              v-model="form.db"
-                              required
-                              placeholder="Enter Database Name">
-                </b-form-input>
-            </b-form-group>
-            <b-form-group id="exampleInputGroup3"
-                          label="Username:"
-                          label-for="Username">
-                <b-form-input id="Username"
-                              type="text"
-                              v-model="form.username"
-                              required
-                              placeholder="Enter Username">
+                              placeholder="Enter Your User Name">
                 </b-form-input>
             </b-form-group>
             <b-form-group id="exampleInputGroup4"
@@ -39,7 +19,17 @@
                               type="password"
                               v-model="form.password"
                               required
-                              placeholder="Enter Password">
+                              placeholder="Enter Your Password">
+                </b-form-input>
+            </b-form-group>
+            <b-form-group id="exampleInputGroup4"
+                          label="Confirm Password:"
+                          label-for="cPassword">
+                <b-form-input id="cPassword"
+                              type="password"
+                              v-model="form.confirm_password"
+                              required
+                              placeholder="Please Confirm Your Password">
                 </b-form-input>
             </b-form-group>
             <b-button type="submit" variant="primary">Submit</b-button>
@@ -54,10 +44,9 @@
         ,data () {
             return {
                 form: {
-                    url: '',
-                    db: '',
-                    username: '',
+                    name: '',
                     password: '',
+                    confirm_password: ''
                 },
                 show: true
             }
@@ -68,7 +57,7 @@
                 let _that = this;
                 this.axios.post('/api/install/mongodb', this.form).then(res=>{
                     console.log(_that.router);
-                    _that.$router.push('/install/admin');
+                    _that.router.push("/api/install/admin");
                 }).catch(res=>{
                     console.error(res);
                 });
@@ -76,10 +65,9 @@
             onReset (evt) {
                 evt.preventDefault();
                 /* Reset our form values */
-                this.form.url = '';
-                this.form.db = '';
-                this.form.username = '';
+                this.form.name = '';
                 this.form.password = '';
+                this.form.confirm_password = '';
                 /* Trick to reset/clear native browser form validation state */
                 this.show = false;
                 this.$nextTick(() => { this.show = true });

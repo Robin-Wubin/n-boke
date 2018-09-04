@@ -39,9 +39,9 @@ module.exports = (app) => {
             try {
                 if(global.mongoDB)ctx.state.mdb = global.mongoDB;
                 await next();
-                if(ctx.body !== null && typeof ctx.body === 'object'  && ctx.body.code !== "0000"){
-                    ctx.status = 400;
-                }
+                // if(ctx.body !== null && typeof ctx.body === 'object'  && ctx.body.code !== "0000"){
+                //     ctx.status = 400;
+                // }
             } catch (err) {
                 console.log(err);
                 ctx.status = err.status || err.code || 500;
