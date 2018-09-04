@@ -1,41 +1,46 @@
 <template>
-    <b-jumbotron border-variant="dark" class="pad">
+    <b-jumbotron border-variant="dark"  header="Install N-Boke" lead=" Set Up Your MongoDB" class="pad">
+        <hr class="my-4">
         <b-form @submit="onSubmit" @reset="onReset" v-if="show">
             <b-form-group id="exampleInputGroup1"
-                          label="Email address:"
-                          label-for="exampleInput1"
-                          description="We'll never share your email with anyone else.">
-                <b-form-input id="exampleInput1"
-                              type="email"
-                              v-model="form.email"
+                          label="Host/Port:"
+                          label-for="url">
+                <b-form-input id="url"
+                              type="text"
+                              v-model="form.url"
                               required
-                              placeholder="Enter email">
+                              placeholder="Enter Host/Port. exp:db.mongo.com:27017">
                 </b-form-input>
             </b-form-group>
             <b-form-group id="exampleInputGroup2"
-                          label="Your Name:"
-                          label-for="exampleInput2">
-                <b-form-input id="exampleInput2"
+                          label="Database Name:"
+                          label-for="dbName">
+                <b-form-input id="dbName"
                               type="text"
-                              v-model="form.name"
+                              v-model="form.db"
                               required
-                              placeholder="Enter name">
+                              placeholder="Enter Database Name">
                 </b-form-input>
             </b-form-group>
             <b-form-group id="exampleInputGroup3"
-                          label="Food:"
-                          label-for="exampleInput3">
-                <b-form-select id="exampleInput3"
-                               :options="foods"
-                               required
-                               v-model="form.food">
-                </b-form-select>
+                          label="Username:"
+                          label-for="Username">
+                <b-form-input id="Username"
+                              type="text"
+                              v-model="form.username"
+                              required
+                              placeholder="Enter Username">
+                </b-form-input>
             </b-form-group>
-            <b-form-group id="exampleGroup4">
-                <b-form-checkbox-group v-model="form.checked" id="exampleChecks">
-                    <b-form-checkbox value="me">Check me out</b-form-checkbox>
-                    <b-form-checkbox value="that">Check that out</b-form-checkbox>
-                </b-form-checkbox-group>
+            <b-form-group id="exampleInputGroup4"
+                          label="Password:"
+                          label-for="Password">
+                <b-form-input id="Password"
+                              type="password"
+                              v-model="form.password"
+                              required
+                              placeholder="Enter Password">
+                </b-form-input>
             </b-form-group>
             <b-button type="submit" variant="primary">Submit</b-button>
             <b-button type="reset" variant="danger">Reset</b-button>
@@ -49,30 +54,30 @@
         ,data () {
             return {
                 form: {
-                    email: '',
-                    name: '',
-                    food: null,
-                    checked: []
+                    url: '',
+                    db: '',
+                    username: '',
+                    password: '',
                 },
-                foods: [
-                    { text: 'Select One', value: null },
-                    'Carrots', 'Beans', 'Tomatoes', 'Corn'
-                ],
                 show: true
             }
         },
         methods: {
             onSubmit (evt) {
                 evt.preventDefault();
-                alert(JSON.stringify(this.form));
+                this.axios.post('/api/install/mongodb', this.form).then(res=>{
+                    console.log(res);
+                }).catch(res=>{
+                    console.error(res);
+                });
             },
             onReset (evt) {
                 evt.preventDefault();
                 /* Reset our form values */
-                this.form.email = '';
-                this.form.name = '';
-                this.form.food = null;
-                this.form.checked = [];
+                this.form.url = '';
+                this.form.db = '';
+                this.form.username = '';
+                this.form.password = '';
                 /* Trick to reset/clear native browser form validation state */
                 this.show = false;
                 this.$nextTick(() => { this.show = true });

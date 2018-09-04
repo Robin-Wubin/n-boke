@@ -5,11 +5,13 @@ const path = require('path');
 const koaBody = require('koa-bodyparser');
 const LRU = require('lru-cache');
 const views = require('koa-views');
+const util = require('util');
 const api = require('./api');
 const mysql = require('mysql');
 // const install = require('./install');
 const { createBundleRenderer } = require('vue-server-renderer');
 const resolve = file => path.resolve(__dirname, file);
+const MongoClient = require('mongodb').MongoClient;
 const templatePath = resolve('./src/index.template.html');
 let renderer,readyPromise;
 function createRenderer (bundle, options) {
@@ -31,24 +33,27 @@ function createRenderer (bundle, options) {
 module.exports = (app) => {
     return new Promise(function(resolve, reject) {
         "use strict";
-        app.context.db = {};
         app.context.renderComponents = {};
 
-        // app.use(async (ctx, next) => {
-        //     try {
-        //         await next();
-        //     } catch (err) {
-        //         console.log('err', err);
-        //         ctx.status = err.status || err.code || 500;
-        //     } finally {
-        //
-        //     }
-        // });
+        app.use(async (ctx, next) => {
+            try {
+                if(global.mongoDB)ctx.state.mdb = global.mongoDB;
+                await next();
+                if(ctx.body !== null && typeof ctx.body === 'object'  && ctx.body.code !== "0000"){
+                    ctx.status = 400;
+                }
+            } catch (err) {
+                console.log(err);
+                ctx.status = err.status || err.code || 500;
+            } finally {
 
-        // app.use(koaBody({
-        //     textLimit: '10mb',
-        //     jsonLimit: '10mb'
-        // }));
+            }
+        });
+
+        app.use(koaBody({
+            textLimit: '10mb',
+            jsonLimit: '10mb'
+        }));
 
         app.use(views(path.normalize('/public'), {
             map: {
@@ -59,8 +64,7 @@ module.exports = (app) => {
             maxage: 1000 * 60 * 60 * 24 * 365, // 1年，默认为0
             gzip: true,
         }));
-
-
+        app.context.code = require("./api/code");
         app.context.renderComponents.readyPromise = require('./build/setup-dev-server')(
             app,
             templatePath,
@@ -108,6 +112,17 @@ module.exports = (app) => {
         };
         const route = api();
         app.use(route.routes()).use(route.allowedMethods());
-        resolve(app);
+        if(appConfig && appConfig.db){
+            MongoClient.connect(`mongodb://${appConfig.db.username}:${appConfig.db.password}@${appConfig.db.url}/${appConfig.db.db}`, {
+                poolSize: 5,
+                autoReconnect: true
+            }, function(err, vcDb) {
+                if(err) reject(err);
+                global.mongoDB = vcDb.db(appConfig.db.db);
+                resolve(app);
+            });
+        } else {
+            resolve(app);
+        }
     });
 };

@@ -3,6 +3,7 @@ const APP_CONFIG = require('./lib/config');
 const CONFIG = require('./config');
 const app = new Koa();
 global.appConfig = APP_CONFIG();
+global.mongoDB = null;
 
 const EventEmitter = require('events');
 global.emitter = new EventEmitter();
