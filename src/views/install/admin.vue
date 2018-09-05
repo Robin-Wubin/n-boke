@@ -32,8 +32,10 @@
                               placeholder="Please Confirm Your Password">
                 </b-form-input>
             </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
+            <div>
+                <b-button type="submit" class="float-right" variant="primary">Submit</b-button>
+                <b-button type="reset" variant="danger">Reset</b-button>
+            </div>
         </b-form>
     </b-jumbotron>
 </template>
@@ -55,9 +57,8 @@
             onSubmit (evt) {
                 evt.preventDefault();
                 let _that = this;
-                this.axios.post('/api/install/mongodb', this.form).then(res=>{
-                    console.log(_that.router);
-                    _that.router.push("/api/install/admin");
+                this.axios.post('/api/install/admin', this.form).then(res=>{
+                    _that.$router.push("/admin");
                 }).catch(res=>{
                     console.error(res);
                 });

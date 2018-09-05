@@ -42,8 +42,10 @@
                               placeholder="Enter Password">
                 </b-form-input>
             </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
+            <div>
+                <b-button type="submit" class="float-right" variant="primary">Submit</b-button>
+                <b-button type="reset" variant="danger">Reset</b-button>
+            </div>
         </b-form>
     </b-jumbotron>
 </template>
@@ -70,6 +72,7 @@
                     console.log(_that.router);
                     _that.$router.push('/install/admin');
                 }).catch(res=>{
+                    _that.$router.push('/install/mongo');
                     console.error(res);
                 });
             },

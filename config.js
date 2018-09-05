@@ -5,9 +5,11 @@ const path = require('path');
 const koaBody = require('koa-bodyparser');
 const LRU = require('lru-cache');
 const views = require('koa-views');
-const util = require('util');
+const session = require('koa-session');
+const crypto = require('crypto');
+const EventEmitter = require('events').EventEmitter;
 const api = require('./api');
-const mysql = require('mysql');
+const mongo = require("./lib/mongo");
 // const install = require('./install');
 const { createBundleRenderer } = require('vue-server-renderer');
 const resolve = file => path.resolve(__dirname, file);
@@ -33,6 +35,37 @@ function createRenderer (bundle, options) {
 module.exports = (app) => {
     return new Promise(function(resolve, reject) {
         "use strict";
+        global.fun = {
+            randomString:function(len = 8) {
+                let chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                let res = "";
+                for (let i = 0; i < len; i++) {
+                    let id = Math.ceil(Math.random() * 35);
+                    res += chars[id];
+                }
+                return res;
+            },
+            sleep : (time)=>{
+                return new Promise( (resolve, reject) =>{
+                    setTimeout(function(){resolve(null)}, time * 1000)
+                })
+            },
+            encord2md5:(string)=>{
+                let ms5Str = crypto.createHash('sha1').update(string).digest('hex');
+                let salt = global.fun.randomString();
+                let password = crypto.createHash('sha1').update(ms5Str + salt).digest('hex');
+                return {password, salt}
+            },
+            checkPassword:(string, passObj)=>{
+                let ms5Str = crypto.createHash('sha1').update(string).digest('hex');
+                let salt = passObj.salt;
+                let password = crypto.createHash('sha1').update(ms5Str + salt).digest('hex');
+                return password === passObj.password;
+            },
+            event: new EventEmitter(),
+            ObjectId : require('mongodb').ObjectID
+        };
+
         app.context.renderComponents = {};
 
         app.use(async (ctx, next) => {
@@ -73,7 +106,7 @@ module.exports = (app) => {
             }
         );
 
-        app.context.renderComponents.render = (ctx) => {
+        app.context.renderComponents.render = (ctx, params = {}) => {
             return new Promise((resolve, reject)=>{
                 const s = Date.now();
                 ctx.set("Content-Type", "text/html");
@@ -94,10 +127,10 @@ module.exports = (app) => {
                     resolve(null);
                 };
 
-                const context = {
+                const context = Object.assign({
                     title: 'N-Boke 1.0', // default title
                     url: ctx.path
-                };
+                }, params);
                 renderer.renderToString(context, (err, html) => {
                     console.log(ctx.path, err, html ? html.substr(0 , 15) + "" : null);
                     if (err) {
@@ -112,6 +145,51 @@ module.exports = (app) => {
         };
         const route = api();
         app.use(route.routes()).use(route.allowedMethods());
+
+        const CONFIG = {
+            key: 'sid', /** (string) cookie key (default is koa:sess) */
+            maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
+            overwrite: true, /** (boolean) can overwrite or not (default true) */
+            httpOnly: true, /** (boolean) httpOnly or not (default true) */
+            store: {
+                get:async (key) => {
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    let data = await appSession.findOne({_id:key});
+                    if(data){
+                        data.session = JSON.parse(data.session);
+                        data.session._expire = new Date(data.session.cookie.expires).getTime();
+                        data.session._maxAge = data.session.cookie.originalMaxAge;
+                        if(data.session.socketId) delete data.session.socketId;
+                        delete data.session.cookie;
+                        return data.session;
+                    } else {
+                        return null;
+                    }
+                }
+                , set:async (key, sess, maxAge)=>{
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    let sessionCookie = {cookie:{
+                            originalMaxAge: maxAge
+                            , expires: new Date(sess._expire)
+                            , httpOnly: true
+                            , path: "/"
+                        }}, sessValue = Object.assign({}, sess);
+                    delete sessValue._expire;
+                    delete sessValue._maxAge;
+                    let keyValue =  Object.assign(sessionCookie, sessValue);
+                    await appSession.update({_id:key}, {$set:{session:JSON.stringify(keyValue), expires: new Date(sess._expire)}});
+                }
+                , destroy:async (key)=>{
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    await appSession.remove({_id:key});
+                }
+            },
+            signed: false /** (boolean) signed or not (default true) */
+        };
+        app.use(session(CONFIG, app));
         if(appConfig && appConfig.db){
             MongoClient.connect(`mongodb://${appConfig.db.username}:${appConfig.db.password}@${appConfig.db.url}/${appConfig.db.db}`, {
                 poolSize: 5,

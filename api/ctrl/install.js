@@ -1,4 +1,4 @@
-
+const mongo = require("../../lib/mongo");
 const validate = require('koa2-validation');
 const Joi = require('joi');
 const MongoClient = require('mongodb').MongoClient;
@@ -41,6 +41,30 @@ module.exports = {
                             global.appConfig.db = body;
                             ctx.body = await ctx.code('0000');
                         }
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/install/admin'
+            , fun: [
+                validate({
+                    body: {
+                        name: Joi.string().required(),
+                        password: Joi.string().required(),
+                        confirm_password: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        if(!ctx.state.mdb) return ctx.body = await ctx.code('1001');
+                        let body = ctx.request.body, password;
+                        let admin = new mongo(ctx.state.mdb, "account.admin");
+                        if(body.password === body.confirm_password) password = global.fun.encord2md5(body.password);
+                        await admin.update({name:body.name}, {$set:{password}});
+                        ctx.body = await ctx.code('0000');
+
                     } catch (e) {
                         throw e;
                     }
