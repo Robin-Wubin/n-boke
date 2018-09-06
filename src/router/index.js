@@ -13,6 +13,7 @@ const InstallMongoDB = () => import('../views/install/mongo.vue');
 const InstallAdmin = () => import('../views/install/admin.vue');
 const Admin = () => import('../views/admin/index.vue');
 const AdminLogin = () => import('../views/admin/login.vue');
+const AdminApp = () => import('../views/admin/app/index.vue');
 
 export function createRouter () {
   return new Router({
@@ -36,7 +37,7 @@ export function createRouter () {
         { path: '/admin', component: Admin,
             children:[
                 {path:'login', component: AdminLogin},
-                {path: 'app', component:HomeView},
+                {path: 'app', component:AdminApp},
             ]
         },
     ]
