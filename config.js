@@ -77,12 +77,56 @@ module.exports = (app) => {
                 // }
             } catch (err) {
                 console.log(err);
-                ctx.status = err.status || err.code || 500;
+                ctx.status = 500;
             } finally {
 
             }
         });
 
+        const CONFIG = {
+            key: 'sid', /** (string) cookie key (default is koa:sess) */
+            maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
+            overwrite: true, /** (boolean) can overwrite or not (default true) */
+            httpOnly: true, /** (boolean) httpOnly or not (default true) */
+            store: {
+                get:async (key) => {
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    let data = await appSession.findOne({_id:key});
+                    if(data){
+                        data.session = JSON.parse(data.session);
+                        data.session._expire = new Date(data.session.cookie.expires).getTime();
+                        data.session._maxAge = data.session.cookie.originalMaxAge;
+                        if(data.session.socketId) delete data.session.socketId;
+                        delete data.session.cookie;
+                        return data.session;
+                    } else {
+                        return null;
+                    }
+                }
+                , set:async (key, sess, maxAge)=>{
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    let sessionCookie = {cookie:{
+                            originalMaxAge: maxAge
+                            , expires: new Date(sess._expire)
+                            , httpOnly: true
+                            , path: "/"
+                        }}, sessValue = Object.assign({}, sess);
+                    delete sessValue._expire;
+                    delete sessValue._maxAge;
+                    let keyValue =  Object.assign(sessionCookie, sessValue);
+                    await appSession.update({_id:key}, {$set:{session:JSON.stringify(keyValue), expires: new Date(sess._expire)}});
+                }
+                , destroy:async (key)=>{
+                    if(!global.mongoDB) return null;
+                    let appSession = new mongo(global.mongoDB, "account.session");
+                    await appSession.remove({_id:key});
+                }
+            },
+            signed: false /** (boolean) signed or not (default true) */
+        };
+        app.use(session(CONFIG, app));
         app.use(koaBody({
             textLimit: '10mb',
             jsonLimit: '10mb'
@@ -146,50 +190,6 @@ module.exports = (app) => {
         const route = api();
         app.use(route.routes()).use(route.allowedMethods());
 
-        const CONFIG = {
-            key: 'sid', /** (string) cookie key (default is koa:sess) */
-            maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
-            overwrite: true, /** (boolean) can overwrite or not (default true) */
-            httpOnly: true, /** (boolean) httpOnly or not (default true) */
-            store: {
-                get:async (key) => {
-                    if(!global.mongoDB) return null;
-                    let appSession = new mongo(global.mongoDB, "account.session");
-                    let data = await appSession.findOne({_id:key});
-                    if(data){
-                        data.session = JSON.parse(data.session);
-                        data.session._expire = new Date(data.session.cookie.expires).getTime();
-                        data.session._maxAge = data.session.cookie.originalMaxAge;
-                        if(data.session.socketId) delete data.session.socketId;
-                        delete data.session.cookie;
-                        return data.session;
-                    } else {
-                        return null;
-                    }
-                }
-                , set:async (key, sess, maxAge)=>{
-                    if(!global.mongoDB) return null;
-                    let appSession = new mongo(global.mongoDB, "account.session");
-                    let sessionCookie = {cookie:{
-                            originalMaxAge: maxAge
-                            , expires: new Date(sess._expire)
-                            , httpOnly: true
-                            , path: "/"
-                        }}, sessValue = Object.assign({}, sess);
-                    delete sessValue._expire;
-                    delete sessValue._maxAge;
-                    let keyValue =  Object.assign(sessionCookie, sessValue);
-                    await appSession.update({_id:key}, {$set:{session:JSON.stringify(keyValue), expires: new Date(sess._expire)}});
-                }
-                , destroy:async (key)=>{
-                    if(!global.mongoDB) return null;
-                    let appSession = new mongo(global.mongoDB, "account.session");
-                    await appSession.remove({_id:key});
-                }
-            },
-            signed: false /** (boolean) signed or not (default true) */
-        };
-        app.use(session(CONFIG, app));
         if(appConfig && appConfig.db){
             MongoClient.connect(`mongodb://${appConfig.db.username}:${appConfig.db.password}@${appConfig.db.url}/${appConfig.db.db}`, {
                 poolSize: 5,

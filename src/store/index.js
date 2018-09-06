@@ -7,9 +7,11 @@ import mutations from './mutations'
 Vue.use(Vuex);
 
 const state = {
-  category: [],
+    admin_info: null,
+    sid: null
 };
-export function createStore () {
+export function createStore (context) {
+  if(context && context.sid) state.sid = context.sid;
   return new Vuex.Store({
     state,
     actions,

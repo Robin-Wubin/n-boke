@@ -10,9 +10,11 @@ export const setCategory = ({ commit, state }) => {
   })
 };
 export const setAdminInfo = ({ commit, state }) => {
-    return request.get('http://localhost:3000/api/admin/info').then((response) => {
+    let headers = {};
+    if(state.sid) headers.Cookie = 'sid='+state.sid;
+    return request.get('http://localhost:3000/api/admin/info', {headers}).then((response) => {
         if (response.statusText === 'OK') {
-            response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data);
+            response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
         }
     }).catch((error) => {
         console.log(error)

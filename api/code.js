@@ -9,6 +9,14 @@ const obj = {
         msgCN: 'MongoDB配置错误',
         msgEN: 'MongoDB Setup Error.'
     },
+    '2001': {
+        msgCN: '名称或密码错误',
+        msgEN: 'Incorrect either name or password.'
+    },
+    '2002': {
+        msgCN: '你还未登录',
+        msgEN: 'Your are not login yet.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{

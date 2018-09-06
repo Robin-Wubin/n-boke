@@ -16,12 +16,13 @@ Vue.use(BootstrapVue);
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 });
+axios.defaults.withCredentials=true;
 Vue.prototype.axios = axios;
 // Expose a factory function that creates a fresh set of store, router,
 // app instances on each call (which is called for each SSR request)
-export function createApp () {
+export function createApp (context = null) {
   // create store and router instances
-  const store = createStore();
+  const store = createStore(context);
   const router = createRouter();
 
   // sync the router with the vuex store.

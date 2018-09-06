@@ -12,8 +12,9 @@ module.exports = ()=>{
     router = router.concat([{
         type: 'get', url: /^\/(?!api)/
         , fun: [async (ctx) => {
+            let sid = ctx.cookies.get("sid");
             await ctx.renderComponents.readyPromise;
-            await ctx.renderComponents.render(ctx);
+            await ctx.renderComponents.render(ctx, {sid});
         }]
     }]);
     for (let c of router){

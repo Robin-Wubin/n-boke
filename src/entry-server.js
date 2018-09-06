@@ -1,6 +1,6 @@
 import { createApp } from './app'
 
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = process.env.NODE_ENV !== 'production';
 
 // This exported function will be called by `bundleRenderer`.
 // This is where we perform data-prefetching to determine the
@@ -9,22 +9,21 @@ const isDev = process.env.NODE_ENV !== 'production'
 // return a Promise that resolves to the app instance.
 export default context => {
   return new Promise((resolve, reject) => {
-    const s = isDev && Date.now()
-    const { app, router, store } = createApp()
-
-    const { url } = context
-    const { fullPath } = router.resolve(url).route
+    const s = isDev && Date.now();
+    const { app, router, store } = createApp(context);
+    const { url } = context;
+    const { fullPath } = router.resolve(url).route;
 
     if (fullPath !== url) {
       return reject({ url: fullPath })
     }
 
     // set router's location
-    router.push(url)
+    router.push(url);
 
     // wait until router has resolved possible async hooks
     router.onReady(() => {
-      const matchedComponents = router.getMatchedComponents()
+      const matchedComponents = router.getMatchedComponents();
       // no matched routes
       if (!matchedComponents.length) {
         return reject({ code: 404 })
@@ -37,14 +36,14 @@ export default context => {
         store,
         route: router.currentRoute
       }))).then(() => {
-        isDev && console.log(`data pre-fetch: ${Date.now() - s}ms`)
+        isDev && console.log(`data pre-fetch: ${Date.now() - s}ms`);
         // After all preFetch hooks are resolved, our store is now
         // filled with the state needed to render the app.
         // Expose the state on the render context, and let the request handler
         // inline the state in the HTML response. This allows the client-side
         // store to pick-up the server-side state without having to duplicate
         // the initial data fetching on the client.
-        context.state = store.state
+        context.state = store.state;
         resolve(app)
       }).catch(reject)
     }, reject)

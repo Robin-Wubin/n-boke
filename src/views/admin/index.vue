@@ -47,12 +47,18 @@
             ])
         },
         mounted(){
-            let that = this;
             if(!this.admin_info){
-                console.log(this);
                 this.$router.push("/admin/login");
             } else {
                 this.$router.push("/admin/app");
+            }
+        },
+        watch: {
+            '$route' (to, from) {
+                console.log(this.admin_info, to.path, to.path === "/admin");
+                if(to.path === "/admin" && !this.admin_info){
+                    this.$router.push("/admin/login");
+                }
             }
         }
     }
