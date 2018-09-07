@@ -60,7 +60,7 @@
             if(!this.admin_info){
                 this.$router.push("/admin/login");
             } else {
-                this.$router.push("/admin/app/index");
+                if(this.$store.state.route.path  === "/admin") this.$router.push("/admin/app/dashboard");
             }
         },
         watch: {
@@ -69,7 +69,7 @@
                     if(!this.admin_info){
                         this.$router.push("/admin/login");
                     } else {
-                        this.$router.push("/admin/app/index");
+                        this.$router.push("/admin/app/dashboard");
                     }
                 }
             }

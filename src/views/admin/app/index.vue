@@ -27,7 +27,7 @@
                 menu: [
                     {
                         name:"博客一览",
-                        path:"/index",
+                        path:"/dashboard",
                         meta:{
                             icon:"fa-dashboard",
                             expanded:false
@@ -82,7 +82,6 @@
         background: #FFF;
         border-radius: 0.25rem;
         border: 1px solid rgba(0,0,0,0.125);
-        padding: 0 15px;
     }
     .no_radius{
         -webkit-border-radius: 0;
