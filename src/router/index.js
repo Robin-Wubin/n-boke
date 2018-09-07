@@ -37,7 +37,12 @@ export function createRouter () {
         { path: '/admin', component: Admin,
             children:[
                 {path:'login', component: AdminLogin},
-                {path: 'app', component:AdminApp},
+                {path: 'app', component:AdminApp,
+                    children:[
+                        {path: 'index', component:HomeView},
+                        {path: 'article', component: List}
+                    ]
+                },
             ]
         },
     ]

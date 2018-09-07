@@ -18,7 +18,7 @@
                             <em>{{admin_info.name}}</em>
                         </template>
                         <b-dropdown-item href="#">Profile</b-dropdown-item>
-                        <b-dropdown-item href="#">Signout</b-dropdown-item>
+                        <b-dropdown-item @click="signout()">Signout</b-dropdown-item>
                     </b-nav-item-dropdown>
                 </b-navbar-nav>
             </b-collapse>
@@ -34,7 +34,7 @@
     export default {
         name: "index",
         asyncData ({ store, route}) {
-            return store.dispatch('setAdminInfo')
+            return store.dispatch('setAdminInfo');
         },
         computed: {
             ...mapGetters({
@@ -44,7 +44,17 @@
         methods: {
             ...mapActions([
                 'setAdminInfo',
-            ])
+            ]),
+            signout(){
+                let _that = this;
+                this.axios.get('/api/admin/signout', this.form).then(res=>{
+                    _that.$store.commit("SET_ADMIN_INFO", null);
+                    _that.$router.push("/");
+                }).catch(res=>{
+                    console.error(res);
+                });
+
+            }
         },
         mounted(){
             if(!this.admin_info){
@@ -54,8 +64,7 @@
             }
         },
         watch: {
-            '$route' (to, from) {
-                console.log(this.admin_info, to.path, to.path === "/admin");
+            $route (to, from) {
                 if(to.path === "/admin"){
                     if(!this.admin_info){
                         this.$router.push("/admin/login");
@@ -68,6 +77,13 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+    body{
+        background: #f6f6f6;
+    }
+    a, a:hover{
+        color: rgba(0, 0, 0, 0.75);
+        text-decoration: none;
+        background-color: transparent;
+    }
 </style>

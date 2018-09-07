@@ -51,6 +51,7 @@ module.exports = {
             test: /\.css/,
             use: ['vue-style-loader', 'css-loader', 'stylus-loader']
         },
+        { test: /.(ttf|eot|woff|woff2)([?]?.*)$/, loader: "file-loader" },
       {
         test: /\.styl(us)?$/,
         use: isProd

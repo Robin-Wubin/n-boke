@@ -18,6 +18,19 @@ module.exports = {
                 }]
         },
         {
+            type: 'get', url: '/api/admin/signout'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        ctx.session.adminInfo = null;
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
             type: 'post', url: '/api/admin/login'
             , fun: [
                 validate({

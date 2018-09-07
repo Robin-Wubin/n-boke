@@ -12,11 +12,15 @@ export const setCategory = ({ commit, state }) => {
 export const setAdminInfo = ({ commit, state }) => {
     let headers = {};
     if(state.sid) headers.Cookie = 'sid='+state.sid;
-    return request.get('http://localhost:3000/api/admin/info', {headers}).then((response) => {
-        if (response.statusText === 'OK') {
-            response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
-        }
-    }).catch((error) => {
-        console.log(error)
-    })
+    if(state.admin_info){
+        return new Promise((resolve, reject)=>{resolve(null)})
+    } else {
+        return request.get('http://localhost:3000/api/admin/info', state.sid ? {headers} : null).then((response) => {
+            if (response.statusText === 'OK') {
+                response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 };
