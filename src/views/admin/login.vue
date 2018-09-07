@@ -51,7 +51,9 @@
                 evt.preventDefault();
                 let _that = this;
                 this.axios.post('/api/admin/login', this.form).then(res=>{
-                    _that.$router.push("/admin");
+                    _that.$store.dispatch('setAdminInfo').then(()=>{
+                        _that.$router.push("/admin");
+                    });
                 }).catch(res=>{
                     console.error(res);
                 });

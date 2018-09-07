@@ -60,7 +60,7 @@
             if(!this.admin_info){
                 this.$router.push("/admin/login");
             } else {
-                this.$router.push("/admin/app");
+                this.$router.push("/admin/app/index");
             }
         },
         watch: {
@@ -69,7 +69,7 @@
                     if(!this.admin_info){
                         this.$router.push("/admin/login");
                     } else {
-                        this.$router.push("/admin/app");
+                        this.$router.push("/admin/app/index");
                     }
                 }
             }

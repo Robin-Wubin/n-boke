@@ -15,7 +15,7 @@ export const setAdminInfo = ({ commit, state }) => {
     if(state.admin_info){
         return new Promise((resolve, reject)=>{resolve(null)})
     } else {
-        return request.get('http://localhost:3000/api/admin/info', state.sid ? {headers} : null).then((response) => {
+        return request.get('http://localhost:3000/api/admin/info', process ? {headers} : null).then((response) => {
             if (response.statusText === 'OK') {
                 response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
             }
