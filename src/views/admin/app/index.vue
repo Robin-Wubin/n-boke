@@ -77,11 +77,12 @@
     }
 </script>
 
-<style scoped>
-    .admin_container{
+<style>
+    .main_container{
         background: #FFF;
         border-radius: 0.25rem;
         border: 1px solid rgba(0,0,0,0.125);
+        margin-bottom: 1rem;
     }
     .no_radius{
         -webkit-border-radius: 0;

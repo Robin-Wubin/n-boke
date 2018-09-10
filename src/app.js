@@ -9,6 +9,9 @@ import * as filters from './util/filters'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 // mixin for handling title
 Vue.mixin(titleMixin);
 Vue.use(BootstrapVue);
@@ -18,6 +21,12 @@ Object.keys(filters).forEach(key => {
 });
 axios.defaults.withCredentials=true;
 Vue.prototype.axios = axios;
+console.log(Vue.prototype.$isServer);
+if(!Vue.prototype.$isServer){
+  const VueQuillEditor = require('vue-quill-editor');
+    Vue.use(VueQuillEditor)
+}
+
 // Expose a factory function that creates a fresh set of store, router,
 // app instances on each call (which is called for each SSR request)
 export function createApp (context = null) {

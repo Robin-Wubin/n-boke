@@ -16,6 +16,8 @@ const AdminLogin = () => import('../views/admin/login.vue');
 const AdminApp = () => import('../views/admin/app/index.vue');
 const AdminAppDashboard = () => import('../views/admin/app/dashboard.vue');
 const AdminAppArticleList = () => import('../views/admin/app/article/list.vue');
+const AdminAppArticleNew = () => import('../views/admin/app/article/new.vue');
+const AdminAppSourceIndex = () => import('../views/admin/app/source/index.vue');
 
 export function createRouter () {
   return new Router({
@@ -44,7 +46,13 @@ export function createRouter () {
                         {path: 'dashboard', component:AdminAppDashboard},
                         {path: 'article', component: AdminAppArticleList, redirect:"/admin/app/article/list"
                             , children:[
-                                {path:"list", component: AdminAppArticleList}
+                                {path:"list", component: AdminAppArticleList},
+                                {path:"new", component: AdminAppArticleNew}
+                            ]
+                        },
+                        {path: 'source', component: AdminAppSourceIndex, redirect:"/admin/app/source/index"
+                            , children:[
+                                {path:"index", component: AdminAppSourceIndex}
                             ]
                         }
                     ]

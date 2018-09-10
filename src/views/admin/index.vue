@@ -56,7 +56,7 @@
 
             }
         },
-        mounted(){
+        beforeMount(){
             if(!this.admin_info){
                 this.$router.push("/admin/login");
             } else {
