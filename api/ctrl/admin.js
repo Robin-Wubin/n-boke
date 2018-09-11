@@ -137,6 +137,99 @@ module.exports = {
                         throw e;
                     }
                 }]
+        },
+        {
+            type: 'post', url: '/api/admin/article/draft/:id'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let articleId = ctx.params.id;
+                        let body = ctx.request.body;
+                        let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        let _id = fun.ObjectId(body._id), query = {_id};
+                        delete body._id;
+                        query.articleId= articleId!=="0" ? fun.ObjectId(articleId) : articleId;
+                        await draftArticle.update(query, {$set:body});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'get', url: '/api/admin/article/draft/:id'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let articleId = ctx.params.id;
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        if(articleId !== "0") articleId = fun.ObjectId(articleId);
+                        let articleInfo = await draftArticle.findOne({articleId});
+                        if(!articleInfo){
+                            if(articleId!=="0"){
+                                articleInfo = await article.findOne({_id:articleId});
+                                if(!articleInfo) return ctx.body = await ctx.code('2004');
+                                articleInfo.articleId = articleInfo._id;
+                                delete articleInfo._id;
+                            } else {
+                                articleInfo = {
+                                    title:"",
+                                    type:null,
+                                    tags:[],
+                                    content:null,
+                                    articleId: "0",
+                                    state:null
+                                };
+                            }
+                            console.log(articleInfo);
+                            let insertData = await draftArticle.insert(articleInfo);
+                            articleInfo._id = insertData.ops[0]._id
+                        }
+                        ctx.body = await ctx.code('0000', articleInfo);
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/article/post/:id'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let articleId = ctx.params.id;
+                        let body = ctx.request.body;
+                        let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let _id = fun.ObjectId(body._id);
+                        delete body._id;
+                        body.type = fun.ObjectId(body.type);
+                        articleId = articleId!=="0" ? fun.ObjectId(articleId) : articleId;
+                        if(articleId!=="0"){
+                            articleId = fun.ObjectId(articleId);
+                            await article.update({_id:articleId}, {$set:body});
+                        } else {
+                            await article.insert(body);
+                        }
+                        await draftArticle.remove({_id});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
         }
     ]
 };

@@ -41,6 +41,14 @@
                         @change="onEditorChange($event)">
                 </quill-editor>
             </no-ssr>
+            <div>
+                <b-row class="new_article_row bt-1">
+                    <b-col sm="2"><label for="input-state">状态:</label></b-col>
+                    <b-col sm="10">
+                        <b-form-select id="input-state" size="sm" v-model="article.state" :options="states" class="mb-1"/>
+                    </b-col>
+                </b-row>
+            </div>
             <b-modal id="modalForTags" size="sm" ref="modalForTags" title="添加标签" @ok="handleOk" @shown="clearName">
                 <form @submit.stop.prevent="handleSubmit">
                     <b-form-input type="text" size="sm" placeholder="请输入要添加的标签" v-model="temp_tag"></b-form-input>
@@ -85,8 +93,10 @@
                     </b-list-group-item>
                 </b-list-group>
             </b-modal>
-
         </div>
+
+        <b-button type="submit" class="float-right" variant="success" @click="postArticle">发布</b-button>
+        <b-button type="reset" variant="danger">重置</b-button>
     </div>
 </template>
 
@@ -107,6 +117,12 @@
     export default {
         asyncData ({ store, route}) {
             return store.dispatch('setTypeList');
+        },
+        props: {
+            id: {
+                type: String,
+                default: '0'
+            }
         },
         computed: {
             ...mapGetters({
@@ -143,6 +159,11 @@
                     tags:[],
                     content:null
                 },
+                states:[
+                    {value:null, text:"请选择发布状态"},
+                    {value:0, text:"下线"},
+                    {value:1, text:"在线"}
+                ],
                 editorOption:{
                     placeholder:"请在此书写你的文章正文...",
                     modules: {
@@ -167,7 +188,8 @@
                         }
                     }
                 },
-                temp_tag: ""
+                temp_tag: "",
+                timer: null
             }
         },
         methods:{
@@ -276,10 +298,45 @@
                 }).catch(res=>{
                     console.error(res);
                 });
+            },
+            postArticle(){
+                let _that = this;
+                this.axios.post('/api/admin/article/post/' + this.id, this.article).then(res=>{
+                    if(res.data.code !== "0000"){
+                        console.error(res);
+                    } else {
+                        _that.$router.push("/admin/app/article/list");
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
             }
         },
         mounted(){
-
+            let _that = this;
+            this.axios.get('/api/admin/article/draft/' + _that.id).then(res=>{
+                if(res.data.code === "0000"){
+                    for(let key in res.data.data){
+                        if(key !== "articleId") _that.article[key] = res.data.data[key]
+                    }
+                } else {
+                    console.error(res);
+                }
+            }).catch(res=>{
+                console.error(res);
+            });
+            this.timer = setInterval(function(){
+                _that.axios.post('/api/admin/article/draft/' + _that.id, _that.article).then(res=>{
+                    if(res.data.code !== "0000"){
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            }, 5000)
+        },
+        beforeDestroy(){
+            clearInterval(this.timer)
         }
     }
 </script>
@@ -301,6 +358,10 @@
     }
     .new_article_row:last-child{
         border-bottom: none;
+    }
+    .bt-1{
+        border-top:1px solid rgba(0,0,0,0.125);
+        padding: 10px 10px 0;
     }
     .new_article_row label{
         font-size: 14px;

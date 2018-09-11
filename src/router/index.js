@@ -47,7 +47,8 @@ export function createRouter () {
                         {path: 'article', component: AdminAppArticleList, redirect:"/admin/app/article/list"
                             , children:[
                                 {path:"list", component: AdminAppArticleList},
-                                {path:"new", component: AdminAppArticleNew}
+                                {path:"new", component: AdminAppArticleNew},
+                                {path:"edit/:id", component: AdminAppArticleNew, props: true}
                             ]
                         },
                         {path: 'source', component: AdminAppSourceIndex, redirect:"/admin/app/source/index"

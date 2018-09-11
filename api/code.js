@@ -21,6 +21,10 @@ const obj = {
         msgCN: '该类别已经存在',
         msgEN: 'Type is exist.'
     },
+    '2004': {
+        msgCN: '不存在该文章',
+        msgEN: 'Article is not exist.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{
