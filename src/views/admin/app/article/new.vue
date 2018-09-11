@@ -150,8 +150,8 @@
                     text: 'Article',
                     href: '/admin/app/article/list'
                 },{
-                    text: 'New',
-                    href: '/admin/app/article/new'
+                    text: this.id === "0" ? 'New' : 'Edit',
+                    href: this.id === "0" ? '/admin/app/article/new' : '/admin/app/article/edit/'+this.id
                 }],
                 article:{
                     title:"",
