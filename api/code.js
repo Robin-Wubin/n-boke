@@ -17,6 +17,10 @@ const obj = {
         msgCN: '你还未登录',
         msgEN: 'Your are not login yet.'
     },
+    '2003': {
+        msgCN: '该类别已经存在',
+        msgEN: 'Type is exist.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{

@@ -4,5 +4,8 @@ export default{
     },
     SET_ADMIN_INFO: (state, admin_info) => {
         state.admin_info = admin_info
+    },
+    SET_TYPE_LIST: (state, list) => {
+        state.type_list = list
     }
 }

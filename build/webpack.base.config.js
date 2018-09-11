@@ -85,9 +85,15 @@ module.exports = {
         new ExtractTextPlugin({
           filename: 'common.[chunkhash].css'
         }),
+          new webpack.ProvidePlugin({
+              'window.Quill': 'quill'
+          })
       ]
     : [
         new VueLoaderPlugin(),
-        new FriendlyErrorsPlugin()
+        new FriendlyErrorsPlugin(),
+          new webpack.ProvidePlugin({
+              'window.Quill': 'quill'
+          })
       ]
 }

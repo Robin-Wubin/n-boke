@@ -8,7 +8,8 @@ Vue.use(Vuex);
 
 const state = {
     admin_info: null,
-    sid: null
+    sid: null,
+    type_list: []
 };
 export function createStore (context) {
   if(context && context.sid) state.sid = context.sid;
