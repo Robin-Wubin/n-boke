@@ -1,5 +1,6 @@
 <template>
     <div>
+        <material ref="material"></material>
         <div class="main_container">
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
             <loading ref="load"></loading>
@@ -113,6 +114,7 @@
     import NoSSR from 'vue-no-ssr'
     import { mapGetters, mapActions } from 'vuex'
     import loading from '../../../../components/Loading.vue'
+    import material from '../../../../components/material.vue'
     let quillEditor, container, ImageExtend, Quill, QuillWatch, ImageResize, ImageDrop;
     if(typeof document !== "undefined"){
         Quill = require('vue-quill-editor').Quill;
@@ -142,7 +144,8 @@
         components: {
             'no-ssr': NoSSR,
             quillEditor,
-            loading
+            loading,
+            material
         },
         name: "new",
         data(){
@@ -201,6 +204,10 @@
                             handlers: {
                                 'image': function () {
                                     QuillWatch.emit(this.quill.id)
+                                },
+                                'video': function () {
+                                    console.log(this);
+                                    that.$refs.material.show()
                                 }
                             }
                         }

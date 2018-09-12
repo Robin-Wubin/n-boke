@@ -128,10 +128,6 @@
             $route (to, from) {
                 this.showlist = /\/admin\/app\/article\/list(\/\d+)*/.test(to.path);
                 if(this.showlist) this.getList();
-            },
-            screenWidth (val) {
-                console.log(val);
-                this.screenWidth = val
             }
         }
     }
