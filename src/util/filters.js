@@ -16,9 +16,49 @@ export function timeAgo (time) {
   }
 }
 
+export function getTypes (type, arr) {
+  let typeName = "未知类别";
+  for(let item of arr){
+    if(type === item.value){
+        typeName = item.text;
+        break;
+    }
+  }
+  return typeName;
+}
+
+export function formatTime (value,type) {
+    let dataTime="";
+    let data = new Date(value);
+    let year   =  data.getFullYear();
+    let month  =  addZero(data.getMonth() + 1);
+    let day    =  addZero(data.getDate());
+    let hour   =  addZero(data.getHours());
+    let minute =  addZero(data.getMinutes());
+    let second =  addZero(data.getSeconds());
+    if(type === "YMD"){
+        dataTime =  year + "-"+ month + "-" + day;
+    }else if(type === "YMDHMS"){
+        dataTime = year + "-"+month + "-" + day + " " +hour+ ":"+minute+":" +second;
+    }else if(type === "HMS"){
+        dataTime = hour+":" + minute+":" + second;
+    }else if(type === "YM"){
+        dataTime = year + "-" + month;
+
+    }
+    return dataTime;//将格式化后的字符串输出到前端显示
+}
+
 function pluralize (time, label) {
   if (time === 1) {
     return time + label
   }
   return time + label + 's'
 }
+function addZero(val){
+    if(val < 10){
+        return "0" +val;
+    }else{
+        return val;
+    }
+};

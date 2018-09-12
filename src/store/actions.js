@@ -25,11 +25,15 @@ export const setAdminInfo = ({ commit, state }) => {
     }
 };
 export const setTypeList = ({ commit, state }) => {
-    return request.get('http://localhost:3000/api/admin/type/list').then((response) => {
-        if (response.statusText === 'OK') {
-            response.data.code === '0000' && commit('SET_TYPE_LIST', response.data.data);
-        }
-    }).catch((error) => {
-        console.log(error)
-    })
+    if(state.type_list.length!==0){
+        return new Promise((resolve, reject)=>{resolve(null)})
+    } else {
+        return request.get('http://localhost:3000/api/admin/type/list').then((response) => {
+            if (response.statusText === 'OK') {
+                response.data.code === '0000' && commit('SET_TYPE_LIST', response.data.data);
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 };

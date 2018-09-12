@@ -155,6 +155,8 @@ module.exports = {
                         let _id = fun.ObjectId(body._id), query = {_id};
                         delete body._id;
                         query.articleId= articleId!=="0" ? fun.ObjectId(articleId) : articleId;
+                        body.draftUpdateAt = new Date();
+                        console.log(query, body);
                         await draftArticle.update(query, {$set:body});
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
@@ -168,14 +170,16 @@ module.exports = {
                 checkAdmin,
                 async (ctx) => {
                     try {
+                        let query = ctx.request.query;
+                        console.log(query, query.reset === "true");
                         let articleId = ctx.params.id;
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
                         if(articleId !== "0") articleId = fun.ObjectId(articleId);
-                        let articleInfo = await draftArticle.findOne({articleId});
+                        let articleInfo = await draftArticle.findOne({articleId}, {fields:{articleId:0}});
                         if(!articleInfo){
                             if(articleId!=="0"){
-                                articleInfo = await article.findOne({_id:articleId});
+                                articleInfo = await article.findOne({_id:articleId}, {fields:{count:0, updateAt:0}});
                                 if(!articleInfo) return ctx.body = await ctx.code('2004');
                                 articleInfo.articleId = articleInfo._id;
                                 delete articleInfo._id;
@@ -185,13 +189,19 @@ module.exports = {
                                     type:null,
                                     tags:[],
                                     content:null,
-                                    articleId: "0",
-                                    state:null
+                                    state:null,
+                                    articleId: "0"
                                 };
                             }
                             console.log(articleInfo);
                             let insertData = await draftArticle.insert(articleInfo);
-                            articleInfo._id = insertData.ops[0]._id
+                            articleInfo._id = insertData.ops[0]._id;
+                            articleInfo.articleId && delete articleInfo.articleId;
+                        }
+                        if(query.reset === "true"){
+                            let tempInfo = await article.findOne({_id:articleId}, {fields:{count:0, updateAt:0}});
+                            tempInfo._id = articleInfo._id;
+                            articleInfo = tempInfo;
                         }
                         ctx.body = await ctx.code('0000', articleInfo);
                     } catch (e) {
@@ -216,12 +226,16 @@ module.exports = {
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let _id = fun.ObjectId(body._id);
                         delete body._id;
+                        body.draftUpdateAt && delete body.draftUpdateAt;
                         body.type = fun.ObjectId(body.type);
                         articleId = articleId!=="0" ? fun.ObjectId(articleId) : articleId;
                         if(articleId!=="0"){
                             articleId = fun.ObjectId(articleId);
+                            body.updateAt = new Date();
                             await article.update({_id:articleId}, {$set:body});
                         } else {
+                            body.createdAt = new Date();
+                            body.count = {view:0,comment:0};
                             await article.insert(body);
                         }
                         await draftArticle.remove({_id});
@@ -230,6 +244,43 @@ module.exports = {
                         throw e;
                     }
                 }]
-        }
+        },
+        {
+            type: 'get', url: '/api/admin/article/list'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let list = await article.find({}, {project:{content:0}});
+                        ctx.body = await ctx.code('0000', list);
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/article/delete'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        let _id = fun.ObjectId(body.id);
+                        await article.remove({_id});
+                        await draftArticle.remove({articleId: _id});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
     ]
 };

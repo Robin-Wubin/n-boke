@@ -3,6 +3,12 @@
         <div class="main_container">
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
             <div>
+                <b-alert :show="dismissCountDown"
+                         variant="info"
+                         @dismissed="dismissCountDown=0"
+                         @dismiss-count-down="countDownChanged" style="font-size: 12px">
+                    <i class="fa fa-info-circle"></i> 此为文章草稿，上次保存时间为：{{article.draftUpdateAt | formatTime("YMDHMS")}}
+                </b-alert>
                 <b-row class="new_article_row">
                     <b-col sm="2"><label for="input-title">标题:</label></b-col>
                     <b-col sm="10">
@@ -96,7 +102,8 @@
         </div>
 
         <b-button type="submit" class="float-right" variant="success" @click="postArticle">发布</b-button>
-        <b-button type="reset" variant="danger">重置</b-button>
+        <b-button type="submit" class="float-right mr-2" variant="info" @click="saveDraft">保存</b-button>
+        <b-button type="reset" variant="danger" @click="resetDraft">重置</b-button>
     </div>
 </template>
 
@@ -136,6 +143,7 @@
         name: "new",
         data(){
             return {
+                dismissCountDown: 0,
                 typeEdit:{
                     editIndex:null,
                     editTemp:{
@@ -168,7 +176,7 @@
                     placeholder:"请在此书写你的文章正文...",
                     modules: {
                         imageResize: {
-                            modules: [ 'Resize', 'DisplaySize', 'Toolbar' ]
+                            modules: [ 'Resize', 'DisplaySize' ]
                         },
                         ImageExtend: {
                             loading: true,
@@ -310,22 +318,12 @@
                 }).catch(res=>{
                     console.error(res);
                 });
-            }
-        },
-        mounted(){
-            let _that = this;
-            this.axios.get('/api/admin/article/draft/' + _that.id).then(res=>{
-                if(res.data.code === "0000"){
-                    for(let key in res.data.data){
-                        if(key !== "articleId") _that.article[key] = res.data.data[key]
-                    }
-                } else {
-                    console.error(res);
-                }
-            }).catch(res=>{
-                console.error(res);
-            });
-            this.timer = setInterval(function(){
+            },
+            countDownChanged (dismissCountDown) {
+                this.dismissCountDown = dismissCountDown
+            },
+            saveDraft(){
+                let _that = this;
                 _that.axios.post('/api/admin/article/draft/' + _that.id, _that.article).then(res=>{
                     if(res.data.code !== "0000"){
                         console.error(res);
@@ -333,7 +331,73 @@
                 }).catch(res=>{
                     console.error(res);
                 });
-            }, 5000)
+            },
+            resetDraft(){
+                let _that = this;
+                if(this.id === "0"){
+                    for(let key in _that.article){
+                        switch(key){
+                            case "content":
+                            case "state":
+                            case "type":
+                            case "password":
+                            case "title":
+                                _that.article[key] = null;
+                                break;
+                            case "tags":
+                                _that.article[key] = [];
+                                break;
+                        }
+                    }
+                } else {
+                    this.axios.get('/api/admin/article/draft/' + _that.id + "?reset=true").then(res=>{
+                        if(res.data.code === "0000"){
+                            for(let key in _that.article){
+                                if(res.data.data[key]){
+                                    _that.article[key] = res.data.data[key]
+                                } else {
+                                    switch(key){
+                                        case "content":
+                                        case "state":
+                                        case "type":
+                                        case "password":
+                                        case "title":
+                                            _that.article[key] = null;
+                                            break;
+                                        case "tags":
+                                            _that.article[key] = [];
+                                            break;
+                                    }
+                                }
+                            }
+                        } else {
+                            console.error(res);
+                        }
+                    }).catch(res=>{
+                        console.error(res);
+                    });
+                }
+            }
+        },
+        mounted(){
+            let _that = this;
+            this.axios.get('/api/admin/article/draft/' + _that.id).then(res=>{
+                if(res.data.code === "0000"){
+                    for(let key in res.data.data){
+                        _that.article[key] = res.data.data[key]
+                    }
+                    if(_that.article.draftUpdateAt){
+                        _that.dismissCountDown = 10;
+                    }
+                    _that.timer = setInterval(function(){
+                        _that.saveDraft();
+                    }, 5000)
+                } else {
+                    console.error(res);
+                }
+            }).catch(res=>{
+                console.error(res);
+            });
         },
         beforeDestroy(){
             clearInterval(this.timer)
