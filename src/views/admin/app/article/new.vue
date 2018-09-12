@@ -104,7 +104,8 @@
 
         <b-button type="submit" class="float-right" variant="success" @click="postArticle">发布</b-button>
         <b-button type="submit" class="float-right mr-2" variant="info" @click="saveDraft">保存</b-button>
-        <b-button type="reset" variant="danger" @click="resetDraft">重置</b-button>
+        <b-button type="reset" variant="danger" class="mr-2" @click="resetDraft">重置</b-button>
+        <b-button type="reset" variant="warning" @click="cancelDraft">取消</b-button>
     </div>
 </template>
 
@@ -336,6 +337,18 @@
                 _that.axios.post('/api/admin/article/draft/' + _that.id, _that.article).then(res=>{
                     if(res.data.code !== "0000"){
                         console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            },
+            cancelDraft(){
+                let _that = this;
+                _that.axios.get('/api/admin/article/draft/cancel/' + _that.id).then(res=>{
+                    if(res.data.code !== "0000"){
+                        console.error(res);
+                    } else {
+                        _that.$router.push("/admin/app/article/list");
                     }
                 }).catch(res=>{
                     console.error(res);

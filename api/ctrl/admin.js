@@ -227,6 +227,24 @@ module.exports = {
                 }]
         },
         {
+            type: 'get', url: '/api/admin/article/draft/cancel/:id'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let query = ctx.request.query;
+                        console.log(query, query.reset === "true");
+                        let articleId = ctx.params.id;
+                        let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        if(articleId !== "0") articleId = fun.ObjectId(articleId);
+                        await draftArticle.remove({articleId});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
             type: 'post', url: '/api/admin/article/post/:id'
             , fun: [
                 checkAdmin,
