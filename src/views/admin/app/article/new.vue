@@ -2,7 +2,8 @@
     <div>
         <div class="main_container">
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
-            <div>
+            <loading ref="load"></loading>
+            <div v-if="!loading">
                 <b-alert :show="dismissCountDown"
                          variant="info"
                          @dismissed="dismissCountDown=0"
@@ -38,7 +39,7 @@
                 </b-row>
             </div>
 
-            <no-ssr>
+            <no-ssr v-if="!loading">
                 <quill-editor
                         v-model="article.content"
                         ref="myQuillEditor"
@@ -47,7 +48,7 @@
                         @change="onEditorChange($event)">
                 </quill-editor>
             </no-ssr>
-            <div>
+            <div v-if="!loading">
                 <b-row class="new_article_row bt-1">
                     <b-col sm="2"><label for="input-state">状态:</label></b-col>
                     <b-col sm="10">
@@ -110,7 +111,8 @@
 <script>
     import NoSSR from 'vue-no-ssr'
     import { mapGetters, mapActions } from 'vuex'
-    let quillEditor, container, ImageExtend, Quill, QuillWatch, ImageResize;
+    import loading from '../../../../components/Loading.vue'
+    let quillEditor, container, ImageExtend, Quill, QuillWatch, ImageResize, ImageDrop;
     if(typeof document !== "undefined"){
         Quill = require('vue-quill-editor').Quill;
         quillEditor = require('vue-quill-editor').quillEditor;
@@ -138,10 +140,13 @@
         },
         components: {
             'no-ssr': NoSSR,
-            quillEditor
+            quillEditor,
+            loading
         },
         name: "new",
         data(){
+            let that = this;
+            console.log(this.id);
             return {
                 dismissCountDown: 0,
                 typeEdit:{
@@ -180,10 +185,14 @@
                         },
                         ImageExtend: {
                             loading: true,
-                            name: 'img',
-                            action: "",
+                            name: 'file',
+                            action: "/api/admin/article/upload",
+                            change: (xhr, formData) => {
+                                formData.append("id", that.id);
+                            },
                             response: (res) => {
-                                return res.info
+                                console.log(res.data);
+                                return res.data
                             }
                         },
                         toolbar: {
@@ -197,7 +206,8 @@
                     }
                 },
                 temp_tag: "",
-                timer: null
+                timer: null,
+                loading: true
             }
         },
         methods:{
@@ -281,7 +291,6 @@
                     alisa:this.types[index].alisa
                 }).then(res=>{
                     if(res.data.code === "0000"){
-                        console.log(res);
                         _that.typeEdit.editIndex = null;//将index置为null，否则在下面reset的时候会把temp的文本重填入修改前的数据
                         _that.$store.commit("SET_TYPE_LIST", res.data.data);
                         _that.resetTypeEditor()
@@ -389,6 +398,8 @@
                     if(_that.article.draftUpdateAt){
                         _that.dismissCountDown = 10;
                     }
+                    _that.$refs.load.finished();
+                    _that.loading= false;
                     _that.timer = setInterval(function(){
                         _that.saveDraft();
                     }, 5000)

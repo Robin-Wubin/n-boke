@@ -1,7 +1,25 @@
 const mongo = require("../../lib/mongo");
 const {checkAdmin} = require("../mid");
+const fs = require('fs');
 const validate = require('koa2-validation');
 const Joi = require('joi');
+//文件上传
+const multer = require('koa-multer');
+//配置
+const storage = multer.diskStorage({
+    //文件保存路径
+    destination: function(req, file, cb) {
+        cb(null, './public/upload/img/')
+    },
+    filename: function(req, file, cb) {
+        let fileFormat = (file.originalname).split(".");
+        cb(null, Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    }
+});
+const upload = multer({
+    storage: storage
+});
+
 module.exports = {
     auth:"admin",
     route: [
@@ -156,7 +174,6 @@ module.exports = {
                         delete body._id;
                         query.articleId= articleId!=="0" ? fun.ObjectId(articleId) : articleId;
                         body.draftUpdateAt = new Date();
-                        console.log(query, body);
                         await draftArticle.update(query, {$set:body});
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
@@ -249,11 +266,19 @@ module.exports = {
             type: 'get', url: '/api/admin/article/list'
             , fun: [
                 checkAdmin,
+                validate({
+                    query: {
+                        page: Joi.number().default(1)
+                    }
+                }),
                 async (ctx) => {
                     try {
+                        let query = ctx.query, page = query.page,NUMBER = 10;
                         let article = new mongo(ctx.state.mdb, "app.article");
-                        let list = await article.find({}, {project:{content:0}});
-                        ctx.body = await ctx.code('0000', list);
+                        let totalNum = await article.count({});
+                        let totalPage = Math.ceil(totalNum/NUMBER);
+                        let list = await article.find({}, {project:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
+                        ctx.body = await ctx.code('0000', {list, totalPage});
                     } catch (e) {
                         throw e;
                     }
@@ -281,6 +306,31 @@ module.exports = {
                         throw e;
                     }
                 }]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/article/upload',
+            fun: [
+                checkAdmin,
+                upload.single('file'),
+                async (ctx) => {
+                    let body = ctx.req.body;
+                    let file = ctx.req.file;
+                    try {
+                        console.log(body, file);
+                        // let objectKey = `/report/${body.type}/${new Date().getTime()}/${file.filename}`;
+                        // await fun.oss.put(objectKey, file.path);
+                        // let url = "https://cdn.das.vcsaas.cn" + objectKey;
+                        // console.log(url);
+                        return  ctx.body = await ctx.code('0000', file.path.replace("public", ""));
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
         },
     ]
 };

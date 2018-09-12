@@ -4,6 +4,7 @@
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
             <b-list-group class="suit_fot">
                 <b-list-group-item class="suit_fot_tpl"><router-link :to="'/admin/app/article/new'"><i class="fa fa-plus-square"></i> 添加新文章</router-link></b-list-group-item>
+                <loading ref="load"></loading>
                 <b-list-group-item v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
                     <div>
                         <div>
@@ -29,7 +30,7 @@
                 </b-list-group-item>
             </b-list-group>
         </div>
-        <b-pagination-nav v-if="showlist" class="pagination_nav" :link-gen="linkGen" :number-of-pages="10" v-model="currentPage" />
+        <b-pagination-nav v-if="showlist" class="pagination_nav" :link-gen="linkGen" :number-of-pages="totalPage" v-model="page" />
         <router-view v-if="!showlist"></router-view>
         <b-modal id="modalForDeleteArticle" size="sm" ref="modalForDeleteArticle" title="删除文章"
                  @ok="confirmDelete" @hidden="cancelDelete">
@@ -40,6 +41,7 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex'
+    import loading from '../../../../components/Loading.vue'
     export default {
         asyncData ({ store, route}) {
             return store.dispatch('setTypeList');
@@ -50,6 +52,9 @@
                 types: 'getTypeList'
             })
         },
+        components: {
+            loading
+        },
         data () {
             return {
                 breadcrumb: [{
@@ -57,7 +62,9 @@
                     href: '/admin/app/article/list'
                 }],
                 screenWidth: !this.$isServer ? document.body.clientWidth : 0,
-                currentPage: 1,
+                loading: true,
+                page: parseInt(this.$route.params.page ? this.$route.params.page : 1),
+                totalPage: 1,
                 showlist: true,
                 list:[],
                 deleteTempObj:null
@@ -65,13 +72,18 @@
         },
         methods: {
             linkGen (pageNum) {
-                return '#page/' + pageNum + '/foobar'
+                return "" + pageNum
             },
             getList () {
                 let _that = this;
-                this.axios.get('/api/admin/article/list' ).then(res=>{
+                let page = parseInt(this.$route.params.page ? this.$route.params.page : 1);
+                this.axios.get('/api/admin/article/list?page=' + page ).then(res=>{
                     if(res.data.code === "0000"){
-                        _that.list = res.data.data;
+                        _that.$refs.load.finished();
+                        _that.loading= false;
+                        _that.list = res.data.data.list;
+                        _that.totalPage = res.data.data.totalPage;
+                        _that.page = page;
                         // console.log(res.data);
                     } else {
                         console.error(res);
@@ -81,7 +93,6 @@
                 });
             },
             deleteArticle (item,index) {
-                console.log(this.deleteTempObj);
                 this.$refs.modalForDeleteArticle.show();
                 this.deleteTempObj = {item,index}
             },
@@ -99,7 +110,7 @@
             }
         },
         beforeMount(){
-            this.showlist = this.$store.state.route.path  === "/admin/app/article/list";
+            this.showlist = /\/admin\/app\/article\/list(\/\d)*/.test(this.$store.state.route.path);
         },
         mounted(){
             this.getList();
@@ -115,7 +126,7 @@
         },
         watch: {
             $route (to, from) {
-                this.showlist = to.path === "/admin/app/article/list";
+                this.showlist = /\/admin\/app\/article\/list(\/\d+)*/.test(to.path);
                 if(this.showlist) this.getList();
             },
             screenWidth (val) {

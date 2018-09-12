@@ -22,10 +22,9 @@ Object.keys(filters).forEach(key => {
 axios.defaults.withCredentials=true;
 Vue.prototype.axios = axios;
 Vue.prototype.$eventHub= Vue.prototype.$eventHub ||  new Vue();
-console.log(Vue.prototype.$isServer);
 if(!Vue.prototype.$isServer){
   const VueQuillEditor = require('vue-quill-editor');
-    Vue.use(VueQuillEditor)
+  Vue.use(VueQuillEditor);
 }
 
 // Expose a factory function that creates a fresh set of store, router,
