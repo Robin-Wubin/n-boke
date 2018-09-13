@@ -24,7 +24,9 @@ module.exports = {
     auth:"admin",
     route: [
         {
-            type: 'get', url: '/api/admin/info'
+            type: 'get'
+            , url: '/api/admin/info'
+            , name: 'get login admin info'
             , fun: [
                 checkAdmin,
                 async (ctx) => {
@@ -37,6 +39,7 @@ module.exports = {
         },
         {
             type: 'get', url: '/api/admin/signout'
+            , name: 'admin signout'
             , fun: [
                 checkAdmin,
                 async (ctx) => {
@@ -50,6 +53,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/login'
+            , name: 'admin login'
             , fun: [
                 validate({
                     body: {
@@ -74,6 +78,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/type/new'
+            , name: 'admin add type'
             , fun: [
                 checkAdmin,
                 validate({
@@ -118,6 +123,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/type/delete'
+            , name: 'admin delete type'
             , fun: [
                 checkAdmin,
                 validate({
@@ -142,6 +148,7 @@ module.exports = {
         },
         {
             type: 'get', url: '/api/admin/type/list'
+            , name: 'admin get type list'
             , fun: [
                 async (ctx) => {
                     try {
@@ -158,6 +165,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/article/draft/:id'
+            , name: 'admin save the article draft'
             , fun: [
                 checkAdmin,
                 validate({
@@ -183,6 +191,7 @@ module.exports = {
         },
         {
             type: 'get', url: '/api/admin/article/draft/:id'
+            , name: 'admin get the article draft'
             , fun: [
                 checkAdmin,
                 async (ctx) => {
@@ -228,6 +237,7 @@ module.exports = {
         },
         {
             type: 'get', url: '/api/admin/article/draft/cancel/:id'
+            , name: 'admin delete the article draft'
             , fun: [
                 checkAdmin,
                 async (ctx) => {
@@ -246,6 +256,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/article/post/:id'
+            , name: 'admin post the article'
             , fun: [
                 checkAdmin,
                 validate({
@@ -282,6 +293,7 @@ module.exports = {
         },
         {
             type: 'get', url: '/api/admin/article/list'
+            , name: 'admin get the articles list'
             , fun: [
                 checkAdmin,
                 validate({
@@ -304,6 +316,7 @@ module.exports = {
         },
         {
             type: 'post', url: '/api/admin/article/delete'
+            , name: 'admin delete the article'
             , fun: [
                 checkAdmin,
                 validate({
@@ -327,7 +340,8 @@ module.exports = {
         },
         {
             type: 'post',
-            url: '/api/admin/article/upload',
+            url: '/api/admin/article/upload/image',
+            name: 'admin upload image',
             fun: [
                 checkAdmin,
                 upload.single('file'),
@@ -335,12 +349,166 @@ module.exports = {
                     let body = ctx.req.body;
                     let file = ctx.req.file;
                     try {
-                        console.log(body, file);
-                        // let objectKey = `/report/${body.type}/${new Date().getTime()}/${file.filename}`;
-                        // await fun.oss.put(objectKey, file.path);
-                        // let url = "https://cdn.das.vcsaas.cn" + objectKey;
-                        // console.log(url);
+                        let source = new mongo(ctx.state.mdb, "app.source");
+                        let fileObj = {
+                            folder:file.destination,
+                            filename: file.filename,
+                            mimetype: file.mimetype,
+                            originalname: file.originalname,
+                            size: file.size,
+                            type:"image",
+                            url: file.path.replace("public", "")
+                        };
+                        await source.insert(fileObj);
                         return  ctx.body = await ctx.code('0000', file.path.replace("public", ""));
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/article/upload/media',
+            name: 'admin upload media',
+            fun: [
+                checkAdmin,
+                upload.single('file'),
+                async (ctx) => {
+                    let body = ctx.req.body;
+                    let file = ctx.req.file;
+                    try {
+                        let source = new mongo(ctx.state.mdb, "app.source");
+                        let fileObj = {
+                            folder:file.destination,
+                            filename: file.filename,
+                            mimetype: file.mimetype,
+                            originalname: file.originalname,
+                            size: file.size,
+                            type:"media",
+                            url: file.path.replace("public", "")
+                        };
+                        await source.insert(fileObj);
+                        return  ctx.body = await ctx.code('0000', file.path.replace("public", ""));
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/article/upload/video',
+            name: 'admin upload video',
+            fun: [
+                checkAdmin,
+                upload.single('file'),
+                async (ctx) => {
+                    let body = ctx.req.body;
+                    let file = ctx.req.file;
+                    try {
+                        let source = new mongo(ctx.state.mdb, "app.source");
+                        let fileObj = {
+                            folder:file.destination,
+                            filename: file.filename,
+                            mimetype: file.mimetype,
+                            originalname: file.originalname,
+                            size: file.size,
+                            type:"video",
+                            url: file.path.replace("public", "")
+                        };
+                        await source.insert(fileObj);
+                        return  ctx.body = await ctx.code('0000', file.path.replace("public", ""));
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'get',
+            url: '/api/admin/source/image/:page',
+            name: 'admin get image list',
+            fun: [
+                checkAdmin,
+                validate({
+                    params: {
+                        page: Joi.number().default(1)
+                    }
+                }),
+                async (ctx) => {
+                    let body = ctx.params;
+                    try {
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
+                        let totalNum = await source.count({type:"image"});
+                        // let totalPage = Math.ceil(totalNum/NUMBER);
+                        let list = await source.find({type:"image"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        ctx.body = await ctx.code('0000', {list, totalNum});
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'get',
+            url: '/api/admin/source/media/:page',
+            name: 'admin get media list',
+            fun: [
+                checkAdmin,
+                validate({
+                    params: {
+                        page: Joi.number().default(1)
+                    }
+                }),
+                async (ctx) => {
+                    let body = ctx.params;
+                    try {
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
+                        let totalNum = await source.count({type:"media"});
+                        // let totalPage = Math.ceil(totalNum/NUMBER);
+                        let list = await source.find({type:"media"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        ctx.body = await ctx.code('0000', {list, totalNum});
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'get',
+            url: '/api/admin/source/video/:page',
+            name: 'admin get video list',
+            fun: [
+                checkAdmin,
+                validate({
+                    params: {
+                        page: Joi.number().default(1)
+                    }
+                }),
+                async (ctx) => {
+                    let body = ctx.params;
+                    try {
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
+                        let totalNum = await source.count({type:"video"});
+                        // let totalPage = Math.ceil(totalNum/NUMBER);
+                        let list = await source.find({type:"video"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        ctx.body = await ctx.code('0000', {list, totalNum});
                     } catch (e) {
                         console.error(e);
                         throw e;

@@ -190,12 +190,12 @@
                         ImageExtend: {
                             loading: true,
                             name: 'file',
-                            action: "/api/admin/article/upload",
+                            action: "/api/admin/article/upload/image",
                             change: (xhr, formData) => {
                                 formData.append("id", that.id);
                             },
                             response: (res) => {
-                                console.log(res.data);
+                                that.$refs.material.getImageList(1);
                                 return res.data
                             }
                         },
@@ -207,7 +207,8 @@
                                 },
                                 'video': function () {
                                     console.log(this);
-                                    that.$refs.material.show()
+                                    console.log(this.quill.selection.cursor.selection.lastRange.index);
+                                    that.$refs.material.show(this.quill, this.quill.selection.cursor.selection.lastRange.index)
                                 }
                             }
                         }
