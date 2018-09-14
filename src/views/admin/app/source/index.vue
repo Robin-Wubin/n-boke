@@ -2,15 +2,50 @@
     <div>
         <div class="main_container">
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
-
-            <b-card no-body>
+            <loading ref="load"></loading>
+            <b-card v-if="!loading" no-body>
                 <b-tabs small card @input="changTab">
                     <b-tab title="图片" active class="bg-dark">
-                        <div class="tab_parent">
+                        <b-row class="flex_space_between">
+                            <div>
+                                <b-dropdown size="sm" id="ddown1" :text="image.groupIndex == null ? '选择分组' : groupList[image.groupIndex].name" class="m-md-2">
+                                    <b-dropdown-item v-for="(item, index) of groupList" :key="index" @click="selectGroup(0, index)">{{item.name}}</b-dropdown-item>
+                                    <b-dropdown-divider></b-dropdown-divider>
+                                    <b-dropdown-item v-b-modal.modalForTypes>新建分组</b-dropdown-item>
+                                </b-dropdown>
+                                <span v-if="image.groupIndex!==null">
+                                    <b-button size="sm" variant="secondary" class="mr-2" @click="resetGroup(0)">
+                                        <i class="fa fa-times"></i>
+                                    </b-button>
+                                    <b-button size="sm" variant="secondary" @click="deleteGroup(0, groupList[image.groupIndex]._id)">
+                                        <i class="fa fa-trash-o"></i>
+                                    </b-button>
+                                </span>
+                            </div>
+                            <div>
+                                <b-button size="sm" variant="success" @click="triggerUpload(0)" class="upload_btn">
+                                    <i class="fa fa-plus-square "></i> 上传
+                                    <input id="uploadImage" class="upload" @change='add_img'  type="file" accept="image/*">
+                                </b-button>
+                            </div>
+                        </b-row>
+                        <div v-if="imageList.length > 0" class="tab_parent">
                             <div class="images">
                                 <div v-for="(item,index) of imageList" class="image_item">
                                     <div class="image">
                                         <b-img center :src="item.url" alt="Thumbnail" />
+                                    </div>
+                                    <div class="hover">
+                                        <b-button size="sm" variant="danger" @click="deleteSource(0, index)">
+                                            <i class="fa fa-trash-o"></i>
+                                        </b-button>
+                                        <b-dropdown v-if="groupList.length > 0" variant="secondary" size="sm" no-caret>
+                                            <template slot="button-content">
+                                                <i class="fa fa-reorder"></i>
+                                            </template>
+                                            <b-dropdown-header>移动到分组</b-dropdown-header>
+                                            <b-dropdown-item v-for="(group, group_i) of groupList" :key="group_i" @click="setSource(0, index, group._id)" v-if="group._id!==item.group">{{group.name}}</b-dropdown-item>
+                                        </b-dropdown>
                                     </div>
                                     <p>{{item.originalname}}</p>
                                 </div>
@@ -18,7 +53,9 @@
 
                             <b-pagination align="center" size="sm" :total-rows="image.totalNum" v-model="image.currentPage" :per-page="10" @change="getImageList"></b-pagination>
                         </div>
-                        <div class="upload_btn" @click="triggerImageUpload"><i class="fa fa-plus-square "></i> 上传<input id="uploadImage" class="upload" @change='add_img'  type="file" accept="image/*"></div>
+                        <div v-if="imageList.length === 0" class="blanket">
+                            <i class="fa fa-child"></i>&nbsp;&nbsp;&nbsp;&nbsp;没有素材
+                        </div>
                     </b-tab>
                     <b-tab title="音频" class="bg-dark">
                         <div class="tab_parent">
@@ -32,7 +69,7 @@
                             </div>
                             <b-pagination align="center" size="sm" :total-rows="media.totalNum" v-model="media.currentPage" :per-page="10" @change="getImageList"></b-pagination>
                         </div>
-                        <div class="upload_btn" @click="triggerMediaUpload"><i class="fa fa-plus-square "></i> 上传<input id="uploadMedia" class="upload" @change='add_media'  type="file" accept="audio/*"></div>
+                        <div class="upload_btn" @click="triggerUpload(1)"><i class="fa fa-plus-square "></i> 上传<input id="uploadMedia" class="upload" @change='add_media'  type="file" accept="audio/*"></div>
                     </b-tab>
                     <b-tab title="视频" class="bg-dark">
                         <div class="tab_parent">
@@ -44,43 +81,58 @@
                                     <p><i class="fa fa-plus mr-2"></i> <a href="javascript:void(0);">{{item.originalname}}</a></p>
                                 </div>
                             </div>
-                            <b-pagination align="center" size="sm" :total-rows="video.totalNum" v-model="video.currentPage" :per-page="10" @change="getImageList"></b-pagination>
+                            <b-pagination align="center" size="sm" :total-rows="video.totalNum" v-model="video.currentPage" :per-page="10" @change="getVideoList"></b-pagination>
                         </div>
-                        <div class="upload_btn" @click="triggerVideoUpload"><i class="fa fa-plus-square "></i> 上传<input id="uploadVideo" class="upload" @change='add_video'  type="file" accept="video/*"></div>
+                        <div class="upload_btn" @click="triggerUpload(2)"><i class="fa fa-plus-square "></i> 上传<input id="uploadVideo" class="upload" @change='add_video'  type="file" accept="video/*"></div>
                     </b-tab>
                 </b-tabs>
             </b-card>
+            <b-modal id="modalForTypes" size="sm" ref="modalForTypes" title="添加分组" @ok="handleOk" @shown="clearName">
+                <form @submit.stop.prevent="handleSubmit">
+                    <b-form-input type="text" size="sm" placeholder="请输入要添加的分组" v-model="temp_type"></b-form-input>
+                </form>
+            </b-modal>
         </div>
     </div>
 </template>
 
 <script>
+    import loading from '../../../../components/Loading.vue'
     export default {
         name: "index",
+        components: {
+            loading
+        },
         data(){
             return {
                 breadcrumb: [{
                     text: 'Source',
                     href: '/admin/app/source/index'
                 }],
+                groupList:[],
                 imageList:[],
                 mediaList:[],
                 videoList:[],
                 image:{
                     totalNum:1,
                     currentPage:1,
+                    groupIndex: null,
                     accept: 'image/gif, image/jpeg, image/png, image/jpg',
                 },
                 media:{
                     totalNum:1,
                     currentPage:1,
+                    groupIndex: null,
                     accept: 'audio/basic, audio/midi, audio/x-mid, audio/x-midi, audio/mpeg3, audio/mp3, audio/x-mpeg-3, audio/ogg',
                 },
                 video:{
                     totalNum:1,
                     currentPage:1,
+                    groupIndex: null,
                     accept: 'video/ogg, video/mp4, video/webm',
                 },
+                temp_type: "",
+                loading:true
             }
         },
         methods:{
@@ -100,7 +152,8 @@
             getImageList(page){
                 let _that = this;
                 this.image.currentPage = page;
-                this.axios.get('/api/admin/source/image/'+page).then(res=>{
+                console.log(this.image.groupIndex, this.image.groupIndex == null, this.groupList);
+                this.axios.get('/api/admin/source/image/'+page + (this.image.groupIndex !== null ? "?type=" + this.groupList[this.image.groupIndex]._id:"")).then(res=>{
                     if(res.data.code === "0000"){
                         _that.image.totalNum = res.data.data.totalNum;
                         _that.imageList = res.data.data.list
@@ -231,15 +284,139 @@
                     });
                 })
             },
-            triggerImageUpload(){
-                document.getElementById("uploadImage").click();
+            triggerUpload(type){
+                switch(type){
+                    case 0:
+                        document.getElementById("uploadImage").click();
+                        break;
+                    case 1:
+                        document.getElementById("uploadMedia").click();
+                        break;
+                    case 2:
+                        document.getElementById("uploadVideo").click();
+                        break;
+                }
             },
-            triggerMediaUpload(){
-                document.getElementById("uploadMedia").click();
+            handleOk (evt) {
+                // Prevent modal from closing
+                evt.preventDefault();
+                if (!this.temp_type) {
+                    alert('Please enter your name')
+                } else {
+                    this.handleSubmit()
+                }
             },
-            triggerVideoUpload(){
-                document.getElementById("uploadVideo").click();
+            handleSubmit () {
+                let that = this;
+                this.axios.post('/api/admin/source/type/new', {name:this.temp_type}).then(response => {
+                    that.groupList = response.data.data;
+                    console.log(response);
+                    that.clearName();
+                    that.$refs.modalForTypes.hide();
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"获取分组列表出错!"
+                    });
+                })
+            },
+            clearName () {
+                this.temp_type = ''
+            },
+            deleteSource (type,index){
+                let sourceInfo, that = this;
+                switch(type){
+                    case 0:
+                        sourceInfo = this.imageList[index];
+                        break;
+                }
+                this.axios.post('/api/admin/source/delete', {_id:sourceInfo._id}).then(response => {
+                    switch(type){
+                        case 0:
+                            that.getImageList(that.image.currentPage);
+                            break;
+                    }
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"删除资源出错!"
+                    });
+                })
+            },
+            setSource (type,index, type_id){
+                let sourceInfo, that = this;
+                switch(type){
+                    case 0:
+                        sourceInfo = this.imageList[index];
+                        break;
+                }
+                this.axios.post('/api/admin/source/set', {_id:sourceInfo._id, type:type_id}).then(response => {
+                    switch(type){
+                        case 0:
+                            that.getImageList(that.image.currentPage);
+                            break;
+                    }
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"删除资源出错!"
+                    });
+                })
+            },
+            selectGroup (type,index){
+                switch(type){
+                    case 0:
+                        this.image.groupIndex = index;
+                        this.getImageList(1);
+                        break;
+                }
+            },
+            resetGroup (type){
+                switch(type){
+                    case 0:
+                        this.image.groupIndex = null;
+                        this.getImageList(1);
+                        break;
+                }
+            },
+            deleteGroup (type, id){
+                let that = this;
+                this.axios.post('/api/admin/source/type/delete', {_id:id}).then(response => {
+                    if(response.data.code ==="0000"){
+                        that.groupList = response.data.data;
+                        switch(type){
+                            case 0:
+                                that.image.groupIndex = null;
+                                that.getImageList(that.image.currentPage);
+                                break;
+                        }
+                    } else {
+                        return that.$eventHub.$emit('alert', {
+                            type:"warning"
+                            , message:response.data.msgCN
+                        });
+                    }
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"删除分组出错!"
+                    });
+                })
             }
+        },
+        beforeMount(){
+            let that = this;
+            this.axios.get('/api/admin/source/type/list').then(response => {
+                that.groupList = response.data.data;
+                that.loading = false;
+                that.$refs.load.finished();
+                console.log(response);
+            }).catch(error => {
+                return that.$eventHub.$emit('alert', {
+                    type:"warning"
+                    , message:"获取分组列表出错!"
+                });
+            })
         }
     }
 </script>
@@ -263,7 +440,7 @@
         position: relative;
     }
     .media_item{
-        width: 310px;
+        width: 300px;
         border-radius: 5px;
         font-size: 12px;
         margin: 0.5rem 1rem;
@@ -281,16 +458,19 @@
         height: 150px;
         position: absolute;
         top: 0;
-        background: #5252529c;
+        background: rgba(39, 35, 39, 0.48);
         color: #FFF;
-        text-align: center;
-        line-height: 150px;
-        font-size: 38px;
         display: none;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 10px;
+        font-size: 20px;
+    }
+    .image_item .hover i{
         cursor: pointer;
     }
     .image_item:hover .hover{
-        display: block;
+        display: flex;
     }
     .image_item p, .media_item p, .video_item p{
         width: 150px;
@@ -305,7 +485,7 @@
         color: #FFF;
     }
     .media_item p{
-        width: 310px;
+        width: 300px;
         border-radius: 0.3rem;
         background: #f1f3f4;
     }
@@ -345,7 +525,7 @@
         padding: 5px;
         border-radius: 5px;
         border: 2px solid #b1b1b1;
-        background: #FFF;
+        background: #12161b;
         overflow: hidden;
     }
     .video video{
@@ -356,29 +536,26 @@
         transform: translateX(-50%) translateY(-50%);
     }
     .upload_btn{
-        color: #ffffff;
-        background-color: #717171;
-        border: 1px solid #504f4f;
-        border-radius: 30px;
         font-size: 12px;
-        cursor: pointer;
-        position: absolute;
         overflow: hidden;
-        top: 5px;
-        right: 5px;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
         text-align: center;
+        margin: 10px auto;
     }
     .upload_btn input[type=file]
     {
-        position:absolute;
-        z-index:1;
-        width:100%;
-        font-size:50rem;
-        opacity:0;
-        cursor:pointer;
+        position: absolute;
+        visibility: hidden;
     }
-
+    .flex_space_between{
+        justify-content: space-between;
+    }
+    .dropdown-item{
+        font-size: 14px;
+    }
+    .blanket{
+        font-size: 14px;
+        line-height: 250px;
+        text-align: center;
+        color: #CCC;
+    }
 </style>

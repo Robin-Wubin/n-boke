@@ -91,7 +91,7 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let body = ctx.request.body;
-                        let type = new mongo(ctx.state.mdb, "admin.type");
+                        let type = new mongo(ctx.state.mdb, "app.article.type");
                         let typeInfo = await type.findOne({name:body.name});
                         let alisaInfo = await type.findOne({alisa:body.alisa});
                         if(body._id){
@@ -134,7 +134,9 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let body = ctx.request.body;
-                        let type = new mongo(ctx.state.mdb, "admin.type");
+                        let type = new mongo(ctx.state.mdb, "app.article.type");
+                        let typeInfo = await type.findOne({_id:fun.ObjectId(body._id)});
+                        if(typeInfo.countNum !== 0) return ctx.body = await ctx.code('2005');
                         await type.remove({_id:fun.ObjectId(body._id)});
                         let list = await type.find(), typeList = [{ value: null, text: '请选择一个类别' }];
                         for(let item of list){
@@ -152,7 +154,7 @@ module.exports = {
             , fun: [
                 async (ctx) => {
                     try {
-                        let type = new mongo(ctx.state.mdb, "admin.type");
+                        let type = new mongo(ctx.state.mdb, "app.article.type");
                         let list = await type.find(), typeList = [{ value: null, text: '请选择一个类别' }];
                         for(let item of list){
                             typeList.push({value:item._id.toString(), text:item.name, alisa:item.alisa, countNum:item.countNum})
@@ -269,6 +271,7 @@ module.exports = {
                         let articleId = ctx.params.id;
                         let body = ctx.request.body;
                         let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
+                        let type = new mongo(ctx.state.mdb, "app.article.type");
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let _id = fun.ObjectId(body._id);
                         delete body._id;
@@ -276,10 +279,18 @@ module.exports = {
                         body.type = fun.ObjectId(body.type);
                         articleId = articleId!=="0" ? fun.ObjectId(articleId) : articleId;
                         if(articleId!=="0"){
+                            //修改
+                            let articleInfo = await article.findOne({_id:articleId});
+                            if(articleInfo.type.toString() !== body.type.toString()){
+                                await type.update({_id:articleInfo.type}, {$inc:{countNum:-1}});
+                                await type.update({_id:body.type}, {$inc:{countNum:1}});
+                            }
                             articleId = fun.ObjectId(articleId);
                             body.updateAt = new Date();
                             await article.update({_id:articleId}, {$set:body});
                         } else {
+                            //新增
+                            await type.update({_id:body.type}, {$inc:{countNum:1}});
                             body.createdAt = new Date();
                             body.count = {view:0,comment:0};
                             await article.insert(body);
@@ -328,8 +339,11 @@ module.exports = {
                     try {
                         let body = ctx.request.body;
                         let article = new mongo(ctx.state.mdb, "app.article");
+                        let type = new mongo(ctx.state.mdb, "app.article.type");
                         let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
                         let _id = fun.ObjectId(body.id);
+                        let articleInfo = await article.findOne({_id});
+                        await type.update({_id:articleInfo.type}, {$inc:{countNum:-1}});
                         await article.remove({_id});
                         await draftArticle.remove({articleId: _id});
                         ctx.body = await ctx.code('0000');
@@ -346,7 +360,6 @@ module.exports = {
                 checkAdmin,
                 upload.single('file'),
                 async (ctx) => {
-                    let body = ctx.req.body;
                     let file = ctx.req.file;
                     try {
                         let source = new mongo(ctx.state.mdb, "app.source");
@@ -378,7 +391,6 @@ module.exports = {
                 checkAdmin,
                 upload.single('file'),
                 async (ctx) => {
-                    let body = ctx.req.body;
                     let file = ctx.req.file;
                     try {
                         let source = new mongo(ctx.state.mdb, "app.source");
@@ -410,7 +422,6 @@ module.exports = {
                 checkAdmin,
                 upload.single('file'),
                 async (ctx) => {
-                    let body = ctx.req.body;
                     let file = ctx.req.file;
                     try {
                         let source = new mongo(ctx.state.mdb, "app.source");
@@ -435,6 +446,75 @@ module.exports = {
             ]
         },
         {
+            type: 'post',
+            url: '/api/admin/source/set',
+            name: 'admin set source type',
+            fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required(),
+                        type: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    let body = ctx.request.body;
+                    try {
+                        body._id = fun.ObjectId(body._id);
+                        let source = new mongo(ctx.state.mdb, "app.source");
+                        let type = new mongo(ctx.state.mdb, "app.source.type");
+                        let sourceInfo = await source.findOne({_id:body._id});
+                        if(!sourceInfo) return ctx.body = await ctx.code('2007');
+                        if(sourceInfo.group && sourceInfo.group.toString() === body.type)  return ctx.body = await ctx.code('0000');
+                        body.type = fun.ObjectId(body.type);
+                        let typeInfo = await type.findOne({_id:body.type});
+                        if(!typeInfo) return ctx.body = await ctx.code('2006');
+                        await source.update({_id:body._id}, {$set:{group:body.type}});
+                        await type.update({_id:body.type}, {$inc:{countNum:1}});
+                        sourceInfo.group && await type.update({_id:sourceInfo.group}, {$inc:{countNum:-1}});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/source/delete',
+            name: 'admin delete source',
+            fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    let body = ctx.request.body;
+                    try {
+                        body._id = fun.ObjectId(body._id);
+                        let source = new mongo(ctx.state.mdb, "app.source");
+                        let type = new mongo(ctx.state.mdb, "app.source.type");
+                        let sourceInfo = await source.findOne({_id:body._id});
+                        if(!sourceInfo) return ctx.body = await ctx.code('2007');
+                        // fs.unlink()
+                        await source.remove({_id:body._id});
+                        sourceInfo.group && await type.update({_id:sourceInfo.group}, {$inc:{countNum:-1}});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
             type: 'get',
             url: '/api/admin/source/image/:page',
             name: 'admin get image list',
@@ -447,11 +527,13 @@ module.exports = {
                 }),
                 async (ctx) => {
                     let body = ctx.params;
+                    let query = ctx.query;
                     try {
-                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
-                        let totalNum = await source.count({type:"image"});
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10, listQuery = {type:"image"};
                         // let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await source.find({type:"image"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        if(query.type) listQuery.group = fun.ObjectId(query.type);
+                        let totalNum = await source.count(listQuery);
+                        let list = await source.find(listQuery, {skip:(body.page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalNum});
                     } catch (e) {
                         console.error(e);
@@ -509,6 +591,95 @@ module.exports = {
                         // let totalPage = Math.ceil(totalNum/NUMBER);
                         let list = await source.find({type:"video"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalNum});
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/source/type/new',
+            name: 'admin add source type',
+            fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        name: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let type = new mongo(ctx.state.mdb, "app.source.type");
+                        let typeInfo = await type.findOne({name:body.name});
+                        if(body._id){
+                            if(typeInfo && typeInfo._id.toString() !== body._id) return ctx.body = await ctx.code('2003');
+                            await type.update({_id:fun.ObjectId(body._id)}, {$set:{
+                                    name:body.name
+                                }});
+                        } else {
+                            if(typeInfo) return ctx.body = await ctx.code('2003');
+                            await type.insert({
+                                name:body.name,
+                                countNum:0
+                            })
+                        }
+                        let list = await type.find();
+                        ctx.body = await ctx.code('0000', list);
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'get',
+            url: '/api/admin/source/type/list',
+            name: 'admin get source type list',
+            fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let type = new mongo(ctx.state.mdb, "app.source.type");
+                        let list = await type.find();
+                        ctx.body = await ctx.code('0000', list);
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    } finally {
+                        // fs.unlinkSync(file.path);
+                    }
+                }
+            ]
+        },
+        {
+            type: 'post',
+            url: '/api/admin/source/type/delete',
+            name: 'admin delete source type',
+            fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let type = new mongo(ctx.state.mdb, "app.source.type");
+                        let typeInfo = await type.findOne({_id:fun.ObjectId(body._id)});
+                        if(!typeInfo) return ctx.body = await ctx.code('2006');
+                        if(typeInfo.countNum !== 0) return ctx.body = await ctx.code('2005');
+                        await type.remove({_id:fun.ObjectId(body._id)});
+                        let list = await type.find();
+                        ctx.body = await ctx.code('0000', list);
                     } catch (e) {
                         console.error(e);
                         throw e;

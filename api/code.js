@@ -25,6 +25,18 @@ const obj = {
         msgCN: '不存在该文章',
         msgEN: 'Article is not exist.'
     },
+    '2005': {
+        msgCN: '该分组下还有素材资源未移除，不允许删除',
+        msgEN: 'Can not delete type because there is some sources belong to.'
+    },
+    '2006': {
+        msgCN: '不存在该分组',
+        msgEN: 'Type no exits.'
+    },
+    '2007': {
+        msgCN: '不存在该资源',
+        msgEN: 'Source no exits.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{

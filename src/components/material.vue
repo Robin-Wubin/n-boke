@@ -45,7 +45,7 @@
                                     <p><i class="fa fa-plus mr-2"></i> <a href="javascript:void(0);" @click="insertVideo(index)">{{item.originalname}}</a></p>
                                 </div>
                             </div>
-                            <b-pagination align="center" size="sm" :total-rows="video.totalNum" v-model="video.currentPage" :per-page="10" @change="getImageList"></b-pagination>
+                            <b-pagination align="center" size="sm" :total-rows="video.totalNum" v-model="video.currentPage" :per-page="10" @change="getVideoList"></b-pagination>
                         </div>
                         <div class="upload_btn" @click="triggerVideoUpload"><i class="fa fa-plus-square "></i> 上传<input id="uploadVideo" class="upload" @change='add_video'  type="file" accept="video/*"></div>
                     </b-tab>
@@ -305,7 +305,7 @@
         position: relative;
     }
     .media_item{
-        width: 310px;
+        width: 300px;
         border-radius: 5px;
         font-size: 12px;
         margin: 0.5rem 1rem;
@@ -347,7 +347,7 @@
         color: #FFF;
     }
     .media_item p{
-        width: 310px;
+        width: 300px;
         border-radius: 0.3rem;
         background: #f1f3f4;
     }
@@ -387,7 +387,7 @@
         padding: 5px;
         border-radius: 5px;
         border: 2px solid #b1b1b1;
-        background: #FFF;
+        background: #12161b;
         overflow: hidden;
     }
     .video video{
