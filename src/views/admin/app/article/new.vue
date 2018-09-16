@@ -125,6 +125,34 @@
         ImageResize = require('quill-image-resize-module').default;
         Quill.register('modules/ImageExtend', ImageExtend);
         Quill.register('modules/imageResize', ImageResize);
+        const Image = Quill.import('formats/image');
+
+        class VideoBlot extends Image {  // 继承Link Blot
+            static create(value) {
+                var node = super.create(value);
+                node.setAttribute('src', this.sanitize(value));
+                node.setAttribute('style', "width:100%");
+                node.setAttribute('controls', "controls");
+                console.log(node);
+                return node;
+            }
+        }
+        VideoBlot.blotName = 'video';
+        VideoBlot.tagName = 'video';
+        Quill.register(VideoBlot);
+        class AudioBlot extends Image {  // 继承Link Blot
+            static create(value) {
+                var node = super.create(value);
+                node.setAttribute('src', this.sanitize(value));
+                node.setAttribute('style', "margin: auto;display: block;");
+                node.setAttribute('controls', "controls");
+                console.log(node);
+                return node;
+            }
+        }
+        AudioBlot.blotName = 'audio';
+        AudioBlot.tagName = 'audio';
+        Quill.register(AudioBlot);
     }
     export default {
         asyncData ({ store, route}) {
@@ -206,8 +234,6 @@
                                     QuillWatch.emit(this.quill.id)
                                 },
                                 'video': function () {
-                                    console.log(this);
-                                    console.log(this.quill.selection.cursor.selection.lastRange.index);
                                     that.$refs.material.show(this.quill, this.quill.selection.cursor.selection.lastRange.index)
                                 }
                             }
@@ -423,13 +449,36 @@
                     _that.loading= false;
                     _that.timer = setInterval(function(){
                         _that.saveDraft();
-                    }, 5000)
+                    }, 5000);
                 } else {
                     console.error(res);
                 }
             }).catch(res=>{
                 console.error(res);
             });
+
+            window.addEventListener('scroll',function(){
+                var clientHeight=document.documentElement.clientHeight; //document.documentElement获取数据
+                var scrollTop=document.documentElement.scrollTop; //document.documentElement获取数据
+                var scrollHeight=document.documentElement.scrollHeight;//document.documentElement获取数据
+                var judgeTop = document.querySelector(".view.container").offsetTop +
+                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
+                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor").offsetTop;
+                var targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
+                parentNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor");
+                targetNode.style.background="#FFF";
+                if(scrollTop>=judgeTop){
+                    targetNode.style.position="fixed";
+                    targetNode.style.top="0";
+                    targetNode.style.zIndex="999";
+                    targetNode.style.width=parentNode.clientWidth + "px";
+                } else {
+                    targetNode.style.position="";
+                    targetNode.style.top="";
+                    targetNode.style.zIndex="";
+                    targetNode.style.width="";
+                }
+            },true);
         },
         beforeDestroy(){
             clearInterval(this.timer)

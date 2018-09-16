@@ -529,7 +529,7 @@ module.exports = {
                     let body = ctx.params;
                     let query = ctx.query;
                     try {
-                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10, listQuery = {type:"image"};
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 8, listQuery = {type:"image"};
                         // let totalPage = Math.ceil(totalNum/NUMBER);
                         if(query.type) listQuery.group = fun.ObjectId(query.type);
                         let totalNum = await source.count(listQuery);
@@ -557,11 +557,13 @@ module.exports = {
                 }),
                 async (ctx) => {
                     let body = ctx.params;
+                    let query = ctx.query;
                     try {
-                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
-                        let totalNum = await source.count({type:"media"});
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10, listQuery = {type:"media"};
+                        if(query.type) listQuery.group = fun.ObjectId(query.type);
+                        let totalNum = await source.count(listQuery);
                         // let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await source.find({type:"media"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        let list = await source.find(listQuery, {skip:(body.page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalNum});
                     } catch (e) {
                         console.error(e);
@@ -585,11 +587,13 @@ module.exports = {
                 }),
                 async (ctx) => {
                     let body = ctx.params;
+                    let query = ctx.query;
                     try {
-                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10;
-                        let totalNum = await source.count({type:"video"});
+                        let source = new mongo(ctx.state.mdb, "app.source"),NUMBER = 10, listQuery = {type:"video"};
+                        if(query.type) listQuery.group = fun.ObjectId(query.type);
+                        let totalNum = await source.count(listQuery);
                         // let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await source.find({type:"video"}, {skip:(body.page-1) * NUMBER, limit:NUMBER});
+                        let list = await source.find(listQuery, {skip:(body.page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalNum});
                     } catch (e) {
                         console.error(e);
