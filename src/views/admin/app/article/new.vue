@@ -35,7 +35,17 @@
                 <b-row class="new_article_row">
                     <b-col sm="2"><label for="input-password">密码:</label></b-col>
                     <b-col sm="10">
-                        <b-form-input id="input-password" size="sm" v-model="article.password" type="password" placeholder="如有密码，打开文章前会先验证密码" class="mb-1"></b-form-input>
+                        <b-form-input id="input-password" size="sm" v-model="article.password" type="password" placeholder="如有密码，访客浏览文章前需验证密码" class="mb-1"></b-form-input>
+                    </b-col>
+                </b-row>
+                <b-row class="new_article_row">
+                    <b-col sm="2"><label for="input-comment">允许评论:</label></b-col>
+                    <b-col sm="10">
+                        <b-form-checkbox id="input-comment"
+                                         v-model="article.isComment"
+                                         :value="true"
+                                         :unchecked-value="false">
+                        </b-form-checkbox>
                     </b-col>
                 </b-row>
             </div>
@@ -146,7 +156,6 @@
                 node.setAttribute('src', this.sanitize(value));
                 node.setAttribute('style', "margin: auto;display: block;");
                 node.setAttribute('controls', "controls");
-                console.log(node);
                 return node;
             }
         }
@@ -223,7 +232,6 @@
                                 formData.append("id", that.id);
                             },
                             response: (res) => {
-                                that.$refs.material.getImageList(1);
                                 return res.data
                             }
                         },
@@ -251,6 +259,16 @@
             onEditorFocus(){//获得焦点事件
             },
             onEditorChange(){//内容改变事件
+                // console.log(this.$refs.myQuillEditor.quill.getContents());
+                if(!this.article.headImage){
+                    let contentArr = this.$refs.myQuillEditor.quill.getContents();
+                    for(let row of contentArr.ops){
+                        if(row.insert.image){
+                            this.article.headImage = row.insert.image;
+                            break;
+                        }
+                    }
+                }
             },
             clearName () {
                 this.temp_tag = ''

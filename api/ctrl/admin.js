@@ -218,7 +218,8 @@ module.exports = {
                                     tags:[],
                                     content:null,
                                     state:null,
-                                    articleId: "0"
+                                    articleId: "0",
+                                    isComment: true
                                 };
                             }
                             console.log(articleInfo);
