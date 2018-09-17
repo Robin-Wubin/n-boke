@@ -48,6 +48,19 @@
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
+                <b-row class="new_article_row">
+                    <b-col sm="2"><label for="input-headImg">头图:</label></b-col>
+                    <b-col sm="10">
+                        <div class="head_image mb-1">
+                            <div class="pre_view">
+                                <b-img src="https://picsum.photos/300/150/?image=41" fluid-grow alt="Fluid image" />
+                            </div>
+                            <b-button size="sm" variant="success">
+                                选择
+                            </b-button>
+                        </div>
+                    </b-col>
+                </b-row>
             </div>
 
             <no-ssr v-if="!loading">
@@ -549,5 +562,18 @@
     }
     #modalForTypes .modal-body{
         padding: 0;
+    }
+    .head_image{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+    .head_image .pre_view{
+        flex-grow: 1;
+    }
+    .head_image>.btn{
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
     }
 </style>
