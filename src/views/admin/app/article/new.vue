@@ -463,6 +463,7 @@
                 var scrollHeight=document.documentElement.scrollHeight;//document.documentElement获取数据
                 var judgeTop = document.querySelector(".view.container").offsetTop +
                     document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
+                    document.querySelector(".view.container>.navbar>.row>.col-md-9").offsetTop +
                     document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor").offsetTop;
                 var targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
                 parentNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor");
