@@ -11,7 +11,7 @@
                         <div class="headImageContainer">
                             <div :class="'headImage '+color[parseInt(Math.random()*color.length)]" v-bind:style="item.headImage ? {backgroundImage:'url(' + item.headImage.replace(/\\/g, '/') + ')'} : null"></div>
                             <div class="articleBrief"><p>{{item.brief}}</p></div>
-                            <div class="slant reverse-slant bg-deepgrey"></div>
+                            <div :class="'slant reverse-slant '+color[parseInt(Math.random()*color.length)]"></div>
                             <div class="slant"></div>
                         </div>
                         <div class="card-content">
