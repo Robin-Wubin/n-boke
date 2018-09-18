@@ -1,5 +1,11 @@
 <template>
     <div class="bg-grey">
+        <b-alert :show="alert.dismissCountDown" :variant="alert.type"
+                 fade
+                 @dismiss-count-down="countDownChanged" class="globalAlert">
+            {{alert.message}}
+            <a href="javascript:void(0)" @click="alert.dismissCountDown=0"><i class="fa fa-times"></i></a>
+        </b-alert>
         <b-navbar toggleable="md" variant="faded" type="light" :class="'n_boke_header animated ' + headDire ">
             <b-container>
                 <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
@@ -30,10 +36,25 @@
     import myFooter from '../components/footer.vue'
 export default {
     data(){
-        return {headDire: ""}
+        return {
+            headDire: "",
+            alert:{
+                type:"info"
+                ,dismissCountDown: 0
+                , message:""
+            }
+        }
     },
     components: {
         myFooter
+    },
+    beforeMount(){
+        let that = this;
+        this.$eventHub.$on('alert', (yourData)=>{
+            yourData.dismissCountDown = yourData.dismissCountDown ? yourData.dismissCountDown : 5;
+            yourData.type = yourData.type ? yourData.type : "primary"; // "secondary", "success", "danger", "warning", "info", "light", "dark"
+            that.alert = yourData;
+        } )
     },
     mounted(){
         let beforeScrollTop = document.body.scrollTop;
@@ -57,6 +78,11 @@ export default {
             beforeScrollTop = afterScrollTop;
 
         },false);
+    },
+    methods:{
+        countDownChanged (dismissCountDown) {
+            this.alert.dismissCountDown = dismissCountDown
+        }
     }
 }
 </script>
@@ -181,5 +207,16 @@ export default {
         outline: 0;
         color: #1b1b1b;
         text-decoration: none
+    }
+    .globalAlert{
+        display: inline-block;
+        margin: auto;
+        position: fixed;
+        z-index: 9999;
+        box-sizing: border-box;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        font-size: 14px;
     }
 </style>

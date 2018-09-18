@@ -43,7 +43,40 @@ module.exports = {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});
+                        if(content.password){
+                            content.needPassword = true;
+                            delete content.password;
+                            delete content.content;
+                        }
                         ctx.body = await ctx.code('0000', content);
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },{
+            type: 'post'
+            , url: '/api/blog/content'
+            , name: 'get blog content'
+            , fun: [
+                validate({
+                    query: {
+                        id: Joi.string().required()
+                    },
+                    body: {
+                        password: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let query = ctx.query, _id = fun.ObjectId(query.id);
+                        let body = ctx.request.body;
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let content = await article.findOne({_id});
+                        if(content.password === body.password){
+                            ctx.body = await ctx.code('0000', content);
+                        } else {
+                            ctx.body = await ctx.code('2008');
+                        }
                     } catch (e) {
                         throw e;
                     }

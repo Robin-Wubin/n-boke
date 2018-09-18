@@ -37,6 +37,10 @@ const obj = {
         msgCN: '不存在该资源',
         msgEN: 'Source no exits.'
     },
+    '2008': {
+        msgCN: '访问密码错误',
+        msgEN: 'Error Password.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{
