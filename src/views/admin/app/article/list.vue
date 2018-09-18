@@ -79,7 +79,7 @@
                 let page = parseInt(this.$route.params.page ? this.$route.params.page : 1);
                 this.axios.get('/api/admin/article/list?page=' + page ).then(res=>{
                     if(res.data.code === "0000"){
-                        _that.$refs.load.finished();
+                        _that.$refs.load && _that.$refs.load.finished();
                         _that.loading= false;
                         _that.list = res.data.data.list;
                         _that.totalPage = res.data.data.totalPage;

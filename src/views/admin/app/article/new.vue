@@ -51,13 +51,15 @@
                 <b-row class="new_article_row">
                     <b-col sm="2"><label for="input-headImg">头图:</label></b-col>
                     <b-col sm="10">
-                        <div class="head_image mb-1">
-                            <div class="pre_view">
-                                <b-img src="https://picsum.photos/300/150/?image=41" fluid-grow alt="Fluid image" />
+                        <div class="head_image mb-2">
+                            <div v-if="article.headImage" class="pre_view">
+                                <b-img :src="article.headImage" fluid-grow alt="Fluid image" />
                             </div>
-                            <b-button size="sm" variant="success">
+                            <b-button size="sm" variant="success" @click="clickUploadHeadImageBtn()">
                                 选择
                             </b-button>
+
+                            <input id="uploadHeadImage" class="upload" @change='uploadHeadImage'  type="file" accept="image/*">
                         </div>
                     </b-col>
                 </b-row>
@@ -384,6 +386,7 @@
             },
             postArticle(){
                 let _that = this;
+                this.article.brief = this.$refs.myQuillEditor.quill.container.innerText.substring(0, 100) + "...";
                 this.axios.post('/api/admin/article/post/' + this.id, this.article).then(res=>{
                     if(res.data.code !== "0000"){
                         console.error(res);
@@ -464,6 +467,47 @@
                         console.error(res);
                     });
                 }
+            },
+            uploadHeadImage(event){
+                let that = this, typeName, sizeLimit, sizeName, url;
+                let img1=event.target.files[0];
+                let type=img1.type;//文件的类型，判断是否是图片
+                let size=img1.size;//文件的大小，判断图片的大小
+
+                typeName = '图片';
+                sizeLimit = 3145728;
+                sizeName = "3M";
+                url = "/api/admin/article/upload/image";
+                if('image/gif, image/jpeg, image/png, image/jpg'.indexOf(type) === -1){
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"请选择我们支持的" + typeName + "格式!"
+                    });
+                }
+                if(size>sizeLimit){
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"请选择" + sizeName + "以内的" + typeName + "!"
+                    });
+                }
+                let form = new FormData();
+                form.append('file',img1,img1.name);
+                this.axios.post(url,form,{
+                    headers:{'Content-Type':'multipart/form-data'}
+                }).then(response => {
+                    that.article.headImage = response.data.data;
+                    that.$nextTick(()=>{
+                        that.article.headImage = response.data.data;
+                    });
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"上传" + typeName + "出错!"
+                    });
+                })
+            },
+            clickUploadHeadImageBtn(){
+                document.getElementById('uploadHeadImage').click()
             }
         },
         mounted(){
@@ -489,14 +533,13 @@
             });
 
             window.addEventListener('scroll',function(){
-                var clientHeight=document.documentElement.clientHeight; //document.documentElement获取数据
-                var scrollTop=document.documentElement.scrollTop; //document.documentElement获取数据
-                var scrollHeight=document.documentElement.scrollHeight;//document.documentElement获取数据
-                var judgeTop = document.querySelector(".view.container").offsetTop +
-                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
+                let scrollTop=document.documentElement.scrollTop; //document.documentElement获取数据
+                let judgeTop = document.querySelector(".view.container").offsetTop +
+                    document.querySelector(".view.container>.navbar").offsetTop +
                     document.querySelector(".view.container>.navbar>.row>.col-md-9").offsetTop +
+                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
                     document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor").offsetTop;
-                var targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
+                let targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
                 parentNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor");
                 targetNode.style.background="#FFF";
                 if(scrollTop>=judgeTop){
@@ -575,5 +618,8 @@
     .head_image>.btn{
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+    }
+    .head_image>.upload{
+        display: none;
     }
 </style>

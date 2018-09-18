@@ -7,5 +7,11 @@ export default{
     },
     SET_TYPE_LIST: (state, list) => {
         state.type_list = list
+    },
+    SET_BLOG_LIST: (state, list) => {
+        state.blog_list = list
+    },
+    SET_BLOG_CONTENT: (state, content) => {
+        state.blog_content = content
     }
 }

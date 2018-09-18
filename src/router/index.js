@@ -6,7 +6,7 @@ Vue.use(Router);
 // route-level code splitting
 const Home = () => import('../views/home.vue');
 const HomeView = () => import('../views/home/default.vue');
-const List = () => import('../views/list/index.vue');
+const ArticleView = () => import('../views/home/article.vue');
 const InstallIndex = () => import('../views/install/index.vue');
 const InstallDefault = () => import('../views/install/default.vue');
 const InstallMongoDB = () => import('../views/install/mongo.vue');
@@ -35,7 +35,8 @@ export function createRouter () {
         { path: '/', component: Home,
             children:[
                 {path: '', component:HomeView},
-                {path:'list', component: List}
+                {path: 'page/:page', component:HomeView},
+                {path: 'article/:id', component:ArticleView}
             ]
         },
         { path: '/admin', component: Admin,
