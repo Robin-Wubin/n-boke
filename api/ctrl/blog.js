@@ -73,6 +73,7 @@ module.exports = {
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});
                         if(content.password === body.password){
+                            delete content.password;
                             ctx.body = await ctx.code('0000', content);
                         } else {
                             ctx.body = await ctx.code('2008');

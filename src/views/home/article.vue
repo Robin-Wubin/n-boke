@@ -20,6 +20,11 @@
             <b-container>
                 <b-row class="need_password">
                     <b-col md="8" offset-md="2">
+                        <b-row class="mb-5">
+                            <b-col>
+                                {{article.brief}}
+                            </b-col>
+                        </b-row>
                         <b-row>
                             <b-col sm="9" offset-sm="3">
                                 <small class="text-muted">* 这篇文章被博主设置为加密访问，你可以联系博主索要密码。</small>
@@ -73,9 +78,8 @@
                 this.axios.post('http://localhost:3000/api/blog/content?id=' + this.id, {
                     password: this.password
                 }).then((response) => {
-                    if (response.statusText === 'OK') {
-                        console.log(response.data);
-                        response.data.code === '0000' && that.$store.commit('SET_BLOG_CONTENT', response.data.data);
+                    if (response.data.code === '0000') {
+                        that.$store.commit('SET_BLOG_CONTENT', response.data.data);
                     } else {
                         that.$eventHub.$emit('alert', {
                             type:"warning"
