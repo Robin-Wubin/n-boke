@@ -10,6 +10,7 @@
                         </div>
                         <div v-if="replyObj" class="head_reply_ico_container">
                             <i class="fa fa-reply"></i>
+                            <i class="fa fa-times" @click="cancel_reply"></i>
                             <img :src="replyObj.headImg">
                         </div>
                         <b-row class="comment_info">
@@ -73,6 +74,29 @@
                                     </time>
                                     <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
+                            </div>
+                            <div class="comment-children" v-if="item.children">
+                                <ol class="comment-list">
+                                    <li v-for="(child,index) of item.children" :key="index" class="comment-body comment-child comment-level-odd comment-odd">
+                                        <div :id="child._id">
+                                            <div class="comment-view" onclick="">
+                                                <div class="comment-header">
+                                                    <img class="avatar" :src="child.headImg" width="80" height="80">
+                                                    <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
+                                                </div>
+                                                <div class="comment-content">
+                                                    <span class="comment-author-at"><a :href="'#' + child.reply.toId">@{{child.reply.toName}}</a></span>
+                                                    <p>{{child.comment}}</p><p></p>
+                                                </div>
+                                                <div class="comment-meta">
+                                                    <time class="comment-time">
+                                                        {{child.time | formatTime("YMDHMS")}}
+                                                    </time>
+                                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ol>
                             </div>
                         </li>
                     </ol>
@@ -175,8 +199,10 @@
                 userInfo.comment && delete userInfo.comment;
                 this.set_client_info(userInfo);
                 this.form.comment = this.form.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+                if(this.replyObj) this.form.reply = this.replyObj;
                 this.axios.post('/api/blog/comment/new?id=' + this.id, this.form).then(res=>{
                     that.form.comment = "";
+                    that.replyObj = null;
                     that.getComment(that.page);
                 }).catch(res=>{
                     console.error(res);
@@ -197,6 +223,9 @@
                 this.replyObj = item;
                 let scrollTop = document.documentElement.scrollTop + document.getElementById("comment_form").getBoundingClientRect().top - 100;
                 window.scrollTo(0, scrollTop);
+            },
+            cancel_reply(){
+                this.replyObj = null;
             }
         },
         mounted(){
@@ -256,8 +285,8 @@
         width: 50px;
         border-radius: 3px;
         background: #fff;
-        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
         position: absolute;
         top: -25px;
         left: 50%;
@@ -273,17 +302,35 @@
         -webkit-transform: rotate(15deg) translate(0, -5px);
         -ms-transform: rotate(15deg)  translate(0, -5px);
         overflow: visible;
+        border-radius: 50%;
     }
-    .head_reply_ico_container i{
+    .head_reply_ico_container i.fa-reply{
         position: absolute;
         left: 50%;
         margin-left: -15px;
         bottom: -7px;
-        color: #ffffff;
+        color: #eb5055ab;
         transform: rotate(90deg);
         -webkit-transform: rotate(90deg);
         -ms-transform: rotate(90deg);
-        text-shadow: 0 1px #5f5f5f, 1px 0 #5f5f5f, -1px 0 #5f5f5f, 0 -1px #5f5f5f;
+        text-shadow: 0 1px #FFF, 1px 0 #FFF, -1px 0 #FFF, 0 -1px #FFF;
+        display: block;
+    }
+    .head_reply_ico_container i.fa-times{
+        position: absolute;
+        right: 0;
+        color: #eb5055;
+        transform: rotate(90deg);
+        -webkit-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        text-shadow: 0 1px #FFF, 1px 0 #FFF, -1px 0 #FFF, 0 -1px #FFF;
+        display: none;
+    }
+    .head_reply_ico_container:hover  i.fa-times{
+        display: block;
+    }
+    .head_reply_ico_container:hover  i.fa-reply{
+        display: none;
     }
     .head_ico_container>img, .head_reply_ico_container>img{
         height: 50px;
@@ -346,5 +393,12 @@
     }
     .comment-view:hover .comment-meta .comment-reply {
         display: block
+    }
+    .comment-child {
+        border-top: 1px solid rgba(184,197,214,.2);
+    }
+    .comment-parent>.comment-children .comment-author-at {
+        float: left;
+        margin-right: 5px;
     }
 </style>

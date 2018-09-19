@@ -126,7 +126,7 @@ module.exports = {
                         id: Joi.string().required()
                     },
                     body: {
-                        id: Joi.string(),
+                        reply: Joi.object(),
                         name: Joi.string().required(),
                         email: Joi.string().required(),
                         site: Joi.string(),
@@ -138,14 +138,27 @@ module.exports = {
                     try {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let body = ctx.request.body;
+
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});
                         if(!content) return ctx.body = await ctx.code('2004');
                         if(!content.isComment) return ctx.body = await ctx.code('2009');
-                        if(body.id){
-                            //回复评论
-
+                        if(body.reply){
+                            //回复评论,
+                            let reply = {};
+                            let topicId = body.reply.topicId ? body.reply.topicId : body.reply._id;
+                            body.topicId = fun.ObjectId(topicId);
+                            reply.toId = fun.ObjectId(body.reply._id);
+                            reply.toName = body.reply.name;
+                            delete body.reply;
+                            body.reply = reply;
+                            body.articleId=_id;
+                            body.time = new Date();
+                            let newComment = await comment.insert(body);
+                            console.log(body,body.topicId, newComment.ops[0]._id);
+                            await comment.update({_id:body.topicId}, {$push:{replyList:newComment.ops[0]._id}});
+                            ctx.body = await ctx.code('0000');
                         } else {
                             //文章评论
                             body.articleId=_id;
@@ -173,11 +186,16 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let query = ctx.query, _id = fun.ObjectId(query.id)
-                            , selectQuery={articleId:_id}, NUMBER=10;
+                            , selectQuery={articleId:_id, reply:null}, NUMBER=10;
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
                         let totalNum = await comment.count(selectQuery);
                         // let totalPage = Math.ceil(totalNum/NUMBER);
                         let list = await comment.find(selectQuery, {skip:(query.page-1) * NUMBER, limit:NUMBER});
+                        for(let child of list){
+                            if(child.replyList){
+                                child.children = await comment.find({_id:{$in:child.replyList}});
+                            }
+                        }
                         ctx.body = await ctx.code('0000', {list, totalNum});
                     } catch (e) {
                         console.error(e);
