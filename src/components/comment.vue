@@ -3,11 +3,14 @@
         <b-container v-if="isComment">
             <b-row>
                 <b-col md="8" offset-md="2">
-                    <b-form @submit="post_comment" class="comment_post_container">
-
+                    <b-form @submit="post_comment" class="comment_post_container" id="comment_form">
                         <div class="head_ico_container" @click="upload_client_user_ico_input()">
                             <img :src="form.headImg">
                             <input id="client_user_ico" type="file" style="display: none" @change="add_source"/>
+                        </div>
+                        <div v-if="replyObj" class="head_reply_ico_container">
+                            <i class="fa fa-reply"></i>
+                            <img :src="replyObj.headImg">
                         </div>
                         <b-row class="comment_info">
                             <b-col md="4">
@@ -68,7 +71,7 @@
                                     <time class="comment-time">
                                         {{item.time | formatTime("YMDHMS")}}
                                     </time>
-                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow">Reply <i class="fa fa-reply"></i> </a></span>
+                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
                             </div>
                         </li>
@@ -111,7 +114,8 @@
                 },
                 page: 1,
                 totalNum: 1,
-                commentList: []
+                commentList: [],
+                replyObj: null
             }
         },
         methods:{
@@ -188,6 +192,11 @@
                     console.error(res);
                 });
 
+            },
+            reply(item){
+                this.replyObj = item;
+                let scrollTop = document.documentElement.scrollTop + document.getElementById("comment_form").getBoundingClientRect().top - 100;
+                window.scrollTo(0, scrollTop);
             }
         },
         mounted(){
@@ -242,7 +251,7 @@
     .comment_info>.btn{
         align-self: right;
     }
-    .head_ico_container{
+    .head_ico_container, .head_reply_ico_container{
         height: 50px;
         width: 50px;
         border-radius: 3px;
@@ -256,7 +265,27 @@
         overflow: hidden;
         cursor: pointer;
     }
-    .head_ico_container>img{
+    .head_reply_ico_container {
+        left: 100%;
+        margin-left: -50px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        transform: rotate(15deg) translate(0, -5px);
+        -webkit-transform: rotate(15deg) translate(0, -5px);
+        -ms-transform: rotate(15deg)  translate(0, -5px);
+        overflow: visible;
+    }
+    .head_reply_ico_container i{
+        position: absolute;
+        left: 50%;
+        margin-left: -15px;
+        bottom: -7px;
+        color: #ffffff;
+        transform: rotate(90deg);
+        -webkit-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        text-shadow: 0 1px #5f5f5f, 1px 0 #5f5f5f, -1px 0 #5f5f5f, 0 -1px #5f5f5f;
+    }
+    .head_ico_container>img, .head_reply_ico_container>img{
         height: 50px;
     }
     .comment-list {
@@ -289,7 +318,7 @@
         width: 40px;
         height: 40px;
         border: 1px solid #eaeaea;
-        border-radius: 50%;
+        border-radius: 3px;
     }
     .comment-header .comment-author {
         font-size: 13px;
