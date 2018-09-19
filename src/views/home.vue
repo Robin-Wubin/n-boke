@@ -219,4 +219,7 @@ export default {
         transform: translateX(-50%) translateY(-50%);
         font-size: 14px;
     }
+    input,input:focus:invalid,input:required:invalid,textarea:focus:invalid,textarea:required:invalid {
+        box-shadow: none
+    }
 </style>

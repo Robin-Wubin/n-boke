@@ -8,13 +8,14 @@
                 </b-container>
             </div>
         </div>
-        <b-container>
-            <b-row class="ql-snow" v-if="!article.needPassword">
+        <b-container v-if="!article.needPassword">
+            <b-row class="ql-snow">
                 <b-col md="8" offset-md="2">
                     <div class="article_content ql-editor" v-html="article.content"></div>
                 </b-col>
             </b-row>
         </b-container>
+        <comment v-if="!article.needPassword" :id="id" :isComment="article.isComment"></comment>
 
         <div class="bg-grey need_password_container" v-if="article.needPassword">
             <b-container>
@@ -26,21 +27,26 @@
                             </b-col>
                         </b-row>
                         <b-row>
-                            <b-col sm="9" offset-sm="3">
-                                <small class="text-muted">* 这篇文章被博主设置为加密访问，你可以联系博主索要密码。</small>
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col sm="3"><label for="input-password">浏览密码:</label></b-col>
-                            <b-col sm="9">
-                                <b-form-input size="sm" id="input-password" :state="null" type="text" placeholder="输入浏览密码" v-model="password"></b-form-input>
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col sm="9" offset-sm="3">
-                                <b-button size="sm" variant="danger" class="float-right" @click="getArticle">
-                                    确认密码
-                                </b-button>
+                            <b-col sm="8" offset-sm="2">
+                                <div class="need_password_form">
+                                    <b-row>
+                                        <b-col>
+                                            <small class="text-muted">* 该文章需使用密码访问，你可以向博主索要密码。</small>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row class="mb-2">
+                                        <b-col>
+                                            <b-form-input size="sm" id="input-password" :state="null" type="text" placeholder="输入密码访问" v-model="password"></b-form-input>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row>
+                                        <b-col>
+                                            <b-button size="sm" variant="danger" class="float-right" @click="getArticle">
+                                                确认密码
+                                            </b-button>
+                                        </b-col>
+                                    </b-row>
+                                </div>
                             </b-col>
                         </b-row>
                     </b-col>
@@ -52,6 +58,7 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex'
+    import comment from '../../components/comment.vue'
     export default {
         name: "myArticle",
         asyncData ({ store, route}) {
@@ -64,6 +71,9 @@
                 types: 'getTypeList',
                 article: 'getBlogContent'
             })
+        },
+        components: {
+            comment
         },
         data(){
             return{
@@ -139,12 +149,19 @@
         color: #5f5f5f;
         font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
     }
+    .need_password_form{
+        padding: 10px 20px;
+        border-radius: 3px;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
     .need_password_container{
         display: flex;
     }
     .need_password{
         font-size: 14px;
         line-height: 31px;
-        margin: 150px 0;
+        margin: 50px 0;
     }
 </style>

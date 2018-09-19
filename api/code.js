@@ -41,6 +41,10 @@ const obj = {
         msgCN: '访问密码错误',
         msgEN: 'Error Password.'
     },
+    '2009': {
+        msgCN: '文章不允许评论',
+        msgEN: 'Article is not allow comment.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{

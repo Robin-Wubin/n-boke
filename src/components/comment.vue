@@ -1,0 +1,321 @@
+<template>
+    <div class="bg-grey">
+        <b-container v-if="isComment">
+            <b-row>
+                <b-col md="8" offset-md="2">
+                    <b-form @submit="post_comment" class="comment_post_container">
+
+                        <div class="head_ico_container" @click="upload_client_user_ico_input()">
+                            <img :src="form.headImg">
+                            <input id="client_user_ico" type="file" style="display: none" @change="add_source"/>
+                        </div>
+                        <b-row class="comment_info">
+                            <b-col md="4">
+                                <b-form-input id="exampleInput1"
+                                              size="sm"
+                                              type="text"
+                                              v-model="form.name"
+                                              required
+                                              placeholder="Enter name">
+                                </b-form-input>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-input id="exampleInput2"
+                                              size="sm"
+                                              type="email"
+                                              v-model="form.email"
+                                              required
+                                              placeholder="Enter email">
+                                </b-form-input>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-input id="exampleInput3"
+                                              size="sm"
+                                              type="text"
+                                              v-model="form.site"
+                                              placeholder="Enter site">
+                                </b-form-input>
+                            </b-col>
+                        </b-row>
+                        <div class="comment_info">
+                            <b-form-textarea id="textarea1"
+                                             size="sm"
+                                             v-model="form.comment"
+                                             placeholder="Enter something"
+                                             required
+                                             :rows="3"
+                                             :max-rows="6">
+                            </b-form-textarea>
+                        </div>
+                        <div style="height: 31px; margin-top: 4px">
+                            <b-button type="submit" variant="secondary" size="sm" class="float-right">Submit</b-button>
+                        </div>
+                    </b-form>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col md="8" offset-md="2">
+                    <ol class="comment-list">
+                        <li class="comment-body comment-parent comment-odd" v-for="(item, index) of commentList" :key="index" :id="item._id">
+                            <div class="comment-view" onclick="">
+                                <div class="comment-header">
+                                    <img class="avatar" :src="item.headImg" width="80" height="80">
+                                    <span class="comment-author"><a :href="item.site ? item.site:'javascript:void(0);'">{{item.name}}</a></span>
+                                </div>
+                                <div class="comment-content" v-html="item.comment">
+                                </div>
+                                <div class="comment-meta">
+                                    <time class="comment-time">
+                                        {{item.time | formatTime("YMDHMS")}}
+                                    </time>
+                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow">Reply <i class="fa fa-reply"></i> </a></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+                    <b-pagination size="sm" align="center" :total-rows="totalNum" v-model="page" :per-page="10" @change="getComment">
+                    </b-pagination>
+                </b-col>
+            </b-row>
+        </b-container>
+        <b-container v-if="!isComment">
+            <b-row>
+                <b-col md="8" offset-md="2">
+                    <div class="comment_post_container comment_close">
+                        评论已关闭
+                    </div>
+                </b-col>
+            </b-row>
+        </b-container>
+    </div>
+</template>
+
+<script>
+    import { mapActions } from 'vuex'
+    export default {
+        name: "comment",
+        props: {
+            id: {
+                type: String ,
+                required: true
+            },
+            isComment: {
+                type: Boolean ,
+                default: false
+            }
+        },
+        data(){
+            return {
+                form:{
+                    headImg:"/upload/ico/head.png"
+                },
+                page: 1,
+                totalNum: 1,
+                commentList: []
+            }
+        },
+        methods:{
+            ...mapActions({
+                set_client_info:"setClientInfo"
+            }),
+            onSubmit(){},
+            upload_client_user_ico_input(){
+                document.querySelector("#client_user_ico").click()
+            },
+            add_source(event){
+                let that = this, typeName, sizeLimit, sizeName, url;
+                let img1=event.target.files[0];
+                let type=img1.type;//文件的类型，判断是否是图片
+                let size=img1.size;//文件的大小，判断图片的大小
+                typeName = '图片';
+                sizeLimit = 3145728;
+                sizeName = "3M";
+                url = "/api/blog/comment/upload/image";
+
+                if('image/gif, image/jpeg, image/png, image/jpg'.indexOf(type) === -1){
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"请选择我们支持的" + typeName + "格式!"
+                    });
+                }
+                if(size>sizeLimit){
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"请选择" + sizeName + "以内的" + typeName + "!"
+                    });
+                }
+                let form = new FormData();
+                form.append('file',img1,img1.name);
+                this.axios.post(url,form,{
+                    headers:{'Content-Type':'multipart/form-data'}
+                }).then(response => {
+                    if(response.data.code === "0000"){
+                        that.form.headImg = response.data.data;
+                    } else {
+                        return that.$eventHub.$emit('alert', {
+                            type:"warning"
+                            , message:response.data.msgCN
+                        });
+                    }
+                }).catch(error => {
+                    return that.$eventHub.$emit('alert', {
+                        type:"warning"
+                        , message:"上传" + typeName + "出错!"
+                    });
+                })
+            },
+            post_comment(evt){
+                evt.preventDefault();
+                let that = this;
+                let userInfo = Object.assign({}, this.form);
+                userInfo.comment && delete userInfo.comment;
+                this.set_client_info(userInfo);
+                this.form.comment = this.form.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
+                this.axios.post('/api/blog/comment/new?id=' + this.id, this.form).then(res=>{
+                    that.form.comment = "";
+                    that.getComment(that.page);
+                }).catch(res=>{
+                    console.error(res);
+                });
+            },
+            getComment(page){
+                let that = this;
+                this.page = page;
+                this.axios.get('/api/blog/comment/list?id=' + this.id + '&page=' + this.page).then(res=>{
+                    that.commentList = res.data.data.list;
+                    that.totalNum = res.data.data.totalNum;
+                }).catch(res=>{
+                    console.error(res);
+                });
+
+            }
+        },
+        mounted(){
+            let client_info = this.$store.getters.getClientInfo;
+            if(client_info) for(let key in client_info) this.form[key] = client_info[key];
+            this.getComment(1);
+        }
+    }
+</script>
+
+<style scoped>
+    .comment_post_container{
+        margin: 80px 0 40px;
+        padding: 35px 20px 10px;
+        border-radius: 3px;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        position: relative;
+    }
+    .comment_close{
+        margin: 40px 0;
+        padding: 35px 20px;
+        font-size: 14px;
+        text-align: center;
+    }
+    .comment_info.row{
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .comment_info>div{
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .comment_info input{
+        border: none;
+        border-bottom: 1px dashed #ddd;
+        border-radius: 0;
+    }
+    .comment_info>textarea{
+        border: none;
+        border-radius: 0;
+    }
+    .comment_info input:focus {
+         border-color: #eb5055;
+         box-shadow: none;
+         outline: 0
+     }
+    .comment_info>textarea:focus{
+        outline: 0
+    }
+    .comment_info>.btn{
+        align-self: right;
+    }
+    .head_ico_container{
+        height: 50px;
+        width: 50px;
+        border-radius: 3px;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        margin-left: -25px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    .head_ico_container>img{
+        height: 50px;
+    }
+    .comment-list {
+        margin: 0;
+        padding-left: 0;
+        list-style-type: none;
+    }
+    .comment-parent:first-child {
+        margin: 0;
+    }
+    .comment-parent {
+        margin: 20px 0;
+        border: 1px solid rgba(184,197,214,.2);
+        border-radius: 3px;
+        background: #fff;
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+    .comment-view {
+        padding: 20px;
+        cursor: pointer;
+    }
+    .comment-header {
+        display: inline-block;
+        width: 100%;
+    }
+    .comment-header .avatar {
+        display: inline-block;
+        float: left;
+        width: 40px;
+        height: 40px;
+        border: 1px solid #eaeaea;
+        border-radius: 50%;
+    }
+    .comment-header .comment-author {
+        font-size: 13px;
+        line-height: 45px;
+        display: inline-block;
+        float: left;
+        margin: 0 20px;
+    }
+    .comment-content {
+        margin-bottom: 10px;
+        color: #313131;
+    }
+    .comment-meta {
+        font-size: 12px;
+    }
+    .comment-meta .comment-time{
+        color: #b4b4b4;
+    }
+    .comment-meta .comment-reply {
+        display: none;
+        float: right;
+    }
+    .comment-meta .comment-reply a {
+        color: #eb5055!important
+    }
+    .comment-view:hover .comment-meta .comment-reply {
+        display: block
+    }
+</style>

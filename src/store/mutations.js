@@ -13,5 +13,8 @@ export default{
     },
     SET_BLOG_CONTENT: (state, content) => {
         state.blog_content = content
+    },
+    SET_CLIENT_INFO: (state, info) => {
+        state.client_info = info
     }
 }

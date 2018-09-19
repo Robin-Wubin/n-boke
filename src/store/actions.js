@@ -58,3 +58,7 @@ export const getBlogContent = ({ commit, state }, id) => {
         console.log(error)
     })
 };
+export const setClientInfo = ({ commit, state }, data) => {
+    window.localStorage.setItem('client_info', JSON.stringify(data));
+    commit('SET_CLIENT_INFO', data);
+};
