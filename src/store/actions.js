@@ -49,14 +49,19 @@ export const getBlogList = ({ commit, state }, page) => {
     })
 };
 export const getBlogContent = ({ commit, state }, id) => {
-    return request.get('http://localhost:3000/api/blog/content?id=' + id).then((response) => {
-        if (response.statusText === 'OK') {
-            console.log(response.data);
-            response.data.code === '0000' && commit('SET_BLOG_CONTENT', response.data.data);
-        }
-    }).catch((error) => {
-        console.log(error)
-    })
+    if(state.blog_content && (state.blog_content._id === id)){
+        console.log(state.blog_content && state.blog_content._id, id);
+        return new Promise((resolve, reject)=>{resolve(null)});
+    } else {
+        return request.get('http://localhost:3000/api/blog/content?id=' + id).then((response) => {
+            if (response.statusText === 'OK') {
+                console.log(response.data);
+                response.data.code === '0000' && commit('SET_BLOG_CONTENT', response.data.data);
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 };
 export const setClientInfo = ({ commit, state }, data) => {
     window.localStorage.setItem('client_info', JSON.stringify(data));

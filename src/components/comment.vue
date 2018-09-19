@@ -85,7 +85,7 @@
                                                     <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
                                                 </div>
                                                 <div class="comment-content">
-                                                    <span class="comment-author-at"><a :href="'#' + child.reply.toId">@{{child.reply.toName}}</a></span>
+                                                    <span class="comment-author-at"><a href="javascript:void(0);" @click="scrollToId(child.reply.toId)">@{{child.reply.toName}}</a></span>
                                                     <p>{{child.comment}}</p><p></p>
                                                 </div>
                                                 <div class="comment-meta">
@@ -222,6 +222,10 @@
             reply(item){
                 this.replyObj = item;
                 let scrollTop = document.documentElement.scrollTop + document.getElementById("comment_form").getBoundingClientRect().top - 100;
+                window.scrollTo(0, scrollTop);
+            },
+            scrollToId(id){
+                let scrollTop = document.documentElement.scrollTop + document.getElementById(id).getBoundingClientRect().top - 100;
                 window.scrollTo(0, scrollTop);
             },
             cancel_reply(){
@@ -366,6 +370,7 @@
         height: 40px;
         border: 1px solid #eaeaea;
         border-radius: 3px;
+        background: #FFF;
     }
     .comment-header .comment-author {
         font-size: 13px;
