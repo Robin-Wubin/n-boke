@@ -59,10 +59,13 @@ module.exports = {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});
+                        if(!content) return ctx.body = await ctx.code('2004');
                         if(content.password){
                             content.needPassword = true;
                             delete content.password;
                             delete content.content;
+                        } else {
+                            await article.update({_id}, {$inc:{"count.view":1}});
                         }
                         ctx.body = await ctx.code('0000', content);
                     } catch (e) {
@@ -87,11 +90,11 @@ module.exports = {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let body = ctx.request.body;
                         let article = new mongo(ctx.state.mdb, "app.article");
-                        let content = await article.findOne({_id});
-                        if(!content) return ctx.body = await ctx.code('2004');
-                        if(content.password === body.password){
-                            delete content.password;
-                            ctx.body = await ctx.code('0000', content);
+                        let content = await article.findOneAndUpdate({_id}, {$inc:{"count.view":1}});
+                        if(!content.value) return ctx.body = await ctx.code('2004');
+                        if(content.value.password === body.password){
+                            delete content.value.password;
+                            ctx.body = await ctx.code('0000', content.value);
                         } else {
                             ctx.body = await ctx.code('2008');
                         }
@@ -157,14 +160,15 @@ module.exports = {
                             body.articleId=_id;
                             body.time = new Date();
                             let newComment = await comment.insert(body);
-                            console.log(body,body.topicId, newComment.ops[0]._id);
                             await comment.update({_id:body.topicId}, {$push:{replyList:newComment.ops[0]._id}});
+                            await article.update({_id}, {$inc:{"count.comment":1}});
                             ctx.body = await ctx.code('0000');
                         } else {
                             //文章评论
                             body.articleId=_id;
                             body.time = new Date();
                             await comment.insert(body);
+                            await article.update({_id}, {$inc:{"count.comment":1}});
                             ctx.body = await ctx.code('0000');
                         }
                     } catch (e) {

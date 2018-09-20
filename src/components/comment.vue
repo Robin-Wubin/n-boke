@@ -72,7 +72,7 @@
                                     <time class="comment-time">
                                         {{item.time | formatTime("YMDHMS")}}
                                     </time>
-                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
+                                    <span class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
                             </div>
                             <div class="comment-children" v-if="item.children">
@@ -92,7 +92,7 @@
                                                     <time class="comment-time">
                                                         {{child.time | formatTime("YMDHMS")}}
                                                     </time>
-                                                    <span class="comment-reply"><a href="javascript:void(0);" rel="nofollow" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
+                                                    <span class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
                                             </div>
                                         </div>
                                     </li>
@@ -420,8 +420,16 @@
         float: left;
         margin-right: 5px;
     }
+    .comment-parent>.comment-children .comment-author-at>a{
+        color: #fd7e14;
+        font-size: 12px;
+        opacity: 0.5;
+    }
+    .comment-parent>.comment-children .comment-author-at>a:hover{
+        opacity: 1;
+    }
     .comment-tips{
-        animation:commentFade 1s infinite; /*animation 时间 播放次数*/
+        animation:commentFade 1s infinite;
     }
     @keyframes commentFade
     {

@@ -5,6 +5,23 @@
             <div class="article_head">
                 <b-container>
                     <div class="title">{{article.title}}</div>
+
+                    <b-row class="type_tag mt-3">
+                        <b-col md="8" offset-md="2">
+                            <b-badge pill variant="success" class="bg-yellow mr-3 mb-1"># {{article.type | getTypes(types)}}</b-badge>
+                            <b-badge v-for="(item, index) of article.tags" :key="index" pill variant="success" class="bg-purple mr-3 mb-1"># {{item}}</b-badge>
+                        </b-col>
+                    </b-row>
+                </b-container>
+            </div>
+            <div class="article_footer">
+                <b-container>
+                    <b-row>
+                        <b-col md="8" offset-md="2" style="text-align: right;">
+                            <span><i class="fa fa-eye "></i>&nbsp;&nbsp;{{article.count.view}}</span>
+                            <span class="ml-3"><i class="fa fa-comments"></i>&nbsp;&nbsp;{{article.count.comment}}</span>
+                        </b-col>
+                    </b-row>
                 </b-container>
             </div>
         </div>
@@ -136,6 +153,15 @@
         align-items: center;
         height: 100%;
     }
+    .article_footer{
+        position: relative;
+        background: rgba(0, 0, 0, 0.3);
+        margin-top: -25px;
+        color: #fff;
+        height: 25px;
+        font-size: 12px;
+        line-height: 25px;
+    }
     .title{
         color: #FFF;
         font-size: 25px;
@@ -163,5 +189,14 @@
         font-size: 14px;
         line-height: 31px;
         margin: 50px 0;
+    }
+    .type_tag{
+        width: 100%;
+        border-top: 1px solid #00000036;
+        padding-top: 1rem;
+    }
+    .type_tag .badge{
+        padding: 0 15px;
+        line-height: 25px;
     }
 </style>
