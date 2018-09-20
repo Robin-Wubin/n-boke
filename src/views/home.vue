@@ -222,4 +222,10 @@ export default {
     input,input:focus:invalid,input:required:invalid,textarea:focus:invalid,textarea:required:invalid {
         box-shadow: none
     }
+
+    .comment-delete{
+        color: #c7c7c7;
+        display: block;
+        text-align: center;
+    }
 </style>

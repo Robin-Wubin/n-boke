@@ -61,38 +61,37 @@
                 <b-col md="8" offset-md="2">
                     <ol class="comment-list">
                         <li class="comment-body comment-parent comment-odd" v-for="(item, index) of commentList" :key="index">
-                            <div :id="item._id" class="comment-view" onclick="">
+                            <div :class="item.del ? 'is_delete':''"><div :id="item._id" class="comment-view" onclick="">
                                 <div class="comment-header">
                                     <img class="avatar" :src="item.headImg" width="80" height="80">
                                     <span class="comment-author"><a :href="item.site ? item.site:'javascript:void(0);'">{{item.name}}</a></span>
                                 </div>
-                                <div class="comment-content" v-html="item.comment">
-                                </div>
+                                <div class="comment-content" v-html="item.comment"></div>
                                 <div class="comment-meta">
                                     <time class="comment-time">
                                         {{item.time | formatTime("YMDHMS")}}
                                     </time>
-                                    <span class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
+                                    <span v-if="!item.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
-                            </div>
+                            </div></div>
                             <div class="comment-children" v-if="item.children">
                                 <ol class="comment-list">
                                     <li v-for="(child,index) of item.children" :key="index" class="comment-body comment-child comment-level-odd comment-odd">
-                                        <div>
+                                        <div :class="child.del ? 'is_delete':''">
                                             <div :id="child._id" class="comment-view" onclick="">
                                                 <div class="comment-header">
                                                     <img class="avatar" :src="child.headImg" width="80" height="80">
                                                     <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
                                                 </div>
                                                 <div class="comment-content">
-                                                    <span class="comment-author-at"><a href="javascript:void(0);" @click="scrollToId(child.reply.toId)">@{{child.reply.toName}}</a></span>
+                                                    <span class="comment-author-at" v-if="!child.del"><a href="javascript:void(0);" @click="scrollToId(child.reply.toId)">@{{child.reply.toName}}</a></span>
                                                     <div v-html="child.comment"></div>
                                                 </div>
                                                 <div class="comment-meta">
                                                     <time class="comment-time">
                                                         {{child.time | formatTime("YMDHMS")}}
                                                     </time>
-                                                    <span class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
+                                                    <span v-if="!child.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
                                             </div>
                                         </div>
                                     </li>
@@ -432,6 +431,11 @@
     .comment-tips{
         animation:commentFade 1s infinite;
     }
+    .comment-delete{
+        color: #c7c7c7;
+        display: block;
+        text-align: center;
+    }
     @keyframes commentFade
     {
         0% {background: rgba(229, 246, 255, 0);}
@@ -445,5 +449,8 @@
         80% {background: rgba(229, 246, 255, 0.4);}
         90% {background: rgba(229, 246, 255, 0.2);}
         100% {background: rgba(229, 246, 255, 0);}
+    }
+    .is_delete{
+        background: #cccccc3b;
     }
 </style>

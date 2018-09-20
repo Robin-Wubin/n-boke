@@ -12,6 +12,7 @@
                     </div>
                     <div class="message" v-html="item.comment"></div>
                     <div class="message time">
+                        <a href="javascript:void(0);" @click="deleteComment(item)" class="del"><i class="fa fa-trash"></i></a>
                         {{item.time | formatTime("YMDHMS")}}
                     </div>
 
@@ -22,10 +23,11 @@
                                 <span> <a :href="'mailto:' + child.email">{{child.email}}</a> </span>
                             </div>
                             <div class="message">
-                                <span class="comment-author-at"><a :href="'#' + child.reply.toId">@{{child.reply.toName}}</a></span>
+                                <span class="comment-author-at" v-if="!child.del"><a href="javascript:void(0);">@{{child.reply.toName}}</a></span>
                                 <div v-html="child.comment"></div>
                             </div>
                             <div class="message time">
+                                <a href="javascript:void(0);" @click="deleteComment(child)" class="del"><i class="fa fa-trash"></i></a>
                                 {{child.time | formatTime("YMDHMS")}}
                             </div>
                         </li>
@@ -86,6 +88,18 @@
                     console.error(res);
                 });
             },
+            deleteComment(item){
+                let _that = this;
+                this.axios.post('/api/admin/comment/delete', {_id:item._id}).then(res=>{
+                    if(res.data.code === "0000"){
+                        _that.getList();
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            }
         },
         beforeMount(){
             this.showlist = /\/admin\/app\/comment\/list(\/\d)*/.test(this.$store.state.route.path);
@@ -103,22 +117,24 @@
 </script>
 
 <style scoped>
+    .main_container {
+        border: none;
+        background: #f6f6f6;
+    }
     .bread_head{
         margin-bottom: 0;
         border-radius: 0;
+        border: 1px solid rgba(0,0,0,0.125);
     }
     .suit_fot_tpl{
-        border-left: none;
-        border-right: none;
         display: flex;
         flex-direction: column;
         padding: 0.75rem 1.25rem 0;
-    }
-    .suit_fot_tpl:first-child{
-        border-radius: 0;
-    }
-    .suit_fot_tpl:last-child{
-        border-bottom: none;
+        margin: 25px 0;
+        border-radius: 3px;
+        -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.125);
     }
     .suit_fot_tpl .info{
         line-height: 32px;
@@ -129,6 +145,7 @@
     .suit_fot_tpl .message{
         padding: 0.5rem 0;
         border-top: 1px solid rgba(51, 51, 51, 0.1);
+        position: relative;
     }
     .suit_fot_tpl .message .comment-author-at {
         float: left;
@@ -136,6 +153,15 @@
     }
     .message>div{
         display: inline;
+    }
+    .message a.del{
+        position: absolute;
+        left: 0;
+        margin-left: 15px;
+        display: none;
+    }
+    .suit_fot_tpl:hover>.message>a.del, .suit_fot_tpl>ol>li:hover>.message>a.del{
+        display: block;
     }
     .pagination_nav{
         display: flex;
@@ -164,22 +190,5 @@
         -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         margin-top: 0.7rem;
-    }
-    .comment-tips{
-        animation:commentFade 1s infinite;
-    }
-    @keyframes commentFade
-    {
-        0% {background: rgba(229, 246, 255, 0);}
-        10% {background: rgba(229, 246, 255, 0.2);}
-        20% {background: rgba(229, 246, 255, 0.4);}
-        30% {background: rgba(229, 246, 255, 0.6);}
-        40% {background: rgba(229, 246, 255, 0.8);}
-        50% {background: rgb(229, 246, 255);}
-        60% {background: rgba(229, 246, 255, 0.8);}
-        70% {background: rgba(229, 246, 255, 0.6);}
-        80% {background: rgba(229, 246, 255, 0.4);}
-        90% {background: rgba(229, 246, 255, 0.2);}
-        100% {background: rgba(229, 246, 255, 0);}
     }
 </style>

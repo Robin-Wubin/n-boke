@@ -87,6 +87,35 @@
 </script>
 
 <style>
+    .bread_head{
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+
+    .suit_fot_tpl{
+        border-left: none;
+        border-right: none;
+        display: flex;
+        flex-direction: column;
+    }
+    .suit_fot_tpl:first-child{
+        border-radius: 0;
+    }
+    .suit_fot_tpl:last-child{
+        border-bottom: none;
+    }
+    .suit_fot_tpl .bottom_side{
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .pagination_nav{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
     .main_container{
         background: #FFF;
         border-radius: 0.25rem;
@@ -111,5 +140,11 @@
         width: 20px;
         text-align: center;
         font-size: 14px;
+    }
+
+    .comment-delete{
+        color: #c7c7c7;
+        display: block;
+        text-align: center;
     }
 </style>

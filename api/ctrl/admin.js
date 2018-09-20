@@ -763,5 +763,28 @@ module.exports = {
                     }
                 }]
         },
+        {
+            type: 'post', url: '/api/admin/comment/delete'
+            , name: 'admin delete the comment'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
+                        let commentInfo = await comment.findOne({_id:fun.ObjectId(body._id)});
+                        if(!commentInfo) return ctx.body = await ctx.code('2006');
+                        await comment.update({_id:fun.ObjectId(body._id)}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true}});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
     ]
 };
