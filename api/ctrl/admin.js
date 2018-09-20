@@ -697,7 +697,7 @@ module.exports = {
             ]
         },
         {
-            type: 'get', url: '/api/admin/comment/list'
+            type: 'get', url: '/api/admin/comment/list/:id'
             , name: 'admin get the comment list'
             , fun: [
                 checkAdmin,
@@ -707,16 +707,19 @@ module.exports = {
                     }
                 }),
                 async (ctx) => {
+                    let body = ctx.params;
                     try {
                         let query = ctx.query, page = query.page,NUMBER = 10;
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
-                        let totalNum = await comment.count({});
+                        let match = {
+                            reply:null
+                        };
+                        if(body.id!=='0')match.articleId = fun.ObjectId(body.id);
+                        let totalNum = await comment.count(match);
                         let totalPage = Math.ceil(totalNum/NUMBER);
                         let list = await comment.aggregate([
                             {
-                                $match: {
-                                    reply:null,
-                                }
+                                $match: match
                             },
                             {
                                 $sort: {

@@ -21,8 +21,8 @@
                             </span>
                         </span>
                         <span class="">
-                            <b-badge variant="secondary" class="mr-2"><i class="fa fa-eye"></i> {{item.count.view}}</b-badge>
-                            <b-badge variant="dark" class="mr-2"><i class="fa fa-comments"></i> {{item.count.comment}}</b-badge>
+                            <b-badge variant="secondary" class="mr-2"><a :href="'/article/' + item._id" target="_blank"><i class="fa fa-eye"></i> {{item.count.view}}</a></b-badge>
+                            <b-badge variant="dark" class="mr-2"><router-link :to="{ path: '/admin/app/comment/list/' + item._id + '/1'}"><i class="fa fa-comments"></i> {{item.count.comment}}</router-link></b-badge>
                             <a href="javascript:void(0);" @click="deleteArticle(item,index)"><i class="fa fa-trash-o"></i></a>
                         </span>
                     </div>
@@ -85,6 +85,7 @@
                 let _that = this;
                 let page = parseInt(this.$route.params.page ? this.$route.params.page : 1);
                 _that.loading= true;
+                _that.$refs.load && _that.$refs.load.start();
                 this.axios.get('/api/admin/article/list?page=' + page ).then(res=>{
                     if(res.data.code === "0000"){
                         _that.$refs.load && _that.$refs.load.finished();
@@ -142,4 +143,7 @@
 </script>
 
 <style scoped>
+    .badge a{
+        color: #FFF;
+    }
 </style>

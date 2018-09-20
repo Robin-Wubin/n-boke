@@ -61,7 +61,8 @@ export function createRouter () {
                         },
                         {path: 'comment', component: AdminAppCommentList, redirect:"/admin/app/comment/list"
                             , children:[
-                                {path:"list", component: AdminAppCommentList}
+                                {path:"list", redirect:"/admin/app/comment/list/0/1"},
+                                {path:"list/:id/:page", component: AdminAppCommentList, props: true}
                             ]
                         }
                     ]

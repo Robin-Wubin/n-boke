@@ -99,7 +99,7 @@
                             </div>
                         </li>
                     </ol>
-                    <b-pagination size="sm" align="center" :total-rows="totalNum" v-model="page" :per-page="10" @change="getComment">
+                    <b-pagination size="sm" align="center" :total-rows="totalNum" v-model="page" :per-page="10" @change="getComment" class="mt-4">
                     </b-pagination>
                 </b-col>
             </b-row>

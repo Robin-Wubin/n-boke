@@ -4,10 +4,12 @@
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
             <b-list-group class="suit_fot">
                 <loading ref="load"></loading>
-                <b-list-group-item v-if="list.length > 0" v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
+                <b-list-group-item v-if="list.length > 0 && !loading" v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
                     <div class="info mb-2">
                         <span><img :src="item.headImg" height="32px" class="mr-2"><a class="mt-2" :href="item.site ? item.site : 'javascript:void(0);'" :target="item.site ? '_blank':''">{{item.name}}</a> </span>
-                        <div><a :href="'/article/' + item.articleId" target="_blank">#{{item.article[0].title}}#</a></div>
+                        <div>
+                            <router-link :to="{ path: '/admin/app/comment/list/' + item.articleId + '/1'}">#{{item.article[0].title}}#</router-link>
+                        </div>
                         <span> <a :href="'mailto:' + item.email">{{item.email}}</a> </span>
                     </div>
                     <div class="message" v-html="item.comment"></div>
@@ -33,7 +35,7 @@
                         </li>
                     </ol>
                 </b-list-group-item>
-                <b-list-group-item v-if="list.length=== 0" class="suit_fot_tpl">
+                <b-list-group-item v-if="list.length=== 0 && !loading" class="suit_fot_tpl">
                     <div style="font-size: 14px;line-height: 250px;text-align: center;color: #CCC;">
                         <i class="fa fa-child"></i>&nbsp;&nbsp;&nbsp;&nbsp;没有评论
                     </div>
@@ -62,7 +64,8 @@
                 page: parseInt(this.$route.params.page ? this.$route.params.page : 1),
                 totalPage: 1,
                 showlist: true,
-                list:[]
+                list:[],
+                id:this.$route.params.id ? this.$route.params.id : '0'
             }
         },
         methods: {
@@ -73,11 +76,18 @@
                 let _that = this;
                 let page = parseInt(this.$route.params.page ? this.$route.params.page : 1);
                 _that.loading= true;
-                this.axios.get('/api/admin/comment/list?page=' + page ).then(res=>{
+                _that.$refs.load && _that.$refs.load.start();
+                let url;
+                url =  '/api/admin/comment/list/' + this.id + '?page=';
+                this.axios.get(url + page ).then(res=>{
                     if(res.data.code === "0000"){
                         _that.$refs.load && _that.$refs.load.finished();
                         _that.loading= false;
                         _that.list = res.data.data.list;
+                        if(_that.id!=='0') _that.breadcrumb.push({
+                            text: _that.list[0].article[0].title,
+                            href: '/admin/app/comment/list/'+_that.id
+                        });
                         _that.totalPage = res.data.data.totalPage;
                         _that.page = page;
                         // console.log(res.data);
@@ -109,6 +119,8 @@
         },
         watch: {
             $route (to, from) {
+                this.id = this.$route.params.id ? this.$route.params.id : '0';
+                if(this.id==='0' && this.breadcrumb.length > 1) this.breadcrumb.splice(1,1);
                 this.showlist = /\/admin\/app\/comment\/list(\/\d+)*/.test(to.path);
                 if(this.showlist) this.getList();
             }

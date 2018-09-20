@@ -34,6 +34,11 @@
                         taht.display = 'none';
                     }
                 }, 30);
+            },
+            start () {
+                this.height = 100;
+                this.opacity = 1;
+                this.display = 'block';
             }
         }
 
