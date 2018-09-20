@@ -60,8 +60,8 @@
             <b-row>
                 <b-col md="8" offset-md="2">
                     <ol class="comment-list">
-                        <li class="comment-body comment-parent comment-odd" v-for="(item, index) of commentList" :key="index" :id="item._id">
-                            <div class="comment-view" onclick="">
+                        <li class="comment-body comment-parent comment-odd" v-for="(item, index) of commentList" :key="index">
+                            <div :id="item._id" class="comment-view" onclick="">
                                 <div class="comment-header">
                                     <img class="avatar" :src="item.headImg" width="80" height="80">
                                     <span class="comment-author"><a :href="item.site ? item.site:'javascript:void(0);'">{{item.name}}</a></span>
@@ -78,8 +78,8 @@
                             <div class="comment-children" v-if="item.children">
                                 <ol class="comment-list">
                                     <li v-for="(child,index) of item.children" :key="index" class="comment-body comment-child comment-level-odd comment-odd">
-                                        <div :id="child._id">
-                                            <div class="comment-view" onclick="">
+                                        <div>
+                                            <div :id="child._id" class="comment-view" onclick="">
                                                 <div class="comment-header">
                                                     <img class="avatar" :src="child.headImg" width="80" height="80">
                                                     <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
@@ -197,11 +197,17 @@
                 let that = this;
                 let userInfo = Object.assign({}, this.form);
                 userInfo.comment && delete userInfo.comment;
+                userInfo.reply && delete userInfo.reply;
                 this.set_client_info(userInfo);
                 this.form.comment = this.form.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
-                if(this.replyObj) this.form.reply = this.replyObj;
+                if(this.replyObj){
+                    this.form.reply = this.replyObj;
+                } else {
+                    this.form.reply && delete this.form.reply;
+                }
                 this.axios.post('/api/blog/comment/new?id=' + this.id, this.form).then(res=>{
                     that.form.comment = "";
+                    delete that.form.reply;
                     that.replyObj = null;
                     that.getComment(that.page);
                 }).catch(res=>{
@@ -227,6 +233,10 @@
             scrollToId(id){
                 let scrollTop = document.documentElement.scrollTop + document.getElementById(id).getBoundingClientRect().top - 100;
                 window.scrollTo(0, scrollTop);
+                document.getElementById(id).setAttribute("class","comment-view comment-tips");
+                setTimeout(()=>{
+                    document.getElementById(id).setAttribute("class","comment-view");
+                }, 3000)
             },
             cancel_reply(){
                 this.replyObj = null;
@@ -279,7 +289,8 @@
          outline: 0
      }
     .comment_info>textarea:focus{
-        outline: 0
+        outline: 0;
+        box-shadow: none;
     }
     .comment_info>.btn{
         align-self: right;
@@ -306,6 +317,9 @@
         -webkit-transform: rotate(15deg) translate(0, -5px);
         -ms-transform: rotate(15deg)  translate(0, -5px);
         overflow: visible;
+        border-radius: 50%;
+    }
+    .head_reply_ico_container img{
         border-radius: 50%;
     }
     .head_reply_ico_container i.fa-reply{
@@ -405,5 +419,22 @@
     .comment-parent>.comment-children .comment-author-at {
         float: left;
         margin-right: 5px;
+    }
+    .comment-tips{
+        animation:commentFade 1s infinite; /*animation 时间 播放次数*/
+    }
+    @keyframes commentFade
+    {
+        0% {background: rgba(229, 246, 255, 0);}
+        10% {background: rgba(229, 246, 255, 0.2);}
+        20% {background: rgba(229, 246, 255, 0.4);}
+        30% {background: rgba(229, 246, 255, 0.6);}
+        40% {background: rgba(229, 246, 255, 0.8);}
+        50% {background: rgb(229, 246, 255);}
+        60% {background: rgba(229, 246, 255, 0.8);}
+        70% {background: rgba(229, 246, 255, 0.6);}
+        80% {background: rgba(229, 246, 255, 0.4);}
+        90% {background: rgba(229, 246, 255, 0.2);}
+        100% {background: rgba(229, 246, 255, 0);}
     }
 </style>

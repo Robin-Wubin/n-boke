@@ -116,7 +116,8 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }
+        ,{
             type: 'post',
             url: '/api/blog/comment/new',
             name: 'client post a new comment',
@@ -172,7 +173,8 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }
+        ,{
             type: 'get',
             url: '/api/blog/comment/list',
             name: 'client get comment list',
@@ -190,7 +192,7 @@ module.exports = {
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
                         let totalNum = await comment.count(selectQuery);
                         // let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await comment.find(selectQuery, {skip:(query.page-1) * NUMBER, limit:NUMBER});
+                        let list = await comment.find(selectQuery, {skip:(query.page-1) * NUMBER, limit:NUMBER, sort:{time:-1}});
                         for(let child of list){
                             if(child.replyList){
                                 child.children = await comment.find({_id:{$in:child.replyList}});
