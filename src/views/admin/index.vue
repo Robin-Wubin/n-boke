@@ -88,6 +88,7 @@
         watch: {
             $route (to, from) {
                 if(to.path === "/admin"){
+                    console.log(this.admin_info);
                     if(!this.admin_info){
                         this.$router.push("/admin/login");
                     } else {

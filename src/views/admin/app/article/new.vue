@@ -178,6 +178,28 @@
         AudioBlot.tagName = 'audio';
         Quill.register(AudioBlot);
     }
+    const scrollListener = function(){
+        let scrollTop=document.documentElement.scrollTop; //document.documentElement获取数据
+        let judgeTop = document.querySelector(".view.container").offsetTop +
+            document.querySelector(".view.container>.navbar").offsetTop +
+            document.querySelector(".view.container>.navbar>.row>.col-md-9").offsetTop +
+            document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
+            document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor").offsetTop;
+        let targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
+            parentNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor");
+        targetNode.style.background="#FFF";
+        if(scrollTop>=judgeTop){
+            targetNode.style.position="fixed";
+            targetNode.style.top="0";
+            targetNode.style.zIndex="999";
+            targetNode.style.width=parentNode.clientWidth + "px";
+        } else {
+            targetNode.style.position="";
+            targetNode.style.top="";
+            targetNode.style.zIndex="";
+            targetNode.style.width="";
+        }
+    };
     export default {
         asyncData ({ store, route}) {
             return store.dispatch('setTypeList');
@@ -432,7 +454,11 @@
                             case "type":
                             case "password":
                             case "title":
+                            case "headImage":
                                 _that.article[key] = null;
+                                break;
+                            case "isComment":
+                                _that.article[key] = true;
                                 break;
                             case "tags":
                                 _that.article[key] = [];
@@ -452,7 +478,11 @@
                                         case "type":
                                         case "password":
                                         case "title":
+                                        case "headImage":
                                             _that.article[key] = null;
+                                            break;
+                                        case "isComment":
+                                            _that.article[key] = true;
                                             break;
                                         case "tags":
                                             _that.article[key] = [];
@@ -532,31 +562,11 @@
                 console.error(res);
             });
 
-            window.addEventListener('scroll',function(){
-                let scrollTop=document.documentElement.scrollTop; //document.documentElement获取数据
-                let judgeTop = document.querySelector(".view.container").offsetTop +
-                    document.querySelector(".view.container>.navbar").offsetTop +
-                    document.querySelector(".view.container>.navbar>.row>.col-md-9").offsetTop +
-                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container").offsetTop +
-                    document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor").offsetTop;
-                let targetNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor>.ql-toolbar"),
-                parentNode = document.querySelector(".view.container>.navbar>.row>.col-md-9>.admin_container .quill-editor");
-                targetNode.style.background="#FFF";
-                if(scrollTop>=judgeTop){
-                    targetNode.style.position="fixed";
-                    targetNode.style.top="0";
-                    targetNode.style.zIndex="999";
-                    targetNode.style.width=parentNode.clientWidth + "px";
-                } else {
-                    targetNode.style.position="";
-                    targetNode.style.top="";
-                    targetNode.style.zIndex="";
-                    targetNode.style.width="";
-                }
-            },true);
+            window.addEventListener('scroll', scrollListener,true);
         },
         beforeDestroy(){
-            clearInterval(this.timer)
+            clearInterval(this.timer);
+            window.removeEventListener('scroll', scrollListener,true)
         }
     }
 </script>

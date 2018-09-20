@@ -340,6 +340,7 @@ module.exports = {
                     try {
                         let body = ctx.request.body;
                         let article = new mongo(ctx.state.mdb, "app.article");
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
                         let type = new mongo(ctx.state.mdb, "app.article.type");
                         let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
                         let _id = fun.ObjectId(body.id);
@@ -347,6 +348,7 @@ module.exports = {
                         await type.update({_id:articleInfo.type}, {$inc:{countNum:-1}});
                         await article.remove({_id});
                         await draftArticle.remove({articleId: _id});
+                        await comment.remove({articleId: _id});
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
                         throw e;
@@ -693,6 +695,73 @@ module.exports = {
                     }
                 }
             ]
+        },
+        {
+            type: 'get', url: '/api/admin/comment/list'
+            , name: 'admin get the comment list'
+            , fun: [
+                checkAdmin,
+                validate({
+                    query: {
+                        page: Joi.number().default(1)
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let query = ctx.query, page = query.page,NUMBER = 10;
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
+                        let totalNum = await comment.count({});
+                        let totalPage = Math.ceil(totalNum/NUMBER);
+                        let list = await comment.aggregate([
+                            {
+                                $match: {
+                                    reply:null,
+                                }
+                            },
+                            {
+                                $sort: {
+                                    time: -1
+                                }
+                            },
+                            {
+                                $skip: (page-1) * NUMBER
+                            },
+                            {
+                                $limit: NUMBER
+                            }, {
+                                $lookup: {
+                                    from: "app.article",
+                                    localField: "articleId",
+                                    foreignField: "_id",
+                                    as: "article"
+                                }
+                            }, {
+                                $project: {
+                                    headImg: 1,
+                                    name: 1,
+                                    email: 1,
+                                    site: 1,
+                                    comment: 1,
+                                    topicId: 1,
+                                    reply: 1,
+                                    articleId: 1,
+                                    time: 1,
+                                    replyList: 1,
+                                    "article.brief": 1,
+                                    "article.title": 1,
+                                }
+                            }]);
+                        list = await list.toArray();
+                        for(let child of list){
+                            if(child.replyList){
+                                child.children = await comment.find({_id:{$in:child.replyList}});
+                            }
+                        }
+                        ctx.body = await ctx.code('0000', {list, totalPage});
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
         },
     ]
 };

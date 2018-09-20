@@ -5,7 +5,7 @@
             <b-list-group class="suit_fot">
                 <b-list-group-item class="suit_fot_tpl"><router-link :to="'/admin/app/article/new'"><i class="fa fa-plus-square"></i> 添加新文章</router-link></b-list-group-item>
                 <loading ref="load"></loading>
-                <b-list-group-item v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
+                <b-list-group-item v-if="list.length > 0" v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
                     <div>
                         <div>
                             <i class="fa fa-circle" :class="item.state ? 'text-success' : 'text-secondary' "></i>
@@ -26,11 +26,18 @@
                             <a href="javascript:void(0);" @click="deleteArticle(item,index)"><i class="fa fa-trash-o"></i></a>
                         </span>
                     </div>
-
+                </b-list-group-item>
+                <b-list-group-item v-if="list.length=== 0" class="suit_fot_tpl">
+                    <div style="font-size: 14px;
+        line-height: 250px;
+        text-align: center;
+        color: #CCC;">
+                        <i class="fa fa-child"></i>&nbsp;&nbsp;&nbsp;&nbsp;没有文章
+                    </div>
                 </b-list-group-item>
             </b-list-group>
         </div>
-        <b-pagination-nav v-if="showlist" class="pagination_nav" :link-gen="linkGen" :number-of-pages="totalPage" v-model="page" />
+        <b-pagination-nav v-if="showlist && totalPage>0" class="pagination_nav" :link-gen="linkGen" :number-of-pages="totalPage" v-model="page" />
         <router-view v-if="!showlist"></router-view>
         <b-modal id="modalForDeleteArticle" size="sm" ref="modalForDeleteArticle" title="删除文章"
                  @ok="confirmDelete" @hidden="cancelDelete">
@@ -77,6 +84,7 @@
             getList () {
                 let _that = this;
                 let page = parseInt(this.$route.params.page ? this.$route.params.page : 1);
+                _that.loading= true;
                 this.axios.get('/api/admin/article/list?page=' + page ).then(res=>{
                     if(res.data.code === "0000"){
                         _that.$refs.load && _that.$refs.load.finished();
@@ -158,7 +166,7 @@
     }
     .pagination_nav{
         display: flex;
-        flex-direction: row;3
+        flex-direction: row;
         justify-content: center;
     }
 </style>

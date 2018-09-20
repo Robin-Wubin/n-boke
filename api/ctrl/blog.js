@@ -44,7 +44,8 @@ module.exports = {
                         throw e;
                     }
                 }]
-        },{
+        }
+        ,{
             type: 'get'
             , url: '/api/blog/content'
             , name: 'get blog content'
@@ -72,7 +73,8 @@ module.exports = {
                         throw e;
                     }
                 }]
-        },{
+        }
+        ,{
             type: 'post'
             , url: '/api/blog/content'
             , name: 'get blog content'
@@ -102,7 +104,8 @@ module.exports = {
                         throw e;
                     }
                 }]
-        },{
+        }
+        ,{
             type: 'post',
             url: '/api/blog/comment/upload/image',
             name: 'client upload they are ico',
@@ -142,7 +145,7 @@ module.exports = {
                     try {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let body = ctx.request.body;
-
+                        body.comment = body.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});

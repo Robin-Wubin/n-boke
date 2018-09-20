@@ -86,7 +86,7 @@
                                                 </div>
                                                 <div class="comment-content">
                                                     <span class="comment-author-at"><a href="javascript:void(0);" @click="scrollToId(child.reply.toId)">@{{child.reply.toName}}</a></span>
-                                                    <p>{{child.comment}}</p><p></p>
+                                                    <div v-html="child.comment"></div>
                                                 </div>
                                                 <div class="comment-meta">
                                                     <time class="comment-time">
@@ -199,7 +199,6 @@
                 userInfo.comment && delete userInfo.comment;
                 userInfo.reply && delete userInfo.reply;
                 this.set_client_info(userInfo);
-                this.form.comment = this.form.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
                 if(this.replyObj){
                     this.form.reply = this.replyObj;
                 } else {
@@ -396,6 +395,8 @@
     .comment-content {
         margin-bottom: 10px;
         color: #313131;
+        font-size: 14px;
+        line-height: 28px;
     }
     .comment-meta {
         font-size: 12px;

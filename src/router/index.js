@@ -18,6 +18,7 @@ const AdminAppDashboard = () => import('../views/admin/app/dashboard.vue');
 const AdminAppArticleList = () => import('../views/admin/app/article/list.vue');
 const AdminAppArticleNew = () => import('../views/admin/app/article/new.vue');
 const AdminAppSourceIndex = () => import('../views/admin/app/source/index.vue');
+const AdminAppCommentList = () => import('../views/admin/app/comment/list.vue');
 
 export function createRouter () {
   return new Router({
@@ -56,6 +57,11 @@ export function createRouter () {
                         {path: 'source', component: AdminAppSourceIndex, redirect:"/admin/app/source/index"
                             , children:[
                                 {path:"index", component: AdminAppSourceIndex}
+                            ]
+                        },
+                        {path: 'comment', component: AdminAppCommentList, redirect:"/admin/app/comment/list"
+                            , children:[
+                                {path:"list", component: AdminAppCommentList}
                             ]
                         }
                     ]

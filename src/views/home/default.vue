@@ -3,7 +3,7 @@
     <b-container>
         <b-row>
             <div style="width: 100%">
-                <div class="list">
+                <div v-if="article.list.length>0" class="list">
                     <b-card v-for="(item,index) of article.list" :key="index"
                             tag="article"
                             style="max-width: 20rem;"
@@ -24,7 +24,24 @@
                         </div>
                     </b-card>
                 </div>
-                <b-pagination-nav class="pagination_nav" align="center" :link-gen="linkGen" :number-of-pages="article.totalPage" v-model="page" />
+                <div v-if="article.list.length===0" class="list">
+                    <b-card tag="article"
+                            style="max-width: 20rem;"
+                            class="n_boke_card">
+                        <div class="headImageContainer">
+                            <div :class="'headImage '+color[parseInt(Math.random()*color.length)]" ></div>
+                            <div class="blanket"><i class="fa fa-edit"></i></div>
+                            <div :class="'slant reverse-slant '+color[parseInt(Math.random()*color.length)]"></div>
+                            <div class="slant"></div>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-text" style="font-size: 12px">
+                                博主正在努力撰写文章中...
+                            </p>
+                        </div>
+                    </b-card>
+                </div>
+                <b-pagination-nav v-if="article.totalPage>1" class="pagination_nav" align="center" :link-gen="linkGen" :number-of-pages="article.totalPage" v-model="page" />
             </div>
         </b-row>
     </b-container>
@@ -145,6 +162,17 @@
         color: #fff
     }
 
+    .n_boke_card .blanket {
+        position: absolute;
+        top: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        font-size: 60px;
+        color: #FFF;
+        text-align: center;
+        line-height: 250px;
+    }
     .n_boke_card:hover .articleBrief {
         background-color: rgba(0,0,0,.5)
     }
