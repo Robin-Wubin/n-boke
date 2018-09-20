@@ -776,10 +776,25 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let body = ctx.request.body;
+                        let _id=fun.ObjectId(body._id);
                         let comment = new mongo(ctx.state.mdb, "app.article.comment");
-                        let commentInfo = await comment.findOne({_id:fun.ObjectId(body._id)});
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let commentInfo = await comment.findOne({_id});
                         if(!commentInfo) return ctx.body = await ctx.code('2006');
-                        await comment.update({_id:fun.ObjectId(body._id)}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true}});
+                        if(!commentInfo.del){
+                            await comment.update({_id}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true}});
+                        } else {
+                            let i = 1;
+                            console.log(_id, commentInfo);
+                            await comment.remove({_id});
+                            if(commentInfo.topicId) await comment.update({_id:commentInfo.topicId}, {$pull:{replyList:_id}});
+                            if(commentInfo.replyList){
+                                await comment.remove({_id:{$in:commentInfo.replyList}});
+                                i += commentInfo.replyList.length;
+                            }
+                            console.log(_id, commentInfo);
+                            await article.update({_id:commentInfo.articleId}, {$inc:{'count.comment':-i}})
+                        }
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
                         throw e;

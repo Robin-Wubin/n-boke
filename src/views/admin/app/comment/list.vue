@@ -16,7 +16,7 @@
                         {{item.time | formatTime("YMDHMS")}}
                     </div>
 
-                    <ol v-if="item.children">
+                    <ol v-if="item.children && item.children.length > 0">
                         <li v-for="(child,i) of item.children" :key="i">
                             <div class="info mb-2">
                                 <span><img :src="child.headImg" height="32px" class="mr-2"><a class="mt-2" :href="child.site ? child.site : 'javascript:void(0);'" :target="child.site ? '_blank':''">{{child.name}}</a> </span>

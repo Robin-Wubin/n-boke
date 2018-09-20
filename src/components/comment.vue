@@ -74,7 +74,7 @@
                                     <span v-if="!item.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
                             </div></div>
-                            <div class="comment-children" v-if="item.children">
+                            <div class="comment-children" v-if="item.children && item.children.length > 0">
                                 <ol class="comment-list">
                                     <li v-for="(child,index) of item.children" :key="index" class="comment-body comment-child comment-level-odd comment-odd">
                                         <div :class="child.del ? 'is_delete':''">
