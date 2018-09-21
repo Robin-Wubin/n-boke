@@ -319,7 +319,7 @@ module.exports = {
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let totalNum = await article.count({});
                         let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await article.find({}, {project:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
+                        let list = await article.find({}, {projection:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalPage});
                     } catch (e) {
                         throw e;
@@ -750,6 +750,8 @@ module.exports = {
                                     articleId: 1,
                                     time: 1,
                                     replyList: 1,
+                                    backupCommon: 1,
+                                    del:1,
                                     "article.brief": 1,
                                     "article.title": 1,
                                 }
@@ -785,7 +787,7 @@ module.exports = {
                         let commentInfo = await comment.findOne({_id});
                         if(!commentInfo) return ctx.body = await ctx.code('2006');
                         if(!commentInfo.del){
-                            await comment.update({_id}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true}});
+                            await comment.update({_id}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true, backupCommon: commentInfo.comment}});
                         } else {
                             let i = 1;
                             console.log(_id, commentInfo);

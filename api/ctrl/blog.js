@@ -38,7 +38,7 @@ module.exports = {
                         selectQuery.state = 1;
                         let totalNum = await article.count(selectQuery);
                         let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await article.find(selectQuery, {project:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
+                        let list = await article.find(selectQuery, {projection:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
                         ctx.body = await ctx.code('0000', {list, totalPage});
                     } catch (e) {
                         throw e;
@@ -202,7 +202,7 @@ module.exports = {
                         let list = await comment.find(selectQuery, {skip:(query.page-1) * NUMBER, limit:NUMBER, sort:{time:-1}});
                         for(let child of list){
                             if(child.replyList){
-                                child.children = await comment.find({_id:{$in:child.replyList}});
+                                child.children = await comment.find({_id:{$in:child.replyList}}, {projection:{backupCommon:0}});
                             }
                         }
                         ctx.body = await ctx.code('0000', {list, totalNum});

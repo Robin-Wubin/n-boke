@@ -62,7 +62,7 @@
                     <ol class="comment-list">
                         <li class="comment-body comment-parent comment-odd" v-for="(item, index) of commentList" :key="index">
                             <div :class="item.del ? 'is_delete':''"><div :id="item._id" class="comment-view" onclick="">
-                                <div class="comment-header">
+                                <div class="comment-header" v-if="!item.del">
                                     <img class="avatar" :src="item.headImg" width="80" height="80">
                                     <span class="comment-author"><a :href="item.site ? item.site:'javascript:void(0);'">{{item.name}}</a></span>
                                 </div>
@@ -79,7 +79,7 @@
                                     <li v-for="(child,index) of item.children" :key="index" class="comment-body comment-child comment-level-odd comment-odd">
                                         <div :class="child.del ? 'is_delete':''">
                                             <div :id="child._id" class="comment-view" onclick="">
-                                                <div class="comment-header">
+                                                <div class="comment-header" v-if="!child.del">
                                                     <img class="avatar" :src="child.headImg" width="80" height="80">
                                                     <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
                                                 </div>

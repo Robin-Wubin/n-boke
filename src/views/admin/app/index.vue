@@ -141,7 +141,11 @@
         text-align: center;
         font-size: 14px;
     }
-
+    .container {
+        width: 100%;
+        padding-right: 0;
+        padding-left: 0;
+    }
     .comment-delete{
         color: #c7c7c7;
         display: block;
