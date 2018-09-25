@@ -39,6 +39,13 @@ module.exports = {
                             ctx.body = await ctx.code('1001');
                         } else {
                             global.appConfig.db = body;
+                            let setting = new mongo(global.mongoDB, "app.setting");
+                            //初始化app
+                            let basic = {
+                                name: "N-Boke",
+                                host: null,
+                                desc:""
+                            };
                             ctx.body = await ctx.code('0000');
                         }
                     } catch (e) {

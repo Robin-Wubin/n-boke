@@ -11,7 +11,7 @@ const state = {
     admin_info: null,
     sid: null,
     type_list: [],
-    blog_list: [],
+    blog_list: {totalPage:1,list:[]},
     blog_content: null,
     client_info: null
 };
