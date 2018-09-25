@@ -47,6 +47,7 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import { mapGetters, mapActions } from 'vuex'
     import loading from '../../../../components/Loading.vue'
     export default {
@@ -68,7 +69,7 @@
                     text: 'Article',
                     href: '/admin/app/article/list'
                 }],
-                screenWidth: !this.$isServer ? document.body.clientWidth : 0,
+                screenWidth: !Vue.prototype.$isServer ? document.body.clientWidth : 0,
                 loading: true,
                 page: parseInt(this.$route.params.page ? this.$route.params.page : 1),
                 totalPage: 1,
@@ -124,7 +125,7 @@
         mounted(){
             this.getList();
             const that = this;
-            if(!this.$isServer){
+            if(!Vue.prototype.$isServer){
                 window.onresize = () => {
                     return (() => {
                         window.screenWidth = document.body.clientWidth;

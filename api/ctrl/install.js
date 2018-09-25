@@ -44,7 +44,11 @@ module.exports = {
                             let basic = {
                                 name: "N-Boke",
                                 host: null,
-                                desc:""
+                                desc:"Easy | Simply | Open Source | Server Side Render",
+                                keyword:"Easy,Simply,Open Source,Server Side Render"
+                            };
+                            let commentSetting = {
+
                             };
                             ctx.body = await ctx.code('0000');
                         }

@@ -1,16 +1,25 @@
 import request from 'axios'
+import Vue from 'vue'
 
-request.defaults.baseURL = 'http://127.0.0.1:3000/';
 request.defaults.proxy = false;
 export const setAdminInfo = ({ commit, state }) => {
-    let headers = {};
-    if(state.sid) headers.Cookie = 'sid='+state.sid;
     if(state.admin_info){
         return new Promise((resolve, reject)=>{resolve(null)})
     } else {
-        return request.get('api/admin/info', process ? {headers} : null).then((response) => {
-            if (response.statusText === 'OK') {
-                response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
+        let headers = {};
+        let opt = {};
+        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url = '/api/admin/info';
+        opt.method = 'get';
+        if(state.sid){
+            headers.Cookie = 'sid='+state.sid;
+            opt.headers = headers;
+        }
+        return request(opt).then((response) => {
+            if (response.data.code === '0000') {
+                 commit('SET_ADMIN_INFO', response.data.data);
+            } else {
+                console.log(response.data)
             }
         }).catch((error) => {
             console.log(error)
@@ -21,9 +30,15 @@ export const setTypeList = ({ commit, state }) => {
     if(state.type_list.length!==0){
         return new Promise((resolve, reject)=>{resolve(null)})
     } else {
-        return request.get('api/admin/type/list').then((response) => {
-            if (response.statusText === 'OK') {
-                response.data.code === '0000' && commit('SET_TYPE_LIST', response.data.data);
+        let opt = {};
+        opt.baseURL=Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url='/api/admin/type/list';
+        opt.method='get';
+        return request(opt).then((response) => {
+            if (response.data.code === '0000') {
+                commit('SET_TYPE_LIST', response.data.data);
+            } else {
+                console.log(response.data)
             }
         }).catch((error) => {
             console.log(error)
@@ -32,7 +47,12 @@ export const setTypeList = ({ commit, state }) => {
 };
 export const getBlogList = ({ commit, state }, page) => {
     page = page ? page : 1;
-    return request.get('api/blog/list?page=' + page).then((response) => {
+
+    let opt = {};
+    opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+    opt.url = 'api/blog/list?page=' + page;
+    opt.method = 'get';
+    return request(opt).then((response) => {
         if(response.data.code === '0000'){
             commit('SET_BLOG_LIST', response.data.data);
         } else {
@@ -47,10 +67,15 @@ export const getBlogContent = ({ commit, state }, id) => {
         console.log(state.blog_content && state.blog_content._id, id);
         return new Promise((resolve, reject)=>{resolve(null)});
     } else {
-        return request.get('api/blog/content?id=' + id).then((response) => {
-            if (response.statusText === 'OK') {
-                console.log(response.data);
-                response.data.code === '0000' && commit('SET_BLOG_CONTENT', response.data.data);
+        let opt = {};
+        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url = '/api/blog/content?id=' + id;
+        opt.method = 'get';
+        return request(opt).then((response) => {
+            if (response.data.code === '0000') {
+                 commit('SET_BLOG_CONTENT', response.data.data);
+            } else {
+                console.log(response.data)
             }
         }).catch((error) => {
             console.log(error)
