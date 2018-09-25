@@ -40,9 +40,10 @@ export const setTypeList = ({ commit, state }) => {
 export const getBlogList = ({ commit, state }, page) => {
     page = page ? page : 1;
     return request.get('http://localhost:3000/api/blog/list?page=' + page).then((response) => {
-        if (response.statusText === 'OK') {
-            console.log(response.data);
-            response.data.code === '0000' && commit('SET_BLOG_LIST', response.data.data);
+        if(response.data.code === '0000'){
+            commit('SET_BLOG_LIST', response.data.data);
+        } else {
+            console.log(response.data)
         }
     }).catch((error) => {
         console.log(error)
