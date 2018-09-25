@@ -1,21 +1,13 @@
 import request from 'axios'
 
-export const setCategory = ({ commit, state }) => {
-  return request.get('https://gxx.leanapp.cn/category').then((response) => {
-    if (response.statusText === 'OK') {
-      response.data.code === '200' && commit('SET_CATEGORY', response.data.data)
-    }
-  }).catch((error) => {
-    console.log(error)
-  })
-};
+request.defaults.baseURL = 'http://localhost:3000/';
 export const setAdminInfo = ({ commit, state }) => {
     let headers = {};
     if(state.sid) headers.Cookie = 'sid='+state.sid;
     if(state.admin_info){
         return new Promise((resolve, reject)=>{resolve(null)})
     } else {
-        return request.get('http://localhost:3000/api/admin/info', process ? {headers} : null).then((response) => {
+        return request.get('api/admin/info', process ? {headers} : null).then((response) => {
             if (response.statusText === 'OK') {
                 response.data.code === '0000' && commit('SET_ADMIN_INFO', response.data.data);
             }
@@ -28,7 +20,7 @@ export const setTypeList = ({ commit, state }) => {
     if(state.type_list.length!==0){
         return new Promise((resolve, reject)=>{resolve(null)})
     } else {
-        return request.get('http://localhost:3000/api/admin/type/list').then((response) => {
+        return request.get('api/admin/type/list').then((response) => {
             if (response.statusText === 'OK') {
                 response.data.code === '0000' && commit('SET_TYPE_LIST', response.data.data);
             }
@@ -39,7 +31,7 @@ export const setTypeList = ({ commit, state }) => {
 };
 export const getBlogList = ({ commit, state }, page) => {
     page = page ? page : 1;
-    return request.get('http://localhost:3000/api/blog/list?page=' + page).then((response) => {
+    return request.get('api/blog/list?page=' + page).then((response) => {
         if(response.data.code === '0000'){
             commit('SET_BLOG_LIST', response.data.data);
         } else {
@@ -54,7 +46,7 @@ export const getBlogContent = ({ commit, state }, id) => {
         console.log(state.blog_content && state.blog_content._id, id);
         return new Promise((resolve, reject)=>{resolve(null)});
     } else {
-        return request.get('http://localhost:3000/api/blog/content?id=' + id).then((response) => {
+        return request.get('api/blog/content?id=' + id).then((response) => {
             if (response.statusText === 'OK') {
                 console.log(response.data);
                 response.data.code === '0000' && commit('SET_BLOG_CONTENT', response.data.data);
