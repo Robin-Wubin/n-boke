@@ -64,7 +64,7 @@
                             <div :class="item.del ? 'is_delete':''"><div :id="item._id" class="comment-view" onclick="">
                                 <div class="comment-header" v-if="!item.del">
                                     <img class="avatar" :src="item.headImg" width="80" height="80">
-                                    <span class="comment-author"><a :href="item.site ? item.site:'javascript:void(0);'">{{item.name}}</a></span>
+                                    <span class="comment-author"><a :href="item.site && setting.comment.display.isIndex ? item.site:'javascript:void(0);'" :rel="setting.comment.display.isNoFollow ? 'external nofollow' : 'external'">{{item.name}}</a></span>
                                 </div>
                                 <div class="comment-content" v-html="item.comment"></div>
                                 <div class="comment-meta">
@@ -128,9 +128,14 @@
             isComment: {
                 type: Boolean ,
                 default: false
+            },
+            setting:{
+                type: Object ,
+                required: true
             }
         },
         data(){
+            console.log(this.id, this.setting);
             return {
                 form:{
                     headImg:"/upload/ico/head.png"

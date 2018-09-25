@@ -32,7 +32,7 @@
                 </b-col>
             </b-row>
         </b-container>
-        <comment v-if="!article.needPassword" :id="id" :isComment="article.isComment"></comment>
+        <comment v-if="!article.needPassword" :id="id" :isComment="article.isComment" :setting="setting"></comment>
 
         <div class="bg-grey need_password_container" v-if="article.needPassword">
             <b-container>
@@ -86,7 +86,8 @@
         computed: {
             ...mapGetters({
                 types: 'getTypeList',
-                article: 'getBlogContent'
+                article: 'getBlogContent',
+                setting: 'getSettingInfo'
             })
         },
         components: {

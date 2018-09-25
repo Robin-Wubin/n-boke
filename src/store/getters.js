@@ -9,6 +9,7 @@ export const getClientInfo = (state) => {
     }
     return client_info;
 };
+export const getSettingInfo = state => state.setting;
 
 
 

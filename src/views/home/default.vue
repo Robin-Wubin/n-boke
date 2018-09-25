@@ -53,13 +53,13 @@
         name: "default",
         asyncData ({ store, route}) {
             let page = route.params.page ? route.params.page : 1;
-            console.log(page);
             return Promise.all([store.dispatch('setTypeList'), store.dispatch('getBlogList', page)]);
         },
         computed: {
             ...mapGetters({
                 types: 'getTypeList',
-                article: 'getBlogList'
+                article: 'getBlogList',
+                setting: 'getSettingInfo'
             })
         },
         data(){

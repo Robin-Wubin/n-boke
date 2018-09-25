@@ -15,14 +15,21 @@ module.exports = ()=>{
         , fun: [async (ctx) => {
             let sid = ctx.cookies.get("sid");
             let opt = {sid};
-            let articleRegular = /\/article\/([0-9a-zA-Z]+)/;
+            let articleRegular = /^\/article\/([0-9a-zA-Z]+)/;
+            let listRegular = /^\/page\/([0-9]+)/;
             let setting = new mongo(global.mongoDB, "app.setting");
             let basic = await setting.findOne({key:"basic"});
-            opt.title = basic.value.name;
-            opt.desc = basic.value.desc;
-            opt.keyword = basic.value.keyword;
+            let read = await setting.findOne({key:"read"});
+            let comment = await setting.findOne({key:"comment"});
+            basic = basic.value;
+            read = read.value;
+            comment = comment.value;
+            opt.title = basic.name;
+            opt.desc = basic.desc;
+            opt.keyword = basic.keyword;
+            let article = new mongo(ctx.state.mdb, "app.article");
             if(articleRegular.test(ctx.url)){
-                let article = new mongo(ctx.state.mdb, "app.article");
+                //文章
                 let urlArr = ctx.url.match(articleRegular);
                 let _id = fun.ObjectId(urlArr[1]);
                 let articleInfo = await article.findOne({_id});
@@ -33,10 +40,23 @@ module.exports = ()=>{
                 } else {
                     await article.update({_id}, {$inc:{"count.view":1}});
                 }
-                opt.title = articleInfo.title + " - " + basic.value.name;
+                opt.title = articleInfo.title + " - " + basic.name;
                 opt.desc = articleInfo.brief.replace(/[\n|\s]/g,"");
                 opt.article = articleInfo;
+            } else if (ctx.url === "/" || listRegular.test(ctx.url)){
+                //列表页
+                let urlArr = ctx.url.match(listRegular);
+                let page = urlArr ? urlArr[1] : 1;
+                let selectQuery={};
+                selectQuery.state = 1;
+                let totalNum = await article.count(selectQuery);
+                let totalPage = Math.ceil(totalNum/read.perPage);
+                let list = await article.find(selectQuery, {projection:{content:0, password:0}, skip:(page-1) * read.perPage, limit:read.perPage, sort:{createdAt:-1}});
+                opt.blogList = {list, totalPage, perPage:read.perPage, page};
+            } else {
+                console.log(ctx.url);
             }
+            opt.setting = {basic, read, comment};
             await ctx.renderComponents.readyPromise;
             await ctx.renderComponents.render(ctx, opt);
         }]

@@ -47,20 +47,23 @@ export const setTypeList = ({ commit, state }) => {
 };
 export const getBlogList = ({ commit, state }, page) => {
     page = page ? page : 1;
-
-    let opt = {};
-    opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-    opt.url = 'api/blog/list?page=' + page;
-    opt.method = 'get';
-    return request(opt).then((response) => {
-        if(response.data.code === '0000'){
-            commit('SET_BLOG_LIST', response.data.data);
-        } else {
-            console.log(response.data)
-        }
-    }).catch((error) => {
-        console.log(error)
-    })
+    if(state.blog_list && (state.blog_list.page === page)){
+        return new Promise((resolve, reject)=>{resolve(null)});
+    } else {
+        let opt = {};
+        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url = 'api/blog/list?page=' + page;
+        opt.method = 'get';
+        return request(opt).then((response) => {
+            if(response.data.code === '0000'){
+                commit('SET_BLOG_LIST', response.data.data);
+            } else {
+                console.log(response.data)
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 };
 export const getBlogContent = ({ commit, state }, id) => {
     if(state.blog_content && typeof state.blog_content._id ==="object")state.blog_content._id = state.blog_content._id.toString();

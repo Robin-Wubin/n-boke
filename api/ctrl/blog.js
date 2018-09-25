@@ -33,13 +33,16 @@ module.exports = {
                 }),
                 async (ctx) => {
                     try {
-                        let query = ctx.query, page = query.page,NUMBER = 9, selectQuery={};
+                        console.log("get blog list", ctx.query.page);
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let read = await setting.findOne({key:"read"});
+                        let query = ctx.query, page = query.page,NUMBER = read.value.perPage, selectQuery={};
                         let article = new mongo(ctx.state.mdb, "app.article");
                         selectQuery.state = 1;
                         let totalNum = await article.count(selectQuery);
                         let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await article.find(selectQuery, {projection:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
-                        ctx.body = await ctx.code('0000', {list, totalPage});
+                        let list = await article.find(selectQuery, {projection:{content:0, password:0}, skip:(page-1) * NUMBER, limit:NUMBER, sort:{createdAt:-1}});
+                        ctx.body = await ctx.code('0000', {list, totalPage, perPage:NUMBER, page});
                     } catch (e) {
                         throw e;
                     }

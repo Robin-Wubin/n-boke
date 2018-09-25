@@ -81,17 +81,17 @@
                 <b-col lg="9">
                     <b-container>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.display.isIndex" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-display-is_index" v-model="comment.display.isIndex" :value="true" :unchecked-value="false">
                                 评论者名称显示时自动加上其个人主页链接
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.display.isNoFollow" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-display-is_nofollow" v-model="comment.display.isNoFollow" :value="true" :unchecked-value="false">
                                 对评论者个人主页链接使用 nofollow 属性
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.display.pagination.is" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-display-pagination-is" v-model="comment.display.pagination.is" :value="true" :unchecked-value="false">
                                 启用分页，并且每页显示
                                 <b-form-input size="sm" v-model="comment.display.pagination.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 篇评论，在列出时将
@@ -100,7 +100,7 @@
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.display.reply.is" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-display-reply-is" v-model="comment.display.reply.is" :value="true" :unchecked-value="false">
                                 启用评论回复，以
                                 <b-form-input size="sm" v-model="comment.display.reply.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 层作为每个评论最多的回复层数，将
@@ -116,34 +116,34 @@
                 <b-col lg="9">
                     <b-container>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.apply" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-apply" v-model="comment.submit.apply" :value="true" :unchecked-value="false">
                                 所有评论必须经过审核
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.email" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-email" v-model="comment.submit.email" :value="true" :unchecked-value="false">
                                 必须填写邮箱
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.website" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-website" v-model="comment.submit.website" :value="true" :unchecked-value="false">
                                 必须填写网址
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.checkRefer" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-check-refer" v-model="comment.submit.checkRefer" :value="true" :unchecked-value="false">
                                 检查评论来源页URL是否与文章链接一致
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.disable.is" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-disable-is" v-model="comment.submit.disable.is" :value="true" :unchecked-value="false">
                                 在文章发布
                                 <b-form-input size="sm" v-model="comment.submit.disable.day" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 天以后自动关闭评论
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="comment.submit.ipLimited.is" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-submit-ip-limited-is" v-model="comment.submit.ipLimited.is" :value="true" :unchecked-value="false">
                                 同一IP发布评论的时间间隔限制为
                                 <b-form-input size="sm" v-model="comment.submit.ipLimited.min" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 分钟
