@@ -45,8 +45,8 @@ export const setTypeList = ({ commit, state }) => {
         })
     }
 };
-export const getBlogList = ({ commit, state }, page) => {
-    page = page ? page : 1;
+export const getBlogList = ({ commit, state }, params) => {
+    let page = params.page ? params.page : 1;
     if(state.blog_list && (state.blog_list.page === page)){
         return new Promise((resolve, reject)=>{resolve(null)});
     } else {

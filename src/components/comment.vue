@@ -89,7 +89,7 @@
                                                 </div>
                                                 <div class="comment-meta">
                                                     <time class="comment-time">
-                                                        {{child.time | formatTime("YMDHMS")}}
+                                                        {{child.time | formatTime(setting.comment.dateFormat)}}
                                                     </time>
                                                     <span v-if="!child.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
                                             </div>
