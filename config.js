@@ -172,7 +172,6 @@ module.exports = (app) => {
                 };
 
                 const context = Object.assign({
-                    title: 'N-Boke 1.0', // default title
                     url: ctx.path
                 }, params);
                 renderer.renderToString(context, (err, html) => {

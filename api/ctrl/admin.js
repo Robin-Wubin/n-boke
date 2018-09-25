@@ -806,5 +806,25 @@ module.exports = {
                     }
                 }]
         },
+        {
+            type: 'get', url: '/api/admin/setting/info'
+            , name: 'admin get the setting list'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let basic = await setting.findOne({key:"basic"});
+                        basic = basic.value;
+                        let comment = await setting.findOne({key:"comment"});
+                        comment = comment.value;
+                        let read = await setting.findOne({key:"read"});
+                        read = read.value;
+                        ctx.body = await ctx.code('0000', {basic, comment, read});
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
     ]
 };

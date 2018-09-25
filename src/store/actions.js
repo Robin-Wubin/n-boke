@@ -63,6 +63,7 @@ export const getBlogList = ({ commit, state }, page) => {
     })
 };
 export const getBlogContent = ({ commit, state }, id) => {
+    if(state.blog_content && typeof state.blog_content._id ==="object")state.blog_content._id = state.blog_content._id.toString();
     if(state.blog_content && (state.blog_content._id === id)){
         console.log(state.blog_content && state.blog_content._id, id);
         return new Promise((resolve, reject)=>{resolve(null)});

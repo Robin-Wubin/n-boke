@@ -17,6 +17,7 @@ const state = {
 export function createStore (context) {
   if(context){
       state.sid = context.sid ? context.sid : null;
+      state.blog_content = context.article ? context.article : null;
   }
   return new Vuex.Store({
     state,

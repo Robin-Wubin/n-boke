@@ -1,14 +1,16 @@
 <template>
     <div class="main_container">
         <b-breadcrumb class="bread_head" :items="breadcrumb"/>
-        <b-container>
+
+        <loading ref="load"></loading>
+        <b-container v-if="!loading">
             <b-row>
                 <b-col class="header">基本设置</b-col>
             </b-row>
             <b-row class="option">
                 <b-col lg="3">站点名称</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="basic.name" type="text" placeholder="Enter your website name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -19,7 +21,7 @@
             <b-row class="option">
                 <b-col lg="3">站点地址</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="basic.host" type="text" placeholder="Enter your web host"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -30,7 +32,7 @@
             <b-row class="option">
                 <b-col lg="3">站点描述</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="basic.desc" type="text" placeholder="Enter your web description"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -41,7 +43,7 @@
             <b-row class="option">
                 <b-col lg="3">关键词</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="basic.keyword" type="text" placeholder="Enter your web keyword"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -55,7 +57,7 @@
             <b-row class="option">
                 <b-col lg="3">评论日期格式</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="comment.dateFormat" type="text" placeholder="Enter your name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -66,7 +68,7 @@
             <b-row class="option">
                 <b-col lg="3">评论列表数目</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="comment.list" type="text" placeholder="Enter your name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -79,30 +81,30 @@
                 <b-col lg="9">
                     <b-container>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.display.isIndex" :value="true" :unchecked-value="false">
                                 评论者名称显示时自动加上其个人主页链接
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.display.isNoFollow" :value="true" :unchecked-value="false">
                                 对评论者个人主页链接使用 nofollow 属性
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.display.pagination.is" :value="true" :unchecked-value="false">
                                 启用分页，并且每页显示
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.display.pagination.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 篇评论，在列出时将
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.display.pagination.type" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 作为默认显示
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.display.reply.is" :value="true" :unchecked-value="false">
                                 启用评论回复，以
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.display.reply.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 层作为每个评论最多的回复层数，将
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.display.reply.type" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 评论显示在前面
                             </b-form-checkbox>
                         </b-row>
@@ -114,36 +116,36 @@
                 <b-col lg="9">
                     <b-container>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.apply" :value="true" :unchecked-value="false">
                                 所有评论必须经过审核
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.email" :value="true" :unchecked-value="false">
                                 必须填写邮箱
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.website" :value="true" :unchecked-value="false">
                                 必须填写网址
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.checkRefer" :value="true" :unchecked-value="false">
                                 检查评论来源页URL是否与文章链接一致
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.disable.is" :value="true" :unchecked-value="false">
                                 在文章发布
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.submit.disable.day" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 天以后自动关闭评论
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
-                            <b-form-checkbox id="input-comment" v-model="text1" :value="true" :unchecked-value="false">
+                            <b-form-checkbox id="input-comment" v-model="comment.submit.ipLimited.is" :value="true" :unchecked-value="false">
                                 同一IP发布评论的时间间隔限制为
-                                <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-input size="sm" v-model="comment.submit.ipLimited.min" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 分钟
                             </b-form-checkbox>
                         </b-row>
@@ -156,7 +158,7 @@
             <b-row class="option">
                 <b-col lg="3">文章日期格式</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="read.dateFormat" type="text" placeholder="Enter your name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -165,27 +167,9 @@
                 </b-col>
             </b-row>
             <b-row class="option">
-                <b-col lg="3">站点首页</b-col>
-                <b-col lg="9">
-                    <b-form-radio-group id="radios2" v-model="text1" name="radioSubComponent">
-
-                        <b-container>
-                            <b-row class="mb-1">
-                                <b-form-radio value="first">显示最新发布的文章</b-form-radio>
-                            </b-row>
-                            <b-row class="mb-1">
-                                <b-form-radio value="second">使用
-                                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
-                                    页面作为首页</b-form-radio>
-                            </b-row>
-                        </b-container>
-                    </b-form-radio-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
                 <b-col lg="3">文章列表数目</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="read.recommendNum" type="text" placeholder="Enter your name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -196,7 +180,7 @@
             <b-row class="option">
                 <b-col lg="3">每页文章数目</b-col>
                 <b-col lg="9">
-                    <b-form-input size="sm" v-model="text1" type="text" placeholder="Enter your name"></b-form-input>
+                    <b-form-input size="sm" v-model="read.perPage" type="text" placeholder="Enter your name"></b-form-input>
                 </b-col>
             </b-row>
             <b-row class="tips mb-2">
@@ -209,17 +193,47 @@
 </template>
 
 <script>
+    import loading from '../../../../components/Loading.vue'
     export default {
         name: "index",
+        components: {
+            loading
+        },
         data () {
             return {
                 breadcrumb: [{
                     text: 'Setting',
                     href: '/admin/app/setting'
                 }],
-                text1:true
+                loading: true,
+                basic:null,
+                comment:null,
+                read:null
             }
         },
+        methods:{
+            getSetting(){
+                let that = this;
+                this.loading = true;
+                this.axios.get("/api/admin/setting/info").then(res=>{
+                    if(res.data.code === "0000"){
+                        that.$refs.load && that.$refs.load.finished();
+                        that.loading= false;
+                        that.basic = res.data.data.basic;
+                        that.comment = res.data.data.comment;
+                        that.read = res.data.data.read;
+                        // console.log(res.data);
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            }
+        },
+        mounted(){
+            this.getSetting();
+        }
     }
 </script>
 

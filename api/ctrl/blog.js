@@ -57,6 +57,7 @@ module.exports = {
                 }),
                 async (ctx) => {
                     try {
+                        console.log("get blog content", ctx.query.id);
                         let query = ctx.query, _id = fun.ObjectId(query.id);
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let content = await article.findOne({_id});

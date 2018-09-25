@@ -48,8 +48,47 @@ module.exports = {
                                 keyword:"Easy,Simply,Open Source,Server Side Render"
                             };
                             let commentSetting = {
-
+                                dateFormat: "YMDHMS",
+                                list:10,
+                                display:{
+                                    isIndex:true,
+                                    isNoFollow:true,
+                                    pagination:{
+                                        is:true,
+                                        num:10,
+                                        type:0              //0：最新一页， 1：最后一页
+                                    },
+                                    reply:{
+                                        is:true,
+                                        num:5,
+                                        type:0              //0：最近的， 1：较早的
+                                    }
+                                },
+                                submit:{
+                                    apply:false,
+                                    email:true,
+                                    website:false,
+                                    checkRefer:true,
+                                    disable:{
+                                        is:true,
+                                        day:30
+                                    },
+                                    ipLimited:{
+                                        is:true,
+                                        min:1
+                                    }
+                                }
                             };
+                            let readSetting = {
+                                dateFormat: "YMDHMS",
+                                perPage: 10,
+                                recommendNum: 8
+                            };
+                            await setting.insertMany([
+                                {type:"setting", key:"basic", value:basic},
+                                {type:"setting", key:"comment", value:commentSetting},
+                                {type:"setting", key:"read", value:readSetting},
+                            ]);
                             ctx.body = await ctx.code('0000');
                         }
                     } catch (e) {
