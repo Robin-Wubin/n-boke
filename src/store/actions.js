@@ -1,6 +1,7 @@
 import request from 'axios'
 
-request.defaults.baseURL = 'http://localhost:3000/';
+request.defaults.baseURL = 'http://127.0.0.1:3000/';
+request.defaults.proxy = false;
 export const setAdminInfo = ({ commit, state }) => {
     let headers = {};
     if(state.sid) headers.Cookie = 'sid='+state.sid;
