@@ -1,6 +1,7 @@
 const _ = require('koa-router')();
 const fs = require('fs');
 const mongo = require("../lib/mongo");
+const ARTICLE = require("./class/artilce");
 const path = require('path');
 module.exports = ()=>{
     "use strict";
@@ -28,6 +29,7 @@ module.exports = ()=>{
             opt.desc = basic.desc;
             opt.keyword = basic.keyword;
             let article = new mongo(ctx.state.mdb, "app.article");
+            let Article = new ARTICLE(ctx);
             if(articleRegular.test(ctx.url)){
                 //文章
                 let urlArr = ctx.url.match(articleRegular);
@@ -47,12 +49,7 @@ module.exports = ()=>{
                 //列表页
                 let urlArr = ctx.url.match(listRegular);
                 let page = urlArr ? urlArr[1] : 1;
-                let selectQuery={};
-                selectQuery.state = 1;
-                let totalNum = await article.count(selectQuery);
-                let totalPage = Math.ceil(totalNum/read.perPage);
-                let list = await article.find(selectQuery, {projection:{content:0, password:0}, skip:(page-1) * read.perPage, limit:read.perPage, sort:{createdAt:-1}});
-                opt.blogList = {list, totalPage, perPage:read.perPage, page};
+                opt.blogList = await Article.list(page, {perPage: read.perPage});
             } else {
                 console.log(ctx.url);
             }
