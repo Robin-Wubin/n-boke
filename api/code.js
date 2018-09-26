@@ -45,6 +45,30 @@ const obj = {
         msgCN: '文章不允许评论',
         msgEN: 'Article is not allow comment.'
     },
+    '2010': {
+        msgCN: '回复的评论不存在',
+        msgEN: 'Comment no exits.'
+    },
+    '2011': {
+        msgCN: '回复的评论超过限制层数',
+        msgEN: 'Comment exceed the limit number.'
+    },
+    '2012': {
+        msgCN: '请填写邮箱',
+        msgEN: 'Please enter your email.'
+    },
+    '2013': {
+        msgCN: '请填写网址',
+        msgEN: 'Please enter your website.'
+    },
+    '2014': {
+        msgCN: '新增评论错误',
+        msgEN: 'new comment error.'
+    },
+    '2015': {
+        msgCN: '抱歉，您的评论太频繁。请稍后一分钟后再发表',
+        msgEN: 'comment too busy.'
+    },
 };
 const ReturnCode = (code, data = null) => {
     return new Promise((resolve, reject)=>{

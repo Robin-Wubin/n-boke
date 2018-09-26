@@ -1,6 +1,7 @@
 const mongo = require("../../lib/mongo");
 const validate = require('koa2-validation');
 const ARTICLE = require("../class/artilce");
+const COMMENT = require("../class/comment");
 const Joi = require('joi');
 //文件上传
 const multer = require('koa-multer');
@@ -59,18 +60,11 @@ module.exports = {
                     try {
                         console.log("get blog content", ctx.query.id);
                         let query = ctx.query, _id = fun.ObjectId(query.id);
-                        let article = new mongo(ctx.state.mdb, "app.article");
-                        let content = await article.findOne({_id});
-                        if(!content) return ctx.body = await ctx.code('2004');
-                        if(content.password){
-                            content.needPassword = true;
-                            delete content.password;
-                            delete content.content;
-                        } else {
-                            await article.update({_id}, {$inc:{"count.view":1}});
-                        }
+                        let Article = new ARTICLE(ctx);
+                        let content = await Article.one(query.id, {type:1});
                         ctx.body = await ctx.code('0000', content);
                     } catch (e) {
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
                         throw e;
                     }
                 }]
@@ -90,18 +84,13 @@ module.exports = {
                 }),
                 async (ctx) => {
                     try {
-                        let query = ctx.query, _id = fun.ObjectId(query.id);
+                        let query = ctx.query;
                         let body = ctx.request.body;
-                        let article = new mongo(ctx.state.mdb, "app.article");
-                        let content = await article.findOneAndUpdate({_id}, {$inc:{"count.view":1}});
-                        if(!content.value) return ctx.body = await ctx.code('2004');
-                        if(content.value.password === body.password){
-                            delete content.value.password;
-                            ctx.body = await ctx.code('0000', content.value);
-                        } else {
-                            ctx.body = await ctx.code('2008');
-                        }
+                        let Article = new ARTICLE(ctx);
+                        let content = await Article.one(query.id, {type:2, password:body.password});
+                        ctx.body = await ctx.code('0000', content);
                     } catch (e) {
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
                         throw e;
                     }
                 }]
@@ -115,7 +104,6 @@ module.exports = {
                 async (ctx) => {
                     let file = ctx.req.file;
                     try {
-                        console.log(file);
                         return  ctx.body = await ctx.code('0000', file.path.replace("public", ""));
                     } catch (e) {
                         console.error(e);
@@ -136,47 +124,30 @@ module.exports = {
                     body: {
                         reply: Joi.object(),
                         name: Joi.string().required(),
-                        email: Joi.string().required(),
+                        email: Joi.string(),
                         site: Joi.string(),
-                        headImg: Joi.string().required(),
+                        headImg: Joi.string(),
                         comment: Joi.string().required()
                     }
                 }),
                 async (ctx) => {
                     try {
                         let query = ctx.query, _id = fun.ObjectId(query.id);
+                        let Article = new ARTICLE(ctx);
+                        let Comment = new COMMENT(ctx);
+                        let hasArticle = await Article.one(query.id, {type:0});
+                        if(!hasArticle.isComment) return ctx.body = await ctx.code('2009');
                         let body = ctx.request.body;
-                        body.comment = body.comment.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ');
-                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
-                        let article = new mongo(ctx.state.mdb, "app.article");
-                        let content = await article.findOne({_id});
-                        if(!content) return ctx.body = await ctx.code('2004');
-                        if(!content.isComment) return ctx.body = await ctx.code('2009');
-                        if(body.reply){
-                            //回复评论,
-                            let reply = {};
-                            let topicId = body.reply.topicId ? body.reply.topicId : body.reply._id;
-                            body.topicId = fun.ObjectId(topicId);
-                            reply.toId = fun.ObjectId(body.reply._id);
-                            reply.toName = body.reply.name;
-                            delete body.reply;
-                            body.reply = reply;
-                            body.articleId=_id;
-                            body.time = new Date();
-                            let newComment = await comment.insert(body);
-                            await comment.update({_id:body.topicId}, {$push:{replyList:newComment.ops[0]._id}});
-                            await article.update({_id}, {$inc:{"count.comment":1}});
-                            ctx.body = await ctx.code('0000');
-                        } else {
-                            //文章评论
-                            body.articleId=_id;
-                            body.time = new Date();
-                            await comment.insert(body);
-                            await article.update({_id}, {$inc:{"count.comment":1}});
-                            ctx.body = await ctx.code('0000');
-                        }
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let comment = await setting.findOne({key:"comment"});
+                        let option = Object.assign({
+                            reply: typeof hasArticle.isComment === "boolean" ? hasArticle.isComment : comment.value.display.reply.is,
+                            num:comment.value.display.reply.num
+                        }, comment.value.submit);
+                        await Comment.add(query.id, body, option, hasArticle);
+                        return  ctx.body = await ctx.code('0000');
                     } catch (e) {
-                        console.error(e);
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
                         throw e;
                     }
                 }
@@ -195,20 +166,18 @@ module.exports = {
                 }),
                 async (ctx) => {
                     try {
-                        let query = ctx.query, _id = fun.ObjectId(query.id)
-                            , selectQuery={articleId:_id, reply:null}, NUMBER=10;
-                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
-                        let totalNum = await comment.count(selectQuery);
-                        // let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await comment.find(selectQuery, {skip:(query.page-1) * NUMBER, limit:NUMBER, sort:{time:-1}});
-                        for(let child of list){
-                            if(child.replyList){
-                                child.children = await comment.find({_id:{$in:child.replyList}}, {projection:{backupCommon:0}});
-                            }
-                        }
-                        ctx.body = await ctx.code('0000', {list, totalNum});
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let comment = await setting.findOne({key:"comment"});
+                        let Comment = new COMMENT(ctx);
+                        let query = ctx.query;
+                        let dsPag = comment.value.display.pagination;
+                        let reply = comment.value.display.reply;
+                        let sort = dsPag.type === 0 ? {time:-1} : {time:1};
+                        let childSort = reply.type === 0 ? {time:-1} : {time:1};
+                        let commentObj = await Comment.list(query.id, query.page, {pagination:dsPag.is, reply:reply.is, perPage:dsPag.num, sort, childSort});
+                        ctx.body = await ctx.code('0000', commentObj);
                     } catch (e) {
-                        console.error(e);
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
                         throw e;
                     }
                 }

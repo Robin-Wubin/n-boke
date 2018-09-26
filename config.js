@@ -68,21 +68,6 @@ module.exports = (app) => {
 
         app.context.renderComponents = {};
 
-        app.use(async (ctx, next) => {
-            try {
-                if(global.mongoDB)ctx.state.mdb = global.mongoDB;
-                await next();
-                // if(ctx.body !== null && typeof ctx.body === 'object'  && ctx.body.code !== "0000"){
-                //     ctx.status = 400;
-                // }
-            } catch (err) {
-                console.log(err);
-                ctx.status = 500;
-            } finally {
-
-            }
-        });
-
         const CONFIG = {
             key: 'sid', /** (string) cookie key (default is koa:sess) */
             maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
@@ -124,9 +109,27 @@ module.exports = (app) => {
                     await appSession.remove({_id:key});
                 }
             },
-            signed: false /** (boolean) signed or not (default true) */
+            signed: false, /** (boolean) signed or not (default true) */
+            renew: true
         };
         app.use(session(CONFIG, app));
+
+        app.use(async (ctx, next) => {
+            try {
+                if(global.mongoDB)ctx.state.mdb = global.mongoDB;
+                let n = ctx.session.views || 0;
+                ctx.session.views = ++n;
+                await next();
+                // if(ctx.body !== null && typeof ctx.body === 'object'  && ctx.body.code !== "0000"){
+                //     ctx.status = 400;
+                // }
+            } catch (err) {
+                console.log(err);
+                ctx.status = 500;
+            } finally {
+
+            }
+        });
         app.use(koaBody({
             textLimit: '10mb',
             jsonLimit: '10mb'

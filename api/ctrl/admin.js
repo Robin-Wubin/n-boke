@@ -3,6 +3,7 @@ const {checkAdmin} = require("../mid");
 const fs = require('fs');
 const validate = require('koa2-validation');
 const Joi = require('joi');
+const ARTICLE = require("../class/artilce");
 //文件上传
 const multer = require('koa-multer');
 //配置
@@ -198,17 +199,15 @@ module.exports = {
                 checkAdmin,
                 async (ctx) => {
                     try {
+                        let Article = new ARTICLE(ctx);
                         let query = ctx.request.query;
-                        console.log(query, query.reset === "true");
                         let articleId = ctx.params.id;
-                        let article = new mongo(ctx.state.mdb, "app.article");
                         let draftArticle = new mongo(ctx.state.mdb, "app.article.draft");
                         if(articleId !== "0") articleId = fun.ObjectId(articleId);
-                        let articleInfo = await draftArticle.findOne({articleId}, {fields:{articleId:0}});
+                        let articleInfo = await draftArticle.findOne({articleId}, {projection:{articleId:0}});
                         if(!articleInfo){
                             if(articleId!=="0"){
-                                articleInfo = await article.findOne({_id:articleId}, {fields:{count:0, updateAt:0}});
-                                if(!articleInfo) return ctx.body = await ctx.code('2004');
+                                articleInfo = await Article.one(articleId, {type:0,projection:{count:0, updateAt:0}});
                                 articleInfo.articleId = articleInfo._id;
                                 delete articleInfo._id;
                             } else {
@@ -222,13 +221,13 @@ module.exports = {
                                     isComment: true
                                 };
                             }
-                            console.log(articleInfo);
                             let insertData = await draftArticle.insert(articleInfo);
                             articleInfo._id = insertData.ops[0]._id;
+                            //删除articleId，防止其返回到前端后随草稿发布到文章中
                             articleInfo.articleId && delete articleInfo.articleId;
                         }
                         if(query.reset === "true"){
-                            let tempInfo = await article.findOne({_id:articleId}, {fields:{count:0, updateAt:0}});
+                            let tempInfo = await Article.one(articleId, {type:0,projection:{count:0, updateAt:0}});
                             tempInfo._id = articleInfo._id;
                             articleInfo = tempInfo;
                         }
@@ -287,6 +286,7 @@ module.exports = {
                                 await type.update({_id:body.type}, {$inc:{countNum:1}});
                             }
                             articleId = fun.ObjectId(articleId);
+                            body.createdAt = new Date(body.createdAt);
                             body.updateAt = new Date();
                             await article.update({_id:articleId}, {$set:body});
                         } else {
@@ -315,11 +315,11 @@ module.exports = {
                 }),
                 async (ctx) => {
                     try {
+                        let Article = new ARTICLE(ctx);
                         let query = ctx.query, page = query.page,NUMBER = 10;
-                        let article = new mongo(ctx.state.mdb, "app.article");
-                        let totalNum = await article.count({});
-                        let totalPage = Math.ceil(totalNum/NUMBER);
-                        let list = await article.find({}, {projection:{content:0}, skip:(page-1) * NUMBER, limit:NUMBER});
+                        let listObj = await Article.list(page, {perPage:NUMBER, projection:{content:0}, query:{}});
+                        let totalPage = listObj.totalPage;
+                        let list = listObj.list;
                         ctx.body = await ctx.code('0000', {list, totalPage});
                     } catch (e) {
                         throw e;
@@ -821,6 +821,70 @@ module.exports = {
                         let read = await setting.findOne({key:"read"});
                         read = read.value;
                         ctx.body = await ctx.code('0000', {basic, comment, read});
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/setting/info'
+            , name: 'admin save the setting list'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        basic: {
+                            name:Joi.string().required(),
+                            desc:Joi.string().required(),
+                            keyword:Joi.string().required(),
+                        },
+                        comment: {
+                            dateFormat:Joi.string().required(),
+                            list:Joi.number().required(),
+                            display:{
+                                isIndex: Joi.boolean().required(),
+                                isNoFollow: Joi.boolean().required(),
+                                pagination:{
+                                    is:Joi.boolean().required(),
+                                    num:Joi.number().required(),
+                                    type:Joi.number().required(),
+                                },
+                                reply:{
+                                    is:Joi.boolean().required(),
+                                    num:Joi.number().required(),
+                                    type:Joi.number().required(),
+                                }
+                            },
+                            submit:{
+                                apply:Joi.boolean().required(),
+                                email:Joi.boolean().required(),
+                                website:Joi.boolean().required(),
+                                checkRefer:Joi.boolean().required(),
+                                disable:{
+                                    is:Joi.boolean().required(),
+                                    day:Joi.number().required()
+                                },
+                                ipLimited:{
+                                    is:Joi.boolean().required(),
+                                    min:Joi.number().required()
+                                }
+                            }
+                        },
+                        read: {
+                            dateFormat:Joi.string().required(),
+                            perPage:Joi.number().required(),
+                            recommendNum:Joi.number().required(),
+                        },
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        await setting.update({key:"basic"}, {$set:{value:body.basic}});
+                        await setting.update({key:"comment"}, {$set:{value:body.comment}});
+                        await setting.update({key:"read"}, {$set:{value:body.read}});
+                        ctx.body = await ctx.code('0000');
                     } catch (e) {
                         throw e;
                     }

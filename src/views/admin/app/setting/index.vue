@@ -94,9 +94,9 @@
                             <b-form-checkbox id="input-display-pagination-is" v-model="comment.display.pagination.is" :value="true" :unchecked-value="false">
                                 启用分页，并且每页显示
                                 <b-form-input size="sm" v-model="comment.display.pagination.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
-                                篇评论，在列出时将
-                                <b-form-input size="sm" v-model="comment.display.pagination.type" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
-                                作为默认显示
+                                篇评论，将
+                                <b-form-select v-model="comment.display.pagination.type" :options="sort_options" size="sm" style="display: inline-block;width: 80px;" />
+                                评论显示在前面
                             </b-form-checkbox>
                         </b-row>
                         <b-row class="mb-1">
@@ -104,7 +104,7 @@
                                 启用评论回复，以
                                 <b-form-input size="sm" v-model="comment.display.reply.num" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 层作为每个评论最多的回复层数，将
-                                <b-form-input size="sm" v-model="comment.display.reply.type" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
+                                <b-form-select v-model="comment.display.reply.type" :options="sort_options" size="sm" style="display: inline-block;width: 80px;" />
                                 评论显示在前面
                             </b-form-checkbox>
                         </b-row>
@@ -144,7 +144,7 @@
                         </b-row>
                         <b-row class="mb-1">
                             <b-form-checkbox id="input-submit-ip-limited-is" v-model="comment.submit.ipLimited.is" :value="true" :unchecked-value="false">
-                                同一IP发布评论的时间间隔限制为
+                                同一Session发布评论的时间间隔限制为
                                 <b-form-input size="sm" v-model="comment.submit.ipLimited.min" type="text" placeholder="Enter your name" style="display: inline-block;width: 50px;"></b-form-input>
                                 分钟
                             </b-form-checkbox>
@@ -188,6 +188,13 @@
                     此数目用于指定文章归档输出时每页显示的文章数目
                 </b-col>
             </b-row>
+            <b-row class="mt-3 submit">
+                <b-col lg="9" offset-lg="3">
+                    <b-button size="sm" variant="primary" class="float-right" @click="saveSetting">
+                        保存
+                    </b-button>
+                </b-col>
+            </b-row>
         </b-container>
     </div>
 </template>
@@ -208,13 +215,19 @@
                 loading: true,
                 basic:null,
                 comment:null,
-                read:null
+                read:null,
+                sort_options: [
+                    { value: null, text: '请选择一个排序' },
+                    { value: 0, text: '最近的' },
+                    { value: 1, text: '较早的' }
+                ]
             }
         },
         methods:{
             getSetting(){
                 let that = this;
                 this.loading = true;
+                that.$refs.load && that.$refs.load.start();
                 this.axios.get("/api/admin/setting/info").then(res=>{
                     if(res.data.code === "0000"){
                         that.$refs.load && that.$refs.load.finished();
@@ -222,6 +235,26 @@
                         that.basic = res.data.data.basic;
                         that.comment = res.data.data.comment;
                         that.read = res.data.data.read;
+                        // console.log(res.data);
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            },
+            saveSetting(){
+                let that = this;
+                this.loading = true;
+                that.$refs.load && that.$refs.load.start();
+                this.axios.post("/api/admin/setting/info", {
+                    basic: that.basic,
+                    comment: that.comment,
+                    read: that.read,
+                }).then(res=>{
+                    if(res.data.code === "0000"){
+                        that.$refs.load && that.$refs.load.finished();
+                        that.loading= false;
                         // console.log(res.data);
                     } else {
                         console.error(res);
@@ -261,5 +294,9 @@
     }
     .tips>div{
         padding-left: 25px;
+    }
+    .submit{
+        background: #a7cdff;
+        padding: 15px 0;
     }
 </style>

@@ -18,6 +18,7 @@
                 <b-container>
                     <b-row>
                         <b-col md="8" offset-md="2" style="text-align: right;">
+                            <span class="float-left">{{article.createdAt | formatTime(setting.read.dateFormat)}}</span>
                             <span><i class="fa fa-eye "></i>&nbsp;&nbsp;{{article.count.view}}</span>
                             <span class="ml-3"><i class="fa fa-comments"></i>&nbsp;&nbsp;{{article.count.comment}}</span>
                         </b-col>

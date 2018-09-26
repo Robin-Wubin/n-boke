@@ -20,6 +20,7 @@
                             </p>
                         </div>
                         <div slot="footer">
+                            <small class="text-muted float-left">{{item.createdAt | formatTime(setting.read.dateFormat)}}</small>
                             <small class="text-muted float-right"># {{item.type | getTypes(types)}}</small>
                         </div>
                     </b-card>

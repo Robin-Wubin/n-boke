@@ -209,10 +209,17 @@
                     this.form.reply && delete this.form.reply;
                 }
                 this.axios.post('/api/blog/comment/new?id=' + this.id, this.form).then(res=>{
-                    that.form.comment = "";
-                    delete that.form.reply;
-                    that.replyObj = null;
-                    that.getComment(that.page);
+                    if(res.data.code === "0000"){
+                        that.form.comment = "";
+                        delete that.form.reply;
+                        that.replyObj = null;
+                        that.getComment(that.page);
+                    } else {
+                        that.$eventHub.$emit('alert', {
+                            type:"danger"
+                            , message:res.data.msgCN
+                        });
+                    }
                 }).catch(res=>{
                     console.error(res);
                 });

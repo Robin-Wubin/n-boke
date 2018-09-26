@@ -14,48 +14,45 @@ module.exports = ()=>{
     router = router.concat([{
         type: 'get', url: /^\/(?!api)/
         , fun: [async (ctx) => {
-            let sid = ctx.cookies.get("sid");
-            let opt = {sid};
-            let articleRegular = /^\/article\/([0-9a-zA-Z]+)/;
-            let listRegular = /^\/page\/([0-9]+)/;
-            let setting = new mongo(global.mongoDB, "app.setting");
-            let basic = await setting.findOne({key:"basic"});
-            let read = await setting.findOne({key:"read"});
-            let comment = await setting.findOne({key:"comment"});
-            basic = basic.value;
-            read = read.value;
-            comment = comment.value;
-            opt.title = basic.name;
-            opt.desc = basic.desc;
-            opt.keyword = basic.keyword;
-            let article = new mongo(ctx.state.mdb, "app.article");
-            let Article = new ARTICLE(ctx);
-            if(articleRegular.test(ctx.url)){
-                //文章
-                let urlArr = ctx.url.match(articleRegular);
-                let _id = fun.ObjectId(urlArr[1]);
-                let articleInfo = await article.findOne({_id});
-                if(articleInfo.password){
-                    articleInfo.needPassword = true;
-                    delete articleInfo.password;
-                    delete articleInfo.content;
+            try{
+                let sid = ctx.cookies.get("sid");
+                let opt = {sid};
+                let articleRegular = /^\/article\/([0-9a-zA-Z]+)/;
+                let listRegular = /^\/page\/([0-9]+)/;
+                let setting = new mongo(global.mongoDB, "app.setting");
+                let basic = await setting.findOne({key:"basic"});
+                let read = await setting.findOne({key:"read"});
+                let comment = await setting.findOne({key:"comment"});
+                basic = basic.value;
+                read = read.value;
+                comment = comment.value;
+                opt.title = basic.name;
+                opt.desc = basic.desc;
+                opt.keyword = basic.keyword;
+                let Article = new ARTICLE(ctx);
+                if(articleRegular.test(ctx.url)){
+                    //文章
+                    let urlArr = ctx.url.match(articleRegular);
+                    let articleInfo = await Article.one(urlArr[1], {type:1});
+                    opt.title = articleInfo.title + " - " + basic.name;
+                    opt.desc = articleInfo.brief.replace(/[\n|\s]/g,"");
+                    opt.article = articleInfo;
+                } else if (ctx.url === "/" || listRegular.test(ctx.url)){
+                    //列表页
+                    let urlArr = ctx.url.match(listRegular);
+                    let page = urlArr ? urlArr[1] : 1;
+                    opt.blogList = await Article.list(page, {perPage: read.perPage});
                 } else {
-                    await article.update({_id}, {$inc:{"count.view":1}});
+                    console.log(ctx.url);
                 }
-                opt.title = articleInfo.title + " - " + basic.name;
-                opt.desc = articleInfo.brief.replace(/[\n|\s]/g,"");
-                opt.article = articleInfo;
-            } else if (ctx.url === "/" || listRegular.test(ctx.url)){
-                //列表页
-                let urlArr = ctx.url.match(listRegular);
-                let page = urlArr ? urlArr[1] : 1;
-                opt.blogList = await Article.list(page, {perPage: read.perPage});
-            } else {
-                console.log(ctx.url);
+                opt.setting = {basic, read, comment};
+                await ctx.renderComponents.readyPromise;
+                await ctx.renderComponents.render(ctx, opt);
+            }catch (e) {
+                if(e.type === 'code') return ctx.body = await ctx.code(e.code);
+                throw e;
             }
-            opt.setting = {basic, read, comment};
-            await ctx.renderComponents.readyPromise;
-            await ctx.renderComponents.render(ctx, opt);
+
         }]
     }]);
     for (let c of router){
