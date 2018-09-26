@@ -11,9 +11,14 @@
                     </div>
                     <div class="message" v-html="item.comment"></div>
                     <div class="message backup" v-if="item.del && item.backupCommon" v-html="item.backupCommon"></div>
+                    <div class="message apply mb-3" v-if="item.state === 0">
+                        <b-button size="sm" variant="success">
+                            审核通过
+                        </b-button>
+                    </div>
                     <div class="message footer">
-                        <a href="javascript:void(0);" @click="deleteComment(item)" class="del"><i class="fa fa-trash"></i></a>
-                        <div class="float-left ml-4 title mr-4">
+                        <a href="javascript:void(0);" @click="deleteComment(item)" class="del btn btn-warning btn-sm"><i class="fa fa-trash"></i></a>
+                        <div class="float-left ml-2 title mr-4">
                             <router-link :to="{ path: '/admin/app/comment/list/' + item.articleId + '/1'}" :title="item.article[0].title">#{{item.article[0].title}}#</router-link>
                         </div>
                         <span class="time">{{item.time | formatTime("YMDHMS")}}</span>
@@ -171,9 +176,6 @@
         display: inline;
     }
     .message a.del{
-        position: absolute;
-        left: 0;
-        margin-left: 15px;
         display: none;
     }
     .message .title{
@@ -201,6 +203,7 @@
         margin: 0 -1.25rem;
         display: flex;
         justify-content: space-between;
+        line-height: 31px;
     }
     .suit_fot_tpl ol{
         padding: 0 0.7rem 0.7rem;
@@ -235,5 +238,12 @@
         background: #eaeaea;
         line-height: 30px;
         color: #FFF;
+    }
+    .apply{
+        padding: 15px !important;
+        text-align: center;
+        border: 1px solid rgba(51,51,51,0.1);
+        border-radius: 3px;
+        background: #cccccc24;
     }
 </style>

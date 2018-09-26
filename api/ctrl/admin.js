@@ -744,6 +744,7 @@ module.exports = {
                                     name: 1,
                                     email: 1,
                                     site: 1,
+                                    state: 1,
                                     comment: 1,
                                     topicId: 1,
                                     reply: 1,
