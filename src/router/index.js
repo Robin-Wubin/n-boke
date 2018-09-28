@@ -20,6 +20,7 @@ const AdminAppArticleNew = () => import('../views/admin/app/article/new.vue');
 const AdminAppSourceIndex = () => import('../views/admin/app/source/index.vue');
 const AdminAppCommentList = () => import('../views/admin/app/comment/list.vue');
 const AdminAppSetting = () => import('../views/admin/app/setting/index.vue');
+const AdminAppPerson = () => import('../views/admin/app/person/index.vue');
 
 export function createRouter () {
   return new Router({
@@ -66,7 +67,8 @@ export function createRouter () {
                                 {path:"list/:id/:page", component: AdminAppCommentList, props: true}
                             ]
                         },
-                        {path: 'setting', component: AdminAppSetting}
+                        {path: 'setting', component: AdminAppSetting},
+                        {path: 'person', component: AdminAppPerson}
                     ]
                 },
             ]
