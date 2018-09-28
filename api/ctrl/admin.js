@@ -787,7 +787,7 @@ module.exports = {
                         let article = new mongo(ctx.state.mdb, "app.article");
                         let commentInfo = await comment.findOne({_id});
                         if(!commentInfo) return ctx.body = await ctx.code('2006');
-                        if(!commentInfo.del){
+                        if(!commentInfo.del && commentInfo.state === 1){
                             await comment.update({_id}, {$set:{comment:`<span class="comment-delete">-&nbsp;&nbsp;该评论已被删除&nbsp;&nbsp;-</span>`, del:true, backupCommon: commentInfo.comment}});
                         } else {
                             let i = 1;
@@ -800,6 +800,56 @@ module.exports = {
                             }
                             console.log(_id, commentInfo);
                             await article.update({_id:commentInfo.articleId}, {$inc:{'count.comment':-i}})
+                        }
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/comment/apply'
+            , name: 'admin apply the comment'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let _id=fun.ObjectId(body._id);
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
+                        let commentInfo = await comment.findOne({_id});
+                        if(!commentInfo) return ctx.body = await ctx.code('2006');
+                        await comment.update({_id}, {$set:{state:1}});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/comment/recall'
+            , name: 'admin recall the comment'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        _id: Joi.string().required()
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let _id=fun.ObjectId(body._id);
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
+                        let commentInfo = await comment.findOne({_id});
+                        if(!commentInfo) return ctx.body = await ctx.code('2006');
+                        if(commentInfo.del){
+                            await comment.update({_id}, {$set:{comment:commentInfo.backupCommon}, $unset:{del:1, backupCommon:1}});
                         }
                         ctx.body = await ctx.code('0000');
                     } catch (e) {

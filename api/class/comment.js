@@ -43,7 +43,7 @@ module.exports = class {
             if(option.reply){
                 for(let child of list){
                     if(child.replyList){
-                        child.children = await comment.find({_id:{$in:child.replyList}}, {projection:option.projection, sort:option.childSort});
+                        child.children = await comment.find({_id:{$in:child.replyList}, state:1}, {projection:option.projection, sort:option.childSort});
                     }
                 }
             }
@@ -112,7 +112,7 @@ module.exports = class {
                     commentObj.topicId = fun.ObjectId(topicId);
                     let parentNode = await comment.findOne({_id:commentObj.topicId});
                     if(!parentNode) throw {type:'code', code:'2010'};
-                    if(parentNode.replyList.length >= option.num) throw {type:'code', code:'2011'};
+                    if(parentNode.replyList && parentNode.replyList.length >= option.num) throw {type:'code', code:'2011'};
                     let reply = {};
                     reply.toId = fun.ObjectId(commentObj.reply._id);
                     reply.toName = commentObj.reply.name;

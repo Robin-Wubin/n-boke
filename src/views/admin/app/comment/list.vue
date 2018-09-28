@@ -4,20 +4,22 @@
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
             <b-list-group class="suit_fot">
                 <loading ref="load"></loading>
-                <b-list-group-item v-if="list.length > 0 && !loading" v-for="(item,index) of list" :key="index" class="suit_fot_tpl">
+                <b-list-group-item v-if="list.length > 0 && !loading" v-for="(item,index) of list" :key="index" class="suit_fot_tpl mb-2">
                     <div class="info mb-2">
                         <span><img :src="item.headImg" height="32px" class="mr-2"><a class="mt-2" :href="item.site ? item.site : 'javascript:void(0);'" :target="item.site ? '_blank':''">{{item.name}}</a> </span>
                         <span> <a :href="'mailto:' + item.email">{{item.email}}</a> </span>
                     </div>
                     <div class="message" v-html="item.comment"></div>
                     <div class="message backup" v-if="item.del && item.backupCommon" v-html="item.backupCommon"></div>
-                    <div class="message apply mb-3" v-if="item.state === 0">
-                        <b-button size="sm" variant="success">
+                    <div class="message apply">
+                        <a href="javascript:void(0);" @click="deleteComment(item)" class="del btn btn-warning btn-sm" v-b-tooltip.hover :title="item.del ? '彻底删除':'删除评论'"><i class="fa fa-trash"></i></a>
+                        <a href="javascript:void(0);" @click="recallComment(item)" v-if="item.del" class="del btn btn-danger btn-sm ml-3" v-b-tooltip.hover title="恢复评论"><i class="fa fa-rotate-left"></i></a>
+                        <a href="javascript:void(0);" v-if="!item.del" class="del btn btn-primary btn-sm ml-3" v-b-tooltip.hover title="回复评论"><i class="fa fa-reply"></i></a>
+                        <b-button v-if="item.state === 0" size="sm" variant="success" class="float-right" @click="applyComment(item)" v-b-tooltip.hover title="审核通过">
                             审核通过
                         </b-button>
                     </div>
                     <div class="message footer">
-                        <a href="javascript:void(0);" @click="deleteComment(item)" class="del btn btn-warning btn-sm"><i class="fa fa-trash"></i></a>
                         <div class="float-left ml-2 title mr-4">
                             <router-link :to="{ path: '/admin/app/comment/list/' + item.articleId + '/1'}" :title="item.article[0].title">#{{item.article[0].title}}#</router-link>
                         </div>
@@ -39,7 +41,13 @@
                                 <div v-html="child.backupCommon"></div>
                             </div>
                             <div class="message footer">
-                                <a href="javascript:void(0);" @click="deleteComment(child)" class="del"><i class="fa fa-trash"></i></a>
+                                <a href="javascript:void(0);" @click="deleteComment(child)" class="del btn btn-warning btn-sm" v-b-tooltip.hover :title="child.del ? '彻底删除':'删除评论'"><i class="fa fa-trash"></i></a>
+                                <a href="javascript:void(0);" @click="recallComment(child)" v-if="child.del" class="del btn btn-danger btn-sm ml-3" v-b-tooltip.hover title="恢复评论"><i class="fa fa-rotate-left"></i></a>
+                                <a href="javascript:void(0);" v-if="!child.del" class="del btn btn-primary btn-sm ml-3"v-b-tooltip.hover title="回复评论"><i class="fa fa-reply"></i></a>
+                                <b-button v-if="child.state === 0" size="sm" variant="success" class="ml-3" @click="applyComment(child)" v-b-tooltip.hover title="审核通过">
+                                    <i class="fa fa-check-circle"></i>
+                                </b-button>
+
                                 <span class="time">{{child.time | formatTime("YMDHMS")}}</span>
                             </div>
                         </li>
@@ -119,6 +127,30 @@
                 }).catch(res=>{
                     console.error(res);
                 });
+            },
+            applyComment(item){
+                let _that = this;
+                this.axios.post('/api/admin/comment/apply', {_id:item._id}).then(res=>{
+                    if(res.data.code === "0000"){
+                        _that.getList();
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
+            },
+            recallComment(item){
+                let _that = this;
+                this.axios.post('/api/admin/comment/recall', {_id:item._id}).then(res=>{
+                    if(res.data.code === "0000"){
+                        _that.getList();
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
             }
         },
         beforeMount(){
@@ -176,7 +208,7 @@
         display: inline;
     }
     .message a.del{
-        display: none;
+        /*display: none;*/
     }
     .message .title{
         white-space: nowrap;
@@ -188,7 +220,7 @@
         flex-shrink: 0;
     }
     .suit_fot_tpl:hover>.message>a.del, .suit_fot_tpl>ol>li:hover>.message>a.del{
-        display: block;
+        /*display: block;*/
     }
     .pagination_nav{
         display: flex;
@@ -240,10 +272,10 @@
         color: #FFF;
     }
     .apply{
-        padding: 15px !important;
-        text-align: center;
-        border: 1px solid rgba(51,51,51,0.1);
+        padding: 10px !important;
         border-radius: 3px;
-        background: #cccccc24;
+        background: rgba(204,204,204,0.141);
+        margin-left: -20px;
+        margin-right: -20px;
     }
 </style>
