@@ -3,7 +3,7 @@
         <div class="social_link">
             <a><i class="fa fa-weibo"></i></a>
             <!--<a><i class="fa fa-weixin"></i></a>-->
-            <a><img height="16" src="/zhihu.png"></a>
+            <a><i class="icon-zhihu-square-fill"></i></a>
             <!--<a><i class="fa fa-qq"></i></a>-->
             <a><i class="fa fa-github"></i></a>
             <a><i class="fa fa-facebook-square"></i></a>

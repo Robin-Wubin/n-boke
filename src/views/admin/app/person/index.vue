@@ -89,7 +89,7 @@
             </b-row>
             <b-row class="option">
                 <b-col class="ico_for_choose">
-                    <b-button class="mr-2 font28 mb-2" size="sm" variant="secondary" v-for="(item, index) of socials" :key="index" :pressed="!!basic.social[item.simple]" @click="setInput(item.simple)">
+                    <b-button class="mr-2 font28 mb-2" size="sm" v-for="(item, index) of socials" :key="index" :variant="typeof basic.social[item.simple] !== 'undefined' ? 'outline-secondary' : 'secondary'" @click="setInput(item.simple)">
                         <i :class="item.value"></i>
                     </b-button>
                 </b-col>
