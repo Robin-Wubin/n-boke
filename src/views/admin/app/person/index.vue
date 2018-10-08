@@ -88,123 +88,10 @@
                 <b-col class="header">社交信息</b-col>
             </b-row>
             <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-weibo"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <img height="16" src="/zhihu.png">
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-github"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-facebook-square"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-google-plus-square"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-instagram"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-linkedin-square"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-qq"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-weixin"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-reddit-square"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-renren"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <b-row class="option">
-                <b-col>
-                    <b-input-group>
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-twitter-square"></i>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" aria-label="Text input with checkbox" />
-                    </b-input-group>
+                <b-col class="ico_for_choose">
+                    <b-button class="mr-2 font28 mb-2" size="sm" variant="secondary" v-for="(item, index) of socials" :key="index" :pressed="!!basic.social[item.simple]" @click="setInput(item.simple)">
+                        <i :class="item.value"></i>
+                    </b-button>
                 </b-col>
             </b-row>
         </b-container>
@@ -225,7 +112,25 @@
                     href: '/admin/app/person'
                 }],
                 loading: true,
-                basic: null
+                basic: {
+                    social:{
+                        reddit:""
+                    }
+                },
+                socials:[
+                    {value:"fa fa-weibo", text:"微博", simple:"weibo", value_type:"url"},
+                    {value:"icon-zhihu-square-fill", text:"知乎", simple:"zhihu", value_type:"url"},
+                    {value:"fa fa-github", text:"GitHub", simple:"github", value_type:"url"},
+                    {value:"fa fa-facebook-square", text:"FaceBook", simple:"facebook", value_type:"url"},
+                    {value:"fa fa-google-plus-square", text:"Google+", simple:"googleplus", value_type:"url"},
+                    {value:"fa fa-instagram", text:"Instagram", simple:"instagram", value_type:"url"},
+                    {value:"fa fa-linkedin-square", text:"LinkedIn", simple:"linkedin", value_type:"url"},
+                    {value:"fa fa-qq", text:"QQ", simple:"qq", value_type:"url"},
+                    {value:"fa fa-weixin", text:"WeiXin", simple:"weixin", value_type:"image"},
+                    {value:"fa fa-reddit-square", text:"Reddit", simple:"reddit", value_type:"url"},
+                    {value:"fa fa-renren", text:"人人", simple:"renren", value_type:"url"},
+                    {value:"fa fa-twitter-square", text:"Twitter", simple:"twitter", value_type:"url"},
+                ],
             }
         },
         methods:{
@@ -237,7 +142,7 @@
                     if(res.data.code === "0000"){
                         that.$refs.load && that.$refs.load.finished();
                         that.loading= false;
-                        that.basic = res.data.data.basic;
+                        // that.basic = res.data.data.basic;
                         that.comment = res.data.data.comment;
                         that.read = res.data.data.read;
                         // console.log(res.data);
@@ -267,7 +172,11 @@
                 }).catch(res=>{
                     console.error(res);
                 });
-            }
+            },
+            setInput(type){
+                this.basic.social[type] = '';
+                console.log(type,this.basic);
+            },
         },
         mounted(){
             this.getSetting();
@@ -303,5 +212,15 @@
     .submit{
         background: #a7cdff;
         padding: 15px 0;
+    }
+    .font28{
+        font-size: 28px;
+        width: 48px;
+        text-align: center;
+    }
+    .ico_for_choose{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 </style>

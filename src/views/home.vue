@@ -88,6 +88,37 @@ export default {
 </script>
 
 <style>
+    @font-face {
+        font-family: 'icomoon';
+        src:  url('/fonts/icomoon.eot?6psrn1');
+        src:  url('/fonts/icomoon.eot?6psrn1#iefix') format('embedded-opentype'),
+        url('/fonts/icomoon.ttf?6psrn1') format('truetype'),
+        url('/fonts/icomoon.woff?6psrn1') format('woff'),
+        url('/fonts/icomoon.svg?6psrn1#icomoon') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    [class^="icon-"], [class*=" icon-"] {
+        /* use !important to prevent issues with browser extensions that change fonts */
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        display: inline-block;
+        line-height: 1;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon-zhihu-square-fill:before {
+        content: "\e900";
+    }
+
     .n_boke_header{
         background: #fff;
         position: fixed;
