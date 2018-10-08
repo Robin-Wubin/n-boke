@@ -28,7 +28,7 @@ module.exports = class {
                 sort:{time:-1},
                 childSort:{time:-1},
                 projection: {backupCommon:0},
-                query:{state:1, reply:null}
+                query:{reply:null}
             }, opt);
             option.query.articleId = fun.ObjectId.isValid(ArticleId) && typeof ArticleId === "object" ? ArticleId : fun.ObjectId(ArticleId);
             let comment = new mongo(this.ctx.state.mdb, "app.article.comment");
@@ -43,9 +43,15 @@ module.exports = class {
             if(option.reply){
                 for(let child of list){
                     if(child.replyList){
-                        child.children = await comment.find({_id:{$in:child.replyList}, state:1}, {projection:option.projection, sort:option.childSort});
+                        child.children = await comment.find({_id:{$in:child.replyList}}, {projection:option.projection, sort:option.childSort});
+                        for(let msg of child.children){
+                            if(msg.state === 0) delete msg.comment;
+                        }
                     }
                 }
+            }
+            for(let msg of list){
+                if(msg.state === 0) delete msg.comment;
             }
             return {list, totalNum};
         }catch (e) {

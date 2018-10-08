@@ -66,12 +66,15 @@
                                     <img class="avatar" :src="item.headImg" width="80" height="80">
                                     <span class="comment-author"><a :href="item.site && setting.comment.display.isIndex ? item.site:'javascript:void(0);'" :rel="setting.comment.display.isNoFollow ? 'external nofollow' : 'external'">{{item.name}}</a></span>
                                 </div>
-                                <div class="comment-content" v-html="item.comment"></div>
+                                <div class="comment-content" v-if="item.state === 1" v-html="item.comment"></div>
+                                <div class="comment-content apply" v-if="item.state === 0">
+                                    - 评论审核中 -
+                                </div>
                                 <div class="comment-meta">
                                     <time class="comment-time">
                                         {{item.time | formatTime("YMDHMS")}}
                                     </time>
-                                    <span v-if="!item.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
+                                    <span v-if="!item.del && item.state !== 0" class="comment-reply"><a href="javascript:void(0);" @click="reply(item)">Reply <i class="fa fa-reply"></i> </a></span>
                                 </div>
                             </div></div>
                             <div class="comment-children" v-if="item.children && item.children.length > 0">
@@ -83,15 +86,18 @@
                                                     <img class="avatar" :src="child.headImg" width="80" height="80">
                                                     <span class="comment-author"><a :href="child.site ? child.site:'javascript:void(0);'">{{child.name}}</a></span>
                                                 </div>
-                                                <div class="comment-content">
+                                                <div class="comment-content" v-if="child.state === 1">
                                                     <span class="comment-author-at" v-if="!child.del"><a href="javascript:void(0);" @click="scrollToId(child.reply.toId)">@{{child.reply.toName}}</a></span>
                                                     <div v-html="child.comment"></div>
+                                                </div>
+                                                <div class="comment-content apply" v-if="child.state === 0">
+                                                    - 评论审核中 -
                                                 </div>
                                                 <div class="comment-meta">
                                                     <time class="comment-time">
                                                         {{child.time | formatTime(setting.comment.dateFormat)}}
                                                     </time>
-                                                    <span v-if="!child.del" class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
+                                                    <span v-if="!child.del && child.state !== 0" class="comment-reply"><a href="javascript:void(0);" @click="reply(child)">Reply <i class="fa fa-reply"></i> </a></span></div>
                                             </div>
                                         </div>
                                     </li>
@@ -464,5 +470,9 @@
     }
     .is_delete{
         background: #cccccc3b;
+    }
+    .apply{
+        text-align: center;
+        color: #cccccc75;
     }
 </style>

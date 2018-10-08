@@ -84,6 +84,129 @@
                     <b-form-input size="sm" v-model="basic.host" type="text" placeholder="Enter your web host"></b-form-input>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col class="header">社交信息</b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-weibo"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <img height="16" src="/zhihu.png">
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-github"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-facebook-square"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-google-plus-square"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-instagram"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-linkedin-square"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-qq"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-weixin"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-reddit-square"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-renren"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row class="option">
+                <b-col>
+                    <b-input-group>
+                        <b-input-group-prepend is-text>
+                            <i class="fa fa-twitter-square"></i>
+                        </b-input-group-prepend>
+                        <b-form-input type="text" aria-label="Text input with checkbox" />
+                    </b-input-group>
+                </b-col>
+            </b-row>
         </b-container>
     </div>
 </template>
