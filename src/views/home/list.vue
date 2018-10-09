@@ -1,7 +1,7 @@
 <template>
     <b-container>
         <b-row>
-            <b-col lg="6" v-for="(item,index) of article.list" :key="index">
+            <b-col md="6" v-for="(item,index) of article.list" :key="index">
 
                 <p class="card-text">
                     <router-link :to="{ path: '/article/' + item._id}">{{item.title}}</router-link>
