@@ -9,20 +9,20 @@
         </div>
         <b-container>
             <b-row>
-                <b-col lg="4" class="recent_comment will_hide">
+                <b-col md="4" class="recent_comment will_hide">
                     <h3 class="meta-title">最近回复</h3>
                     <p v-if="recent_comment.list.length > 0" v-for="(item, index) of recent_comment.list" :key="index"><a :href="'/article/' + item.articleId + '#' + item._id">{{item.name}}&nbsp;:&nbsp;{{item.comment}}</a></p>
                     <p v-if="recent_comment.list.length === 0" >
                         还没有人回复
                     </p>
                 </b-col>
-                <b-col lg="4" class="bl-1">
-                    <p><img :src="user_info.ico ? user_info.ico : '/avatar.png'" height="80"></p>
+                <b-col md="4" class="bl-1">
+                    <p class="mb-2"><img :src="user_info.ico ? user_info.ico : '/avatar.png'" height="60"></p>
                     <p>Theme is Pinghsu by Chakhsu</p>
                     <p>Powered by N-Boke</p>
                     <p>© 2018 <span>{{(user_info && user_info.nickname) ? user_info.nickname : "未具名"}}</span>的博客</p>
                 </b-col>
-                <b-col lg="4" class="recent_comment bl-1 will_hide">
+                <b-col md="4" class="recent_comment bl-1 will_hide">
                     <h3 class="meta-title">最新文章</h3>
                     <p v-if="recent_post.list.length > 0" v-for="(item, index) of recent_post.list" :key="index"><a :href="'/article/' + item._id">{{item.title}}</a></p>
                     <p v-if="recent_post.list.length === 0" >
@@ -83,7 +83,7 @@
 .will_hide{
     display: none;
 }
-@media (min-width: 992px){
+@media (min-width: 768px){
     .bl-1{
         border-left: 1px solid rgba(184,197,214,.2);
     }

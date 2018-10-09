@@ -47,6 +47,45 @@ module.exports = {
                 }]
         },
         {
+            type: 'post'
+            , url: '/api/blog/search'
+            , name: 'get blog list'
+            , fun: [
+                validate({
+                    query: {
+                        page: Joi.number().default(1)
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        console.log("get blog list", ctx.query.page);
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let read = await setting.findOne({key:"read"});
+                        let query = ctx.query, page = query.page;
+                        let Article = new ARTICLE(ctx);
+                        let selectQuery = {state:1};
+                        for(let key in body){
+                            switch(key){
+                                case "search":
+                                    selectQuery.$or = [{title:  { $regex: body[key], $options: 'g' }}, {content:  { $regex: body[key], $options: 'g' }}];
+                                    break;
+                                case "tag":
+                                    selectQuery.tags = body[key];
+                                    break;
+                                case "type":
+                                    selectQuery.type = fun.ObjectId(body[key]);
+                                    break;
+                            }
+                        }
+                        console.log("selectQuery", selectQuery, body);
+                        ctx.body = await Article.list(page, {perPage: read.value.perPage, query:selectQuery});
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
             type: 'get'
             , url: '/api/blog/recent'
             , name: 'get blog recent'
@@ -222,7 +261,6 @@ module.exports = {
                         let setting = new mongo(global.mongoDB, "app.setting");
                         let userInfo = await setting.findOne({key:"userInfo"});
                         userInfo = userInfo ? userInfo.value : {social:{}};
-                        console.log(userInfo);
                         ctx.body = await ctx.code('0000', userInfo);
                     } catch (e) {
                         if(e.type === 'code') return ctx.body = await ctx.code(e.code);

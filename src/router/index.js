@@ -7,6 +7,7 @@ Vue.use(Router);
 const Home = () => import('../views/home.vue');
 const HomeView = () => import('../views/home/default.vue');
 const ArticleView = () => import('../views/home/article.vue');
+const ListView = () => import('../views/home/list.vue');
 const InstallIndex = () => import('../views/install/index.vue');
 const InstallDefault = () => import('../views/install/default.vue');
 const InstallMongoDB = () => import('../views/install/mongo.vue');
@@ -39,7 +40,8 @@ export function createRouter () {
             children:[
                 {path: '', component:HomeView},
                 {path: 'page/:page', component:HomeView},
-                {path: 'article/:id', component:ArticleView}
+                {path: 'article/:id', component:ArticleView},
+                {path: 'list/:act/:keyword/:page', component:ListView}
             ]
         },
         { path: '/admin', component: Admin,
