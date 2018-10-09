@@ -1,6 +1,13 @@
 <template>
     <b-container>
-        asd
+        <b-row>
+            <b-col lg="6" v-for="(item,index) of article.list" :key="index">
+
+                <p class="card-text">
+                    <router-link :to="{ path: '/article/' + item._id}">{{item.title}}</router-link>
+                </p>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -31,6 +38,9 @@
             linkGen (pageNum) {
                 return "/page/" + pageNum
             }
+        },
+        mounted(){
+            console.log(this.article);
         }
     }
 </script>

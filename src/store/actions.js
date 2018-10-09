@@ -52,7 +52,7 @@ export const getBlogList = ({ commit, state }, params) => {
     } else {
         let opt = {};
         opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-        opt.url = 'api/blog/list?page=' + page;
+        opt.url = '/api/blog/list?page=' + page;
         opt.method = 'get';
         return request(opt).then((response) => {
             if(response.data.code === '0000'){
@@ -146,10 +146,11 @@ export const searchBlogList = ({ commit, state }, params, query) => {
     } else {
         let opt = {};
         opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-        opt.url = 'api/blog/search?page=' + page;
+        opt.url = '/api/blog/search?page=' + page;
         opt.method = 'post';
         opt.data = params.query;
         return request(opt).then((response) => {
+            console.log(response.data);
             if(response.data.code === '0000'){
                 commit('SET_BLOG_LIST', response.data.data);
             } else {

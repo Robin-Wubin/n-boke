@@ -40,7 +40,7 @@ module.exports = {
                         let read = await setting.findOne({key:"read"});
                         let query = ctx.query, page = query.page;
                         let Article = new ARTICLE(ctx);
-                        ctx.body = await Article.list(page, {perPage: read.value.perPage});
+                        ctx.body = await ctx.code("0000", await Article.list(page, {perPage: read.value.perPage}));
                     } catch (e) {
                         throw e;
                     }
@@ -79,7 +79,7 @@ module.exports = {
                             }
                         }
                         console.log("selectQuery", selectQuery, body);
-                        ctx.body = await Article.list(page, {perPage: read.value.perPage, query:selectQuery});
+                        ctx.body = await ctx.code("0000", await Article.list(page, {perPage: read.value.perPage, query:selectQuery}));
                     } catch (e) {
                         throw e;
                     }
