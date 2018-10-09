@@ -82,7 +82,7 @@
         asyncData ({ store, route}) {
             let id = route.params.id;
             console.log(id);
-            return Promise.all([store.dispatch('setTypeList'), store.dispatch('getBlogContent', id)]);
+            return Promise.all([store.dispatch('getUserInfo'), store.dispatch('setTypeList'), store.dispatch('getBlogContent', id)]);
         },
         computed: {
             ...mapGetters({

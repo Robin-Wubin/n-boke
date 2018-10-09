@@ -35,6 +35,9 @@
 <script>
     import myFooter from '../components/footer.vue'
 export default {
+    asyncData ({ store, route}) {
+        return store.dispatch('getUserInfo');
+    },
     data(){
         return {
             headDire: "",

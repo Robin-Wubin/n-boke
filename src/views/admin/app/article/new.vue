@@ -301,7 +301,7 @@
                     let contentArr = this.$refs.myQuillEditor.quill.getContents();
                     for(let row of contentArr.ops){
                         if(row.insert.image){
-                            this.article.headImage = row.insert.image;
+                            this.$set(this.article,headImage,row.insert.image);
                             break;
                         }
                     }
@@ -455,13 +455,13 @@
                             case "password":
                             case "title":
                             case "headImage":
-                                _that.article[key] = null;
+                                _that.$set(_that.article,key,null);
                                 break;
                             case "isComment":
-                                _that.article[key] = true;
+                                _that.$set(_that.article,key,true);
                                 break;
                             case "tags":
-                                _that.article[key] = [];
+                                _that.$set(_that.article,key,[]);
                                 break;
                         }
                     }
@@ -479,13 +479,13 @@
                                         case "password":
                                         case "title":
                                         case "headImage":
-                                            _that.article[key] = null;
+                                            _that.$set(_that.article,key,null);
                                             break;
                                         case "isComment":
-                                            _that.article[key] = true;
+                                            _that.$set(_that.article,key,true);
                                             break;
                                         case "tags":
-                                            _that.article[key] = [];
+                                            _that.$set(_that.article,key,[]);
                                             break;
                                     }
                                 }
@@ -525,10 +525,7 @@
                 this.axios.post(url,form,{
                     headers:{'Content-Type':'multipart/form-data'}
                 }).then(response => {
-                    that.article.headImage = response.data.data;
-                    that.$nextTick(()=>{
-                        that.article.headImage = response.data.data;
-                    });
+                    that.$set(that.article,"headImage",response.data.data);
                 }).catch(error => {
                     return that.$eventHub.$emit('alert', {
                         type:"warning"

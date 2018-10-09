@@ -10,6 +10,7 @@ export const getClientInfo = (state) => {
     return client_info;
 };
 export const getSettingInfo = state => state.setting;
+export const getUserInfo = state => state.user_info;
 
 
 

@@ -941,5 +941,51 @@ module.exports = {
                     }
                 }]
         },
+        {
+            type: 'get', url: '/api/admin/setting/userInfo'
+            , name: 'admin get the userInfo'
+            , fun: [
+                checkAdmin,
+                async (ctx) => {
+                    try {
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let userInfo = await setting.findOne({key:"userInfo"});
+                        userInfo = userInfo ? userInfo.value : {social:{}};
+                        ctx.body = await ctx.code('0000', {userInfo});
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
+            type: 'post', url: '/api/admin/setting/userInfo'
+            , name: 'admin save the userInfo'
+            , fun: [
+                checkAdmin,
+                validate({
+                    body: {
+                        nickname:Joi.string().required(),
+                        brief:Joi.string().required(),
+                        motto:Joi.string().required(),
+                        ico:Joi.string().default('/avatar.png'),
+                        name:Joi.string(),
+                        gender:Joi.number(),
+                        birthday:Joi.string(),
+                        tel:Joi.string(),
+                        address:Joi.string(),
+                        socials: Joi.object(),
+                    }
+                }),
+                async (ctx) => {
+                    try {
+                        let body = ctx.request.body;
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        await setting.update({key:"userInfo"}, {$set:{value:body}});
+                        ctx.body = await ctx.code('0000');
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
     ]
 };

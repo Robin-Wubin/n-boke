@@ -182,6 +182,24 @@ module.exports = {
                     }
                 }
             ]
+        },{
+            type: 'get',
+            url: '/api/blog/user/info',
+            name: 'client get user info',
+            fun: [
+                async (ctx) => {
+                    try {
+                        let setting = new mongo(global.mongoDB, "app.setting");
+                        let userInfo = await setting.findOne({key:"userInfo"});
+                        userInfo = userInfo ? userInfo.value : {social:{}};
+                        console.log(userInfo);
+                        ctx.body = await ctx.code('0000', userInfo);
+                    } catch (e) {
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
+                        throw e;
+                    }
+                }
+            ]
         }
     ]
 };

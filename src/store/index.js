@@ -13,6 +13,7 @@ const state = {
     blog_list: {totalPage:1,list:[],perPage:10},
     blog_content: null,
     client_info: null,
+    user_info: null,
     setting:null
 };
 export function createStore (context) {

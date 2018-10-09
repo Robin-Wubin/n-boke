@@ -1,25 +1,34 @@
 <template>
     <div class="my_footer_container">
         <div class="social_link">
-            <a><i class="fa fa-weibo"></i></a>
-            <!--<a><i class="fa fa-weixin"></i></a>-->
-            <a><i class="icon-zhihu-square-fill"></i></a>
-            <!--<a><i class="fa fa-qq"></i></a>-->
-            <a><i class="fa fa-github"></i></a>
-            <a><i class="fa fa-facebook-square"></i></a>
-            <!--<a><i class="fa fa-twitter"></i></a>-->
+            <div v-for="item in user_info.social" :key="item.name">
+                <a v-if="item.type === 'text'" v-b-tooltip.hover :title="item.text + ':' + item.url"><i :class="item.style"></i></a>
+                <a v-if="item.type === 'url'" :href="item.url" target="_blank"><i :class="item.style"></i></a>
+                <a v-if="item.type === 'image'" v-b-popover.hover.top.html="popoverMethod(item)"><i :class="item.style"></i></a>
+            </div>
         </div>
         <b-container>
             <p>Theme is Pinghsu by Chakhsu</p>
-            <p>Powered by Typecho</p>
-            <p>© 2018 周春宇的博客</p>
+            <p>Powered by N-Boke</p>
+            <p>© 2018 <span>{{(user_info && user_info.nickname) ? user_info.nickname : "未具名"}}</span>的博客</p>
         </b-container>
     </div>
 </template>
 
 <script>
+    import { mapGetters, mapActions } from 'vuex'
     export default {
-        name: "myFooter"
+        name: "myFooter",
+        computed: {
+            ...mapGetters({
+                user_info: 'getUserInfo'
+            })
+        },
+        methods:{
+            popoverMethod(item){
+                return '<img src="' + item.url + '" width="256" style="display: block;margin-left: -3px;border-radius: 0.2rem;">'
+            }
+        }
     }
 </script>
 
