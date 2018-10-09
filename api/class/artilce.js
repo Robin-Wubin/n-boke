@@ -32,6 +32,19 @@ class artilce{
             throw e;
         }
     }
+    /**
+     * 最近5篇文章
+     * @returns {Promise<void>}
+     */
+    async recent (){
+        try{
+            let article = new mongo(this.ctx.state.mdb, "app.article");
+            let list = await article.find({state:1}, {projection:{content:0, password:0}, limit:5, sort:{createdAt:-1}});
+            return {list};
+        }catch (e) {
+            throw e;
+        }
+    }
 
     /**
      * 获取文章详情

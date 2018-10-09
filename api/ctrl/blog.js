@@ -45,6 +45,20 @@ module.exports = {
                         throw e;
                     }
                 }]
+        },
+        {
+            type: 'get'
+            , url: '/api/blog/recent'
+            , name: 'get blog recent'
+            , fun: [
+                async (ctx) => {
+                    try {
+                        let Article = new ARTICLE(ctx);
+                        ctx.body = await ctx.code("0000", await Article.recent());
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
         }
         ,{
             type: 'get'

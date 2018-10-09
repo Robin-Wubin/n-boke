@@ -15,7 +15,10 @@ export default{
         state.user_info = info
     },
     SET_RECENT_COMMENT: (state, list) => {
-        state.recent = list
+        state.recent_comment = list
+    },
+    SET_RECENT_POST: (state, list) => {
+        state.recent_post = list
     },
     SET_CLIENT_INFO: (state, info) => {
         state.client_info = info

@@ -36,7 +36,7 @@
     import myFooter from '../components/footer.vue'
 export default {
     asyncData ({ store, route}) {
-        return Promise.all([store.dispatch('getUserInfo'), store.dispatch('getRecentComment')]);
+        return Promise.all([store.dispatch('getUserInfo'), store.dispatch('getRecentComment'), store.dispatch('getRecentPost')]);
     },
     data(){
         return {

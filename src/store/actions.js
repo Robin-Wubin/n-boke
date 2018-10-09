@@ -87,26 +87,22 @@ export const getBlogContent = ({ commit, state }, id) => {
     }
 };
 export const getUserInfo = ({ commit, state }) => {
-    if(state.user_info){
-        return new Promise((resolve, reject)=>{resolve(null)});
-    } else {
-        let opt = {};
-        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-        opt.url = '/api/blog/user/info';
-        opt.method = 'get';
-        return request(opt).then((response) => {
-            if (response.data.code === '0000') {
-                commit('SET_USER_INFO', response.data.data);
-            } else {
-                console.log(response.data)
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    let opt = {};
+    opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+    opt.url = '/api/blog/user/info';
+    opt.method = 'get';
+    return request(opt).then((response) => {
+        if (response.data.code === '0000') {
+            commit('SET_USER_INFO', response.data.data);
+        } else {
+            console.log(response.data)
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
 };
 export const getRecentComment = ({ commit, state }) => {
-    if(state.recent){
+    if(state.recent_comment){
         return new Promise((resolve, reject)=>{resolve(null)});
     } else {
         let opt = {};
@@ -116,6 +112,25 @@ export const getRecentComment = ({ commit, state }) => {
         return request(opt).then((response) => {
             if (response.data.code === '0000') {
                 commit('SET_RECENT_COMMENT', response.data.data);
+            } else {
+                console.log(response.data)
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+};
+export const getRecentPost = ({ commit, state }) => {
+    if(state.recent_post){
+        return new Promise((resolve, reject)=>{resolve(null)});
+    } else {
+        let opt = {};
+        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url = '/api/blog/recent';
+        opt.method = 'get';
+        return request(opt).then((response) => {
+            if (response.data.code === '0000') {
+                commit('SET_RECENT_POST', response.data.data);
             } else {
                 console.log(response.data)
             }
