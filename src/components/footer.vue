@@ -8,9 +8,24 @@
             </div>
         </div>
         <b-container>
-            <p>Theme is Pinghsu by Chakhsu</p>
-            <p>Powered by N-Boke</p>
-            <p>© 2018 <span>{{(user_info && user_info.nickname) ? user_info.nickname : "未具名"}}</span>的博客</p>
+            <b-row>
+                <b-col lg="4" class="recent_comment">
+                    <h3 class="meta-title">最近回复</h3>
+                    <p v-for="(item, index) of recent_comment.list" :key="index"><a :href="'/article/' + item.articleId + '#' + item._id">{{item.name}}&nbsp;:&nbsp;{{item.comment}}</a></p>
+                </b-col>
+                <b-col lg="4" class="bl-1">
+                    <p><img :src="user_info.ico ? user_info.ico : '/avatar.png'" height="80"></p>
+                    <p>Theme is Pinghsu by Chakhsu</p>
+                    <p>Powered by N-Boke</p>
+                    <p>© 2018 <span>{{(user_info && user_info.nickname) ? user_info.nickname : "未具名"}}</span>的博客</p>
+                </b-col>
+                <b-col lg="4" class="bl-1">
+                    <p><img :src="user_info.ico ? user_info.ico : '/avatar.png'" height="80"></p>
+                    <p>Theme is Pinghsu by Chakhsu</p>
+                    <p>Powered by N-Boke</p>
+                    <p>© 2018 <span>{{(user_info && user_info.nickname) ? user_info.nickname : "未具名"}}</span>的博客</p>
+                </b-col>
+            </b-row>
         </b-container>
     </div>
 </template>
@@ -21,7 +36,8 @@
         name: "myFooter",
         computed: {
             ...mapGetters({
-                user_info: 'getUserInfo'
+                user_info: 'getUserInfo',
+                recent_comment: 'getRecentComment'
             })
         },
         methods:{
@@ -35,6 +51,7 @@
 <style scoped>
 .my_footer_container{
     background: #FFF;
+    padding-bottom: 1.5em;
 }
     .social_link{
         display: flex;
@@ -44,7 +61,7 @@
         align-items: center;
         padding: 25px 0;
         border-bottom: 1px solid rgba(184,197,214,.2);
-        margin-bottom: 2.5em;
+        margin-bottom: 1.5em;
     }
     .social_link a{
         margin: 0 25px;
@@ -54,5 +71,21 @@
         color: #5f5f5f;
         font-size: 14px;
         margin-bottom: 0.2rem;
+    }
+    .bl-1{
+        border-left: 1px solid rgba(184,197,214,.2);
+    }
+    .meta-title{
+        font-size: 14px;
+        font-weight: bold;
+        padding: 0 0 10px 0;
+        text-decoration: none;
+        color: #5f5f5f;
+    }
+    .recent_comment p{
+        text-align: left !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>

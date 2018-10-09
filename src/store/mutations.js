@@ -14,6 +14,9 @@ export default{
     SET_USER_INFO: (state, info) => {
         state.user_info = info
     },
+    SET_RECENT_COMMENT: (state, list) => {
+        state.recent = list
+    },
     SET_CLIENT_INFO: (state, info) => {
         state.client_info = info
     }

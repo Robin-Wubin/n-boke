@@ -11,6 +11,7 @@ export const getClientInfo = (state) => {
 };
 export const getSettingInfo = state => state.setting;
 export const getUserInfo = state => state.user_info;
+export const getRecentComment = state => state.recent;
 
 
 

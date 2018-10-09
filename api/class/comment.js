@@ -58,6 +58,52 @@ module.exports = class {
             throw e;
         }
     }
+    /**
+     * 获取最近5条评论
+     * @returns {Promise<void>}
+     */
+    async recent(){
+        try{
+            let query = {
+                state:1,
+                del: null
+            };
+            let comment = new mongo(this.ctx.state.mdb, "app.article.comment");
+            let list = await comment.aggregate([
+                {
+                    $match: query
+                },
+                {
+                    $sort: {
+                        time: -1
+                    }
+                },
+                {
+                    $limit: 5
+                }, {
+                    $lookup: {
+                        from: "app.article",
+                        localField: "articleId",
+                        foreignField: "_id",
+                        as: "article"
+                    }
+                }, {
+                    $project: {
+                        name: 1,
+                        comment: 1,
+                        topicId: 1,
+                        articleId: 1,
+                        time: 1,
+                        "article.brief": 1,
+                        "article.title": 1,
+                    }
+                }]);
+            list = await list.toArray();
+            return {list};
+        }catch (e) {
+            throw e;
+        }
+    }
 
     /**
      * 新增评论

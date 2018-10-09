@@ -54,7 +54,7 @@
         name: "default",
         asyncData ({ store, route}) {
             let page = route.params.page ? route.params.page : 1;
-            return Promise.all([store.dispatch('getUserInfo'), store.dispatch('setTypeList'), store.dispatch('getBlogList', {page})]);
+            return Promise.all([store.dispatch('getUserInfo'), store.dispatch('getRecentComment'), store.dispatch('setTypeList'), store.dispatch('getBlogList', {page})]);
         },
         computed: {
             ...mapGetters({

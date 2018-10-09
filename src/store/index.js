@@ -14,6 +14,7 @@ const state = {
     blog_content: null,
     client_info: null,
     user_info: null,
+    recent: null,
     setting:null
 };
 export function createStore (context) {

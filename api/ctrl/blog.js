@@ -152,6 +152,22 @@ module.exports = {
                     }
                 }
             ]
+        },{
+            type: 'get',
+            url: '/api/blog/comment/recent',
+            name: 'client get recent comment',
+            fun: [
+                async (ctx) => {
+                    try {
+                        let Comment = new COMMENT(ctx);
+                        let commentObj = await Comment.recent();
+                        ctx.body = await ctx.code('0000', commentObj);
+                    } catch (e) {
+                        if(e.type === 'code') return ctx.body = await ctx.code(e.code);
+                        throw e;
+                    }
+                }
+            ]
         }
         ,{
             type: 'get',
