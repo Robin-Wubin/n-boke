@@ -21,7 +21,9 @@
                         </div>
                         <div slot="footer">
                             <small class="text-muted float-left">{{item.createdAt | formatTime(setting.read.dateFormat)}}</small>
-                            <small class="text-muted float-right"># {{item.type | getTypes(types)}}</small>
+                            <small class="text-muted float-right">
+                                # <router-link :to="{ path: '/list/type/' + item.type + '/1'}">{{item.type | getTypes(types)}}</router-link>
+                            </small>
                         </div>
                     </b-card>
                 </div>

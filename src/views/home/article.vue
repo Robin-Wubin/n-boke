@@ -8,8 +8,12 @@
 
                     <b-row class="type_tag mt-3">
                         <b-col md="8" offset-md="2">
-                            <b-badge pill variant="success" class="bg-yellow mr-3 mb-1"># {{article.type | getTypes(types)}}</b-badge>
-                            <b-badge v-for="(item, index) of article.tags" :key="index" pill variant="success" class="bg-purple mr-3 mb-1"># {{item}}</b-badge>
+                            <b-badge pill variant="success" class="bg-yellow mr-3 mb-1">
+                                <router-link :to="{ path: '/list/type/' + article.type + '/1'}"># {{article.type | getTypes(types)}}</router-link>
+                            </b-badge>
+                            <b-badge v-for="(item, index) of article.tags" :key="index" pill variant="success" class="bg-purple mr-3 mb-1">
+                                <router-link :to="{ path: '/list/tag/' + item + '/1'}"># {{item}}</router-link>
+                            </b-badge>
                         </b-col>
                     </b-row>
                 </b-container>
