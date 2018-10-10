@@ -20,6 +20,9 @@ export default{
     SET_RECENT_POST: (state, list) => {
         state.recent_post = list
     },
+    SET_ARCHIVES: (state, list) => {
+        state.archives = list
+    },
     SET_CLIENT_INFO: (state, info) => {
         state.client_info = info
     }

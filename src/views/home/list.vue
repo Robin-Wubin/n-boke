@@ -5,7 +5,7 @@
             <div class="categorys-title" v-if="act === 'tag'">标签: {{keyword}}</div>
             <div class="categorys-title" v-if="act === 'type'">分类: {{keyword | getTypes(types)}}</div>
         </div>
-        <div class="articles">
+        <div class="articles" v-if="article.list.length > 0">
             <b-col lg="12" v-for="(item,index) of article.list" :key="index">
                 <b-container class="article">
                     <div v-if="item.headImage" class="head-img bg-deepgrey" :style="{'background-image': 'url(' + item.headImage.replace(/\\/g, '/') + ')'}"></div>
@@ -19,7 +19,12 @@
                 </b-container>
             </b-col>
         </div>
-        <b-pagination-nav v-if="article.totalPage>1" class="pagination_nav mt-3" align="center" :link-gen="linkGen" :number-of-pages="article.totalPage" v-model="page" />
+        <b-container class="article blank" v-if="article.list.length === 0">
+            <div v-if="act === 'search'">- Sorry, 找不到与 <strong>{{keyword}}</strong> 有关的文章 -</div>
+            <div v-if="act === 'tag'">- 还没有与 {<strong>{{keyword}}</strong> 有关的文章 -</div>
+            <div v-if="act === 'type'">- 此分类下还没有发布文章 -</div>
+        </b-container>
+        <b-pagination-nav size="sm" v-if="article.totalPage>1" class="pagination_nav mt-3" align="center" :link-gen="linkGen" :number-of-pages="article.totalPage" v-model="page" />
     </div>
 
 </template>
@@ -161,6 +166,12 @@
         justify-content: center;
         padding: 15px 0;
         background: #f1f1f1;
+    }
+    .blank{
+        text-align: center;
+        font-size: 9px;
+        color: #888;
+        padding: 150px 0;
     }
     @media (min-width: 768px){
         .item-content{

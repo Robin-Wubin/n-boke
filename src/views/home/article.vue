@@ -167,11 +167,12 @@
         height: 25px;
         font-size: 12px;
         line-height: 25px;
+        box-shadow: 3px -5px 20px 8px rgba(0,0,0,0.3);
     }
     .title{
         color: #FFF;
         font-size: 25px;
-        text-shadow: 0 1px #5f5f5f, 1px 0 #5f5f5f, -1px 0 #5f5f5f, 0 -1px #5f5f5f;
+        text-shadow: 0 2px #5f5f5f, 2px 0 #5f5f5f, -2px 0 #5f5f5f, 0 -2px #5f5f5f;
     }
     .article_content{
         width: 100%;
