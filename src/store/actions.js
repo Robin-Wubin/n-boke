@@ -161,6 +161,26 @@ export const searchBlogList = ({ commit, state }, params, query) => {
         })
     }
 };
+export const setArchivesList = ({ commit, state }) => {
+    if(state.archives){
+        return new Promise((resolve, reject)=>{resolve(null)});
+    } else {
+        let opt = {};
+        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+        opt.url = '/api/blog/archives' ;
+        opt.method = 'get';
+        return request(opt).then((response) => {
+            console.log(response.data);
+            if(response.data.code === '0000'){
+                commit('SET_ARCHIVES', response.data.data);
+            } else {
+                console.log(response.data)
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+};
 export const setClientInfo = ({ commit, state }, data) => {
     window.localStorage.setItem('client_info', JSON.stringify(data));
     commit('SET_CLIENT_INFO', data);

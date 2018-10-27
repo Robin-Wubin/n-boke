@@ -84,10 +84,17 @@ module.exports = {
                                 perPage: 10,
                                 recommendNum: 8
                             };
+                            let userInfo = {
+                                nickname: "boke",
+                                brief: "...",
+                                motto: "...",
+                                ico: "/avatar.png"
+                            };
                             await setting.insertMany([
                                 {type:"setting", key:"basic", value:basic},
                                 {type:"setting", key:"comment", value:commentSetting},
                                 {type:"setting", key:"read", value:readSetting},
+                                {type:"setting", key:"userInfo", value:userInfo},
                             ]);
                             ctx.body = await ctx.code('0000');
                         }

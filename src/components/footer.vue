@@ -67,6 +67,7 @@
         padding: 25px 0;
         border-bottom: 1px solid rgba(184,197,214,.2);
         margin-bottom: 1.5em;
+        overflow: hidden;
     }
     .social_link a{
         margin: 0 25px;

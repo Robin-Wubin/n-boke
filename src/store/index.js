@@ -16,6 +16,7 @@ const state = {
     user_info: null,
     recent_comment: null,
     recent_post: null,
+    archives: null,
     setting:null
 };
 export function createStore (context) {

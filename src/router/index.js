@@ -8,6 +8,7 @@ const Home = () => import('../views/home.vue');
 const HomeView = () => import('../views/home/default.vue');
 const ArticleView = () => import('../views/home/article.vue');
 const ListView = () => import('../views/home/list.vue');
+const archivesView = ()=> import('../views/home/archives.vue');
 const InstallIndex = () => import('../views/install/index.vue');
 const InstallDefault = () => import('../views/install/default.vue');
 const InstallMongoDB = () => import('../views/install/mongo.vue');
@@ -41,7 +42,8 @@ export function createRouter () {
                 {path: '', component:HomeView},
                 {path: 'page/:page', component:HomeView},
                 {path: 'article/:id', component:ArticleView},
-                {path: 'list/:act/:keyword/:page', component:ListView}
+                {path: 'list/:act/:keyword/:page', component:ListView},
+                {path: 'archives', component:archivesView},
             ]
         },
         { path: '/admin', component: Admin,

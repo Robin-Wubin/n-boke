@@ -980,7 +980,7 @@ module.exports = {
                     try {
                         let body = ctx.request.body;
                         let setting = new mongo(global.mongoDB, "app.setting");
-                        await setting.update({key:"userInfo"}, {$set:{value:body}});
+                        await setting.update({type:"setting", key:"userInfo"}, {$set:{value:body}});
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
                         throw e;

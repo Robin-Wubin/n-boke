@@ -98,6 +98,21 @@ module.exports = {
                         throw e;
                     }
                 }]
+        },
+        {
+            type: 'get'
+            , url: '/api/blog/archives'
+            , name: 'get blog archives'
+            , fun: [
+                async (ctx) => {
+                    try {
+                        let Article = new ARTICLE(ctx);
+                        ctx.body = await ctx.code("0000", await Article.archives());
+                        console.log(ctx.body);
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
         }
         ,{
             type: 'get'
@@ -205,7 +220,8 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }
+        ,{
             type: 'get',
             url: '/api/blog/comment/recent',
             name: 'client get recent comment',
@@ -251,7 +267,8 @@ module.exports = {
                     }
                 }
             ]
-        },{
+        }
+        ,{
             type: 'get',
             url: '/api/blog/user/info',
             name: 'client get user info',

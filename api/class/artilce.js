@@ -47,6 +47,23 @@ class artilce{
     }
 
     /**
+     * 获取分类及分类下的最近9篇文章
+     */
+    async archives (){
+        try{
+            let type = new mongo(this.ctx.state.mdb, "app.article.type");
+            let article = new mongo(this.ctx.state.mdb, "app.article");
+            let types = await type.find();
+            for(let item of types){
+                item.count = await article.count({type: item._id, state:1});
+                item.list = await article.find({type: item._id, state:1}, {projection:{content:0, password:0}, limit:8, sort:{createdAt:-1}});
+            }
+            return types;
+        }catch (e) {
+            throw e;
+        }
+    }
+    /**
      * 获取文章详情
      * @param id                文章id
      * @param opt               配置
