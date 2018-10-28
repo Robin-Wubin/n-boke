@@ -195,7 +195,8 @@ module.exports = (app) => {
         if(appConfig && appConfig.db){
             MongoClient.connect(`mongodb://${appConfig.db.username}:${appConfig.db.password}@${appConfig.db.url}/${appConfig.db.db}`, {
                 poolSize: 5,
-                autoReconnect: true
+                autoReconnect: true,
+                useNewUrlParser: true
             }, function(err, vcDb) {
                 if(err) reject(err);
                 global.mongoDB = vcDb.db(appConfig.db.db);

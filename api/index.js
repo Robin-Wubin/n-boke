@@ -3,6 +3,7 @@ const fs = require('fs');
 const mongo = require("../lib/mongo");
 const ARTICLE = require("./class/artilce");
 const path = require('path');
+const mid = require("./mid");
 module.exports = ()=>{
     "use strict";
     let router = [];
@@ -13,7 +14,9 @@ module.exports = ()=>{
     }
     router = router.concat([{
         type: 'get', url: /^\/(?!api)/
-        , fun: [async (ctx) => {
+        , fun: [
+            mid.pvuv,
+            async (ctx) => {
             try{
                 let sid = ctx.cookies.get("sid");
                 let opt = {sid};
@@ -52,7 +55,6 @@ module.exports = ()=>{
                 if(e.type === 'code') return ctx.body = await ctx.code(e.code);
                 throw e;
             }
-
         }]
     }]);
     for (let c of router){

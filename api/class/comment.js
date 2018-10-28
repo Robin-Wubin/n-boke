@@ -149,6 +149,8 @@ module.exports = class {
                     if(new Date().getTime() >= expireTime) throw {type:'code', code:'2014'};
                 }
                 let commentLimited = new mongo(this.ctx.state.mdb, "app.article.comment.limited");
+                let dailyData = new mongo(this.ctx.state.mdb, "app.data.daily");
+                let date = new Date().setHours(0,0,0,0);
                 if(option.ipLimited && option.ipLimited.is){
                     let limited = await commentLimited.findOne({sid});
                     if(limited && limited.time.getTime() + option.ipLimited.min * 60 * 1000 >= new Date().getTime()) throw {type:'code', code:'2015'};
@@ -182,6 +184,7 @@ module.exports = class {
                 }
                 await article.update({_id:articleId}, {$inc:{"count.comment":1}});
                 await commentLimited.update({sid}, {$set:{time:new Date()}});
+                await dailyData.update({date}, {$inc:{comment:1}});
                 return null;
             } else {
                 throw {type:'code', code:'2009'};

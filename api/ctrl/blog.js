@@ -3,6 +3,7 @@ const validate = require('koa2-validation');
 const ARTICLE = require("../class/artilce");
 const COMMENT = require("../class/comment");
 const Joi = require('joi');
+const mid = require("../mid");
 //文件上传
 const multer = require('koa-multer');
 //配置
@@ -33,6 +34,7 @@ module.exports = {
                         page: Joi.number().default(1)
                     }
                 }),
+                mid.pvuv,
                 async (ctx) => {
                     try {
                         console.log("get blog list", ctx.query.page);
@@ -56,6 +58,7 @@ module.exports = {
                         page: Joi.number().default(1)
                     }
                 }),
+                mid.pvuv,
                 async (ctx) => {
                     try {
                         let body = ctx.request.body;
@@ -124,6 +127,7 @@ module.exports = {
                         id: Joi.string().required()
                     }
                 }),
+                mid.pvuv,
                 async (ctx) => {
                     try {
                         console.log("get blog content", ctx.query.id);
@@ -249,6 +253,7 @@ module.exports = {
                         page: Joi.number().default(1),
                     }
                 }),
+                mid.pvuv,
                 async (ctx) => {
                     try {
                         let setting = new mongo(global.mongoDB, "app.setting");
@@ -273,6 +278,7 @@ module.exports = {
             url: '/api/blog/user/info',
             name: 'client get user info',
             fun: [
+                mid.pvuv,
                 async (ctx) => {
                     try {
                         let setting = new mongo(global.mongoDB, "app.setting");

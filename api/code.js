@@ -62,7 +62,7 @@ const obj = {
         msgEN: 'Please enter your website.'
     },
     '2014': {
-        msgCN: '新增评论错误',
+        msgCN: '文章超过可评论天数，评论已关闭',
         msgEN: 'new comment error.'
     },
     '2015': {
