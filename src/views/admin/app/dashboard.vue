@@ -2,6 +2,28 @@
     <div>
         <div class="main_container">
             <b-breadcrumb class="bread_head" :items="breadcrumb"/>
+            <b-container>
+                <b-row>
+                    <b-col lg="4">
+                        <div class="bg-orange daily_block">
+                            <span class="head font">UV</span>
+                            <span class="val">12</span>
+                        </div>
+                    </b-col>
+                    <b-col lg="4">
+                        <div class="bg-yellow daily_block">
+                            <span class="head font">PV</span>
+                            <span class="val">12</span>
+                        </div>
+                    </b-col>
+                    <b-col lg="4">
+                        <div class="bg-green daily_block">
+                            <span class="head font">评论</span>
+                            <span class="val">12</span>
+                        </div>
+                    </b-col>
+                </b-row>
+            </b-container>
         </div>
     </div>
 </template>
@@ -14,12 +36,36 @@
                 breadcrumb: [{
                     text: 'Dashboard',
                     href: '/admin/app/dashboard'
-                }]
+                }],
+                dailyData:{
+                    pv:0,
+                    uv:0,
+                    comment:0
+                }
             }
         }
     }
 </script>
 
 <style scoped>
-
+.daily_block{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+    .daily_block .head {
+        width: 100%;
+        color: #fff;
+        font-size: 20px;
+        font-weight: lighter;
+        padding: 10px 0;
+        background: rgba(45, 45, 45, 0.5);
+        text-align: center;
+    }
+.daily_block .val {
+    font-size: 32px;
+    font-weight: 100;
+    padding: 15px 0;
+    color: #FFF;
+}
 </style>

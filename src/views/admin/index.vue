@@ -103,6 +103,7 @@
 <style>
     body{
         background: #f6f6f6;
+        font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
     }
     a, a:hover{
         color: rgba(0, 0, 0, 0.75);
@@ -148,5 +149,61 @@
 
     .icon-zhihu-square-fill:before {
         content: "\e900";
+    }
+
+    .bg-white {
+        background-color: #fff!important
+    }
+    .bg-white .font {
+        color: #fff!important
+    }
+    .bg-grey {
+        background-color: #f7f7f7!important
+    }
+    .bg-grey .font {
+        color: #f7f7f7!important
+    }
+
+    .bg-deepgrey {
+        background-color: rgba(0,0,0,.5)!important
+    }
+    .bg-deepgrey .font{
+        color: rgba(0,0,0,.5)!important
+    }
+    .bg-blue {
+        background-color: #6fa3ef!important
+    }
+    .bg-blue .font{
+        color: #6fa3ef!important
+    }
+    .bg-purple {
+        background-color: #bc99c4!important
+    }
+    .bg-purple .font{
+        color: #bc99c4!important
+    }
+    .bg-green {
+        background-color: #46c47c!important
+    }
+    .bg-green .font{
+        color: #46c47c!important
+    }
+    .bg-yellow {
+        background-color: #f9bb3c!important
+    }
+    .bg-yellow .font{
+        color: #f9bb3c!important
+    }
+    .bg-red {
+        background-color: #e8583d!important
+    }
+    .bg-red .font{
+        color: #e8583d!important
+    }
+    .bg-orange {
+        background-color: #f68e5f!important
+    }
+    .bg-orange .font{
+        color: #f68e5f!important
     }
 </style>

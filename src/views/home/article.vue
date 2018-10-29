@@ -151,6 +151,7 @@
     .article_head{
         position: relative;
         height: 100%;
+        background: #00000045;
      }
     .article_head>.container{
         display: flex;
@@ -161,18 +162,16 @@
     }
     .article_footer{
         position: relative;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.1);
         margin-top: -25px;
         color: #fff;
         height: 25px;
         font-size: 12px;
         line-height: 25px;
-        box-shadow: 3px -5px 20px 8px rgba(0,0,0,0.3);
     }
     .title{
         color: #FFF;
         font-size: 25px;
-        text-shadow: 0 2px #5f5f5f, 2px 0 #5f5f5f, -2px 0 #5f5f5f, 0 -2px #5f5f5f;
     }
     .article_content{
         width: 100%;
