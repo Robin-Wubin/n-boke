@@ -4,8 +4,8 @@
 
         <loading ref="load"></loading>
         <b-container v-if="!loading">
-            <b-row class="bg-purple">
-                <b-col class="header font">基本设置</b-col>
+            <b-row>
+                <b-col class="header">基本设置</b-col>
             </b-row>
             <b-row class="option">
                 <b-col lg="3">站点名称</b-col>
@@ -51,8 +51,8 @@
                     请以半角逗号“,”分割多个关键字。
                 </b-col>
             </b-row>
-            <b-row class="bg-blue">
-                <b-col class="header font">评论设置</b-col>
+            <b-row>
+                <b-col class="header">评论设置</b-col>
             </b-row>
             <b-row class="option">
                 <b-col lg="3">评论日期格式</b-col>
@@ -152,8 +152,8 @@
                     </b-container>
                 </b-col>
             </b-row>
-            <b-row class="bg-red">
-                <b-col class="header font">阅读设置</b-col>
+            <b-row>
+                <b-col class="header">阅读设置</b-col>
             </b-row>
             <b-row class="option">
                 <b-col lg="3">文章日期格式</b-col>
@@ -277,7 +277,7 @@
         padding-left: 15px;
     }
 .header{
-    background: rgba(70, 70, 70, 0.5);
+    background: rgba(0,0,0,0.13);
     border-left: 5px solid #313131;
     padding: 5px 15px;
     color: #313131;
