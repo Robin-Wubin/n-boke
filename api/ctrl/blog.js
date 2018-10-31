@@ -51,7 +51,7 @@ module.exports = {
         {
             type: 'post'
             , url: '/api/blog/search'
-            , name: 'get blog list'
+            , name: 'search blog list'
             , fun: [
                 validate({
                     query: {
