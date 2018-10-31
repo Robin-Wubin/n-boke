@@ -40,6 +40,7 @@
     }
     .about_body{
         padding: 15px 35px;
+        background: #FFF;
     }
     .categorys-title{
         position: relative;
