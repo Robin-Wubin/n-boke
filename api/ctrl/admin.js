@@ -78,6 +78,35 @@ module.exports = {
                 }]
         },
         {
+            type: 'get', url: '/api/admin/overview'
+            , name: 'admin get the overview'
+            , fun: [
+                async (ctx) => {
+                    try {
+                        let date = new Date().setHours(0,0,0,0);
+                        let article = new mongo(ctx.state.mdb, "app.article");
+                        let comment = new mongo(ctx.state.mdb, "app.article.comment");
+                        let daily = new mongo(ctx.state.mdb, "app.data.daily");
+                        let articleCount = await article.count();
+                        let commentCount = await comment.count();
+                        let daily_data = await daily.findOne({date});
+                        ctx.body = await ctx.code('0000', {
+                            overview:{
+                                article: articleCount,
+                                comment: commentCount
+                            },
+                            daily:{
+                                uv:daily_data && daily_data.uv ? daily_data.uv : 0,
+                                pv:daily_data && daily_data.pv ? daily_data.pv : 0,
+                                comment:daily_data && daily_data.comment ? daily_data.comment : 0
+                            }
+                        });
+                    } catch (e) {
+                        throw e;
+                    }
+                }]
+        },
+        {
             type: 'post', url: '/api/admin/type/new'
             , name: 'admin add type'
             , fun: [

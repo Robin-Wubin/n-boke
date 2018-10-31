@@ -49,7 +49,7 @@
                 <b-row>
                     <b-col>
                         <div class="self-title">
-                            <span class="my-title">概览</span>
+                            <span class="my-title">站点概览</span>
                         </div>
                     </b-col>
                 </b-row>
@@ -57,13 +57,13 @@
                     <b-col lg="6" class="overview_data">
                         <div class="bg-purple daily_block">
                             <span class="head font">文章总数</span>
-                            <span class="val">12</span>
+                            <span class="val">{{overView.article}}</span>
                         </div>
                     </b-col>
                     <b-col lg="6" class="overview_data">
                         <div class="bg-blue daily_block">
                             <span class="head font">评论总数</span>
-                            <span class="val">12</span>
+                            <span class="val">{{overView.comment}}</span>
                         </div>
                     </b-col>
                 </b-row>
@@ -78,19 +78,19 @@
                     <b-col lg="4" class="daily_data">
                         <div class="bg-orange daily_block">
                             <span class="head font">UV</span>
-                            <span class="val">12</span>
+                            <span class="val">{{dailyData.uv}}</span>
                         </div>
                     </b-col>
                     <b-col lg="4" class="daily_data">
                         <div class="bg-yellow daily_block">
                             <span class="head font">PV</span>
-                            <span class="val">12</span>
+                            <span class="val">{{dailyData.pv}}</span>
                         </div>
                     </b-col>
                     <b-col lg="4" class="daily_data">
                         <div class="bg-green daily_block">
                             <span class="head font">评论</span>
-                            <span class="val">12</span>
+                            <span class="val">{{dailyData.comment}}</span>
                         </div>
                     </b-col>
                 </b-row>
@@ -112,14 +112,39 @@
                     pv:0,
                     uv:0,
                     comment:0
+                },
+                overView:{
+                    article: 0,
+                    comment: 0
                 }
             }
         },
         methods:{
             go(url){
                 this.$router.push(url);
+            },
+            getData(){
+                let _that = this;
+                this.axios.get('/api/admin/overview' ).then(res=>{
+                    console.log(res.data.data);
+                    if(res.data.code === "0000"){
+                        _that.$set(_that.dailyData,"pv",res.data.data.daily.pv);
+                        _that.$set(_that.dailyData,"uv",res.data.data.daily.uv);
+                        _that.$set(_that.dailyData,"comment",res.data.data.daily.comment);
+                        _that.$set(_that.overView,"article",res.data.data.overview.article);
+                        _that.$set(_that.overView,"comment",res.data.data.overview.comment);
+                        console.log(res.data.data);
+                    } else {
+                        console.error(res);
+                    }
+                }).catch(res=>{
+                    console.error(res);
+                });
             }
-        }
+        },
+        mounted(){
+            this.getData();
+        },
     }
 </script>
 
