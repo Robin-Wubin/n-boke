@@ -22,33 +22,39 @@ module.exports = ()=>{
                 let opt = {sid};
                 let articleRegular = /^\/article\/([0-9a-zA-Z]+)/;
                 let listRegular = /^\/page\/([0-9]+)/;
-                let setting = new mongo(global.mongoDB, "app.setting");
-                let basic = await setting.findOne({key:"basic"});
-                let read = await setting.findOne({key:"read"});
-                let comment = await setting.findOne({key:"comment"});
-                basic = basic.value;
-                read = read.value;
-                comment = comment.value;
-                opt.title = basic.name;
-                opt.desc = basic.desc;
-                opt.keyword = basic.keyword;
-                let Article = new ARTICLE(ctx);
-                if(articleRegular.test(ctx.url)){
-                    //文章
-                    let urlArr = ctx.url.match(articleRegular);
-                    let articleInfo = await Article.one(urlArr[1], {type:1});
-                    opt.title = articleInfo.title + " - " + basic.name;
-                    opt.desc = articleInfo.brief.replace(/[\n|\s]/g,"");
-                    opt.article = articleInfo;
-                } else if (ctx.url === "/" || listRegular.test(ctx.url)){
-                    //列表页
-                    let urlArr = ctx.url.match(listRegular);
-                    let page = urlArr ? urlArr[1] : 1;
-                    opt.blogList = await Article.list(page, {perPage: read.perPage});
-                } else {
-                    console.log(ctx.url);
+                let installRegular = /^\/install/;
+                opt.title = "准备安装 N-Boke";
+                opt.desc = "A New Blog App Development with KOA and VUE.JS";
+                opt.keyword = "";
+                if(!installRegular.test(ctx.url)){
+                    let setting = new mongo(global.mongoDB, "app.setting");
+                    let basic = await setting.findOne({key:"basic"});
+                    let read = await setting.findOne({key:"read"});
+                    let comment = await setting.findOne({key:"comment"});
+                    basic = basic.value;
+                    read = read.value;
+                    comment = comment.value;
+                    opt.title = basic.name;
+                    opt.desc = basic.desc;
+                    opt.keyword = basic.keyword;
+                    let Article = new ARTICLE(ctx);
+                    if(articleRegular.test(ctx.url)){
+                        //文章
+                        let urlArr = ctx.url.match(articleRegular);
+                        let articleInfo = await Article.one(urlArr[1], {type:1});
+                        opt.title = articleInfo.title + " - " + basic.name;
+                        opt.desc = articleInfo.brief.replace(/[\n|\s]/g,"");
+                        opt.article = articleInfo;
+                    } else if (ctx.url === "/" || listRegular.test(ctx.url)){
+                        //列表页
+                        let urlArr = ctx.url.match(listRegular);
+                        let page = urlArr ? urlArr[1] : 1;
+                        opt.blogList = await Article.list(page, {perPage: read.perPage});
+                    } else {
+                        console.log(ctx.url);
+                    }
+                    opt.setting = {basic, read, comment};
                 }
-                opt.setting = {basic, read, comment};
                 await ctx.renderComponents.readyPromise;
                 await ctx.renderComponents.render(ctx, opt);
             }catch (e) {

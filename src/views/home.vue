@@ -12,8 +12,8 @@
                 <b-navbar-brand href="/">{{setting.basic.name}}</b-navbar-brand>
                 <b-collapse is-nav id="nav_collapse">
                     <b-navbar-nav>
-                        <b-nav-item href="/archives">分类</b-nav-item>
-                        <b-nav-item href="#" disabled>Disabled</b-nav-item>
+                        <b-nav-item href="/archives"><i class="fa fa-th-large"></i> 分类</b-nav-item>
+                        <b-nav-item href="/about"><i class="fa fa-info"></i> 关于</b-nav-item>
                     </b-navbar-nav>
 
                     <!-- Right aligned nav items -->

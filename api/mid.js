@@ -13,7 +13,8 @@ module.exports.pvuv = async(ctx, next)=>{
         if(ctx.session.adminInfo) return await next();
         let sid = ctx.cookies.get("sid");
         let matchUtl = /\.[a-zA-Z0-9]{1,4}$/;
-        if(!matchUtl.test(ctx.url)){
+        let matchInstall = /^\/install/;
+        if(!matchUtl.test(ctx.url) && !matchInstall.test(ctx.url)){
             //非资源请求
             let date = new Date().setHours(0,0,0,0);
             let $inc = {}, $push = {}, updateData;

@@ -80,7 +80,10 @@ if (process.env.NODE_ENV === 'production') {
           fs.readdir(path.resolve(__dirname, '../public/dist'), (err, files) => {
               files.forEach(file => {
                   if (!newlyCreatedAssets[file]) {
-                      fs.unlink(path.resolve(__dirname, '../public/dist/' + file));
+                      console.log(file, newlyCreatedAssets[file]);
+                      fs.unlink(path.resolve(__dirname, '../public/dist/' + file), (err, data)=>{
+                          console.log(err, data);
+                      });
                       unlinked.push(file);
                   }
               });
