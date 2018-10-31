@@ -5,23 +5,73 @@
             <b-container>
                 <b-row>
                     <b-col>
-                        <p>欢迎使用N-Boke，你可以开始使用并自定义你的站点：</p>
+                        <p class="tips">欢迎使用N-Boke，你可以开始使用并自定义你的站点：</p>
                     </b-col>
                 </b-row>
                 <b-row>
-                    <b-col lg="4">
-                        <p>开始使用</p>
+                    <b-col lg="4" class="intro">
+                        <div class="advice">
+                            <h5>开始使用</h5>
+                        </div>
+                        <div class="advice_content">
+                            <b-button size="" variant="primary" class="self-btn" @click="go('/admin/app/setting')">
+                                设置您的站点
+                            </b-button>
+                            <div class="self-or">
+                                <span class="mine-or">或</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <b-button size="sm" variant="success"  @click="go('/admin/app/person')">
+                                    完善您的个人信息
+                                </b-button>
+                            </div>
+                        </div>
                     </b-col>
-                    <b-col lg="4">
-                        <p>接下来</p>
+                    <b-col lg="4" class="intro">
+                        <div class="advice">
+                            <h5>接下来</h5>
+                        </div>
+                        <div class="advice_content">
+                            <a href="/admin/app/article/new"><i class="fa fa-edit"></i> 撰写文章</a>
+                            <a href="/" target="_blank"><i class="fa fa-desktop"></i> 查看站点</a>
+                        </div>
                     </b-col>
-                    <b-col lg="4">
-                        <p>更多操作</p>
+                    <b-col lg="4" class="intro">
+                        <div class="advice">
+                            <h5>更多操作</h5>
+                        </div>
+                        <div class="advice_content">
+                            <a href="/admin/app/source/index"><i class="fa fa-file-image-o"></i> 管理素材</a>
+                            <a href="/admin/app/comment/list/0/1"><i class="fa fa-comments"></i> 管理评论</a>
+                        </div>
                     </b-col>
                 </b-row>
                 <b-row>
                     <b-col>
-                        <p>今日数据：</p>
+                        <div class="self-title">
+                            <span class="my-title">概览</span>
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col lg="6" class="overview_data">
+                        <div class="bg-purple daily_block">
+                            <span class="head font">文章总数</span>
+                            <span class="val">12</span>
+                        </div>
+                    </b-col>
+                    <b-col lg="6" class="overview_data">
+                        <div class="bg-blue daily_block">
+                            <span class="head font">评论总数</span>
+                            <span class="val">12</span>
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <div class="self-title">
+                            <span class="my-title">今日数据</span>
+                        </div>
                     </b-col>
                 </b-row>
                 <b-row>
@@ -64,6 +114,11 @@
                     comment:0
                 }
             }
+        },
+        methods:{
+            go(url){
+                this.$router.push(url);
+            }
         }
     }
 </script>
@@ -89,17 +144,114 @@
     padding: 15px 0;
     color: #FFF;
 }
-@media (min-width: 768px){
-    .daily_data{
+
+@media (min-width: 992px){
+    .daily_data, .overview_data{
         padding-left: 0;
         padding-right: 0;
     }
-    .daily_data:first-child{
+    .daily_data:first-child, .overview_data:first-child{
         padding-left: 15px;
     }
-    .daily_data:last-child{
+    .daily_data:last-child, .overview_data:last-child{
+        padding-right: 15px;
+    }
+    .intro{
+        border-right: 1px solid #888;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .intro:first-child{
+        padding-left: 15px;
+    }
+    .intro:last-child{
+        border-right: none;
         padding-right: 15px;
     }
 }
 
+    .tips{
+        color: #888;
+        padding: 15px;
+        font-size: 14px;
+    }
+    .advice{
+        padding: 0 15px;
+        position: relative;
+        height: 32px;
+    }
+    .advice_content{
+        padding: 0 15px;
+        position: relative;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 150px;
+        margin-bottom: 15px;
+    }
+    .advice_content a{
+        text-align: center;
+    }
+    .self-btn{
+        margin: 0.5rem 0;
+    }
+    .advice h5{
+        display: block;
+        float: left;
+        background: #fff;
+        z-index: 8;
+        position: relative;
+        padding: 0 1.5rem;
+    }
+    .advice:before{
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: #888;
+        top: 50%;
+        left: 0;
+        content: '';
+        margin-top: -0.4rem;
+    }
+    .self-or{
+        position: relative;
+        text-align: center;
+    }
+    .self-or:before{
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: #ddd;
+        top: 50%;
+        left: 0;
+        content: '';
+    }
+    .mine-or{
+        background: #FFF;
+        position: relative;
+        z-index: 8;
+        padding: 0 20px;
+    }
+    .self-title{
+        position: relative;
+        text-align: center;
+        background: #5a5a5a;
+    }
+    .self-title:before{
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: #BBB;
+        top: 50%;
+        left: 0;
+        content: '';
+    }
+    .my-title{
+        color: #FFF;
+        position: relative;
+        z-index: 8;
+        background: #5a5a5a;
+        padding: 0 25px;
+    }
 </style>
