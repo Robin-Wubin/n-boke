@@ -149,11 +149,13 @@ module.exports = (app) => {
             app,
             templatePath,
             (bundle, options) => {
+                console.log("bundle, options", bundle, options)
                 renderer = createRenderer(bundle, options);
             }
         );
 
         app.context.renderComponents.render = (ctx, params = {}) => {
+            console.log("params", params);
             return new Promise((resolve, reject)=>{
                 const s = Date.now();
                 ctx.set("Content-Type", "text/html");

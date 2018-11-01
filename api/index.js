@@ -55,7 +55,9 @@ module.exports = ()=>{
                     }
                     opt.setting = {basic, read, comment};
                 }
-                await ctx.renderComponents.readyPromise;
+                console.log("readyPromise", ctx.renderComponents.readyPromise);
+                let readyPromise = await ctx.renderComponents.readyPromise;
+                console.log("readyPromise", readyPromise);
                 await ctx.renderComponents.render(ctx, opt);
             }catch (e) {
                 if(e.type === 'code') return ctx.body = await ctx.code(e.code);

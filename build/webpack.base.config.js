@@ -49,7 +49,7 @@ module.exports = {
       },
         {
             test: /\.css/,
-            use: ['css-loader', 'stylus-loader']
+            use: ['vue-style-loader', 'css-loader', 'stylus-loader']
         },
         { test: /.(ttf|eot|woff|woff2)([?]?.*)$/, loader: "file-loader" },
       {
@@ -62,9 +62,10 @@ module.exports = {
                   options: { minimize: true }
                 },
                 'stylus-loader'
-              ]
+              ],
+              fallback: 'vue-style-loader'
             })
-          : ['css-loader', 'stylus-loader']
+          : ['vue-style-loader', 'css-loader', 'stylus-loader']
       }
     ]
   },

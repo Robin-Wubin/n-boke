@@ -21,7 +21,7 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   const readyPromise = new Promise(r => { ready = r })
   const update = () => {
     if (bundle && clientManifest) {
-      ready()
+      ready();
       cb(bundle, {
         template,
         clientManifest
@@ -46,27 +46,27 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   // )
 
   // dev middleware
-  const clientCompiler = webpack(clientConfig)
-  const devMiddleware = require('../lib/webpack-dev-middleware')(clientCompiler, {
-    publicPath: clientConfig.output.publicPath,
-    noInfo: true
-  });
-  app.use(async (ctx, next)=>{
-    let isNext = await devMiddleware(ctx);
-    if(isNext) await next();
-  });
-    console.log(devMiddleware.fileSystem);
-  clientCompiler.plugin('done', stats => {
-    stats = stats.toJson();
-    stats.errors.forEach(err => console.error(err));
-    stats.warnings.forEach(err => console.warn(err));
-    if (stats.errors.length) return
+  // const clientCompiler = webpack(clientConfig)
+  // const devMiddleware = require('../lib/webpack-dev-middleware')(clientCompiler, {
+  //   publicPath: clientConfig.output.publicPath,
+  //   noInfo: true
+  // });
+  // app.use(async (ctx, next)=>{
+  //   let isNext = await devMiddleware(ctx);
+  //   if(isNext) await next();
+  // });
+  //   console.log(devMiddleware.fileSystem);
+  // clientCompiler.plugin('done', stats => {
+  //   stats = stats.toJson();
+  //   stats.errors.forEach(err => console.error(err));
+  //   stats.warnings.forEach(err => console.warn(err));
+  //   if (stats.errors.length) return
     clientManifest = JSON.parse(readFile(
-      devMiddleware.fileSystem,
+      fs,
       'vue-ssr-client-manifest.json'
     ));
-    update()
-  });
+  //   update()
+  // });
 
   // hot middleware
 
