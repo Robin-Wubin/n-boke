@@ -100,7 +100,7 @@ export default {
 }
 </script>
 
-<style>
+<style  lang="stylus">
     body{
 
         font-family: -apple-system,SF UI Text,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;

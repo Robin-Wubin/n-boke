@@ -49,7 +49,18 @@ module.exports = {
       },
         {
             test: /\.css/,
-            use: ['vue-style-loader', 'css-loader', 'stylus-loader']
+            use: isProd
+                ? ExtractTextPlugin.extract({
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: { minimize: true }
+                        },
+                        'stylus-loader'
+                    ],
+                    fallback: 'vue-style-loader'
+                })
+                : ['vue-style-loader', 'css-loader', 'stylus-loader']
         },
         { test: /.(ttf|eot|woff|woff2)([?]?.*)$/, loader: "file-loader" },
       {
