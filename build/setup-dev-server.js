@@ -38,47 +38,48 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   })
 
   // modify client config to work with hot middleware
-  clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app]
-  clientConfig.output.filename = '[name].js'
-  clientConfig.plugins.push(
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  )
+  // clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app]
+  // clientConfig.output.filename = '[name].js'
+  // clientConfig.plugins.push(
+  //   new webpack.HotModuleReplacementPlugin(),
+  //   new webpack.NoEmitOnErrorsPlugin()
+  // )
 
   // dev middleware
   const clientCompiler = webpack(clientConfig)
   const devMiddleware = require('../lib/webpack-dev-middleware')(clientCompiler, {
     publicPath: clientConfig.output.publicPath,
     noInfo: true
-  })
+  });
   app.use(async (ctx, next)=>{
     let isNext = await devMiddleware(ctx);
     if(isNext) await next();
-  })
+  });
+    console.log(devMiddleware.fileSystem);
   clientCompiler.plugin('done', stats => {
-    stats = stats.toJson()
-    stats.errors.forEach(err => console.error(err))
-    stats.warnings.forEach(err => console.warn(err))
+    stats = stats.toJson();
+    stats.errors.forEach(err => console.error(err));
+    stats.warnings.forEach(err => console.warn(err));
     if (stats.errors.length) return
     clientManifest = JSON.parse(readFile(
       devMiddleware.fileSystem,
       'vue-ssr-client-manifest.json'
-    ))
+    ));
     update()
-  })
+  });
 
   // hot middleware
 
-    app.use(async (ctx, next)=>{
-        let isNext = await require('../lib/webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 })(ctx.req, ctx.res);
-        if(isNext){
-          await next();
-        } else {
-          await new Promise((resolve, reject)=>{
-            setTimeout(()=>{resolve}, 5000)
-          })
-        }
-    })
+    // app.use(async (ctx, next)=>{
+    //     let isNext = await require('../lib/webpack-hot-middleware')(clientCompiler, { heartbeat: 5000 })(ctx.req, ctx.res);
+    //     if(isNext){
+    //       await next();
+    //     } else {
+    //       await new Promise((resolve, reject)=>{
+    //         setTimeout(()=>{resolve}, 5000)
+    //       })
+    //     }
+    // })
 
   // watch and update server renderer
   const serverCompiler = webpack(serverConfig)
