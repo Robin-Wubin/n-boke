@@ -116,6 +116,22 @@ export default {
         font-style: normal;
     }
 
+    @media (max-width: 768px){
+        .navbar-collapse{
+            background: #fff;
+            padding: 0 15px 15px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.5);
+        }
+        .form-inline{
+            flex-flow: row nowrap;
+        }
+        .navbar-nav{
+            flex-direction: row;
+            justify-content: space-around;
+        }
+    }
+
     [class^="icon-"], [class*=" icon-"] {
         /* use !important to prevent issues with browser extensions that change fonts */
         font-family: 'icomoon' !important;

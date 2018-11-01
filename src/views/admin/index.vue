@@ -8,7 +8,7 @@
         </b-alert>
         <b-navbar toggleable="md" type="dark" variant="secondary">
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-            <b-navbar-brand href="#">Admin</b-navbar-brand>
+            <b-navbar-brand href="#">N-Boke 后台管理系统</b-navbar-brand>
             <b-collapse is-nav id="nav_collapse">
                 <!--<b-navbar-nav>-->
                     <!--<b-nav-item href="#">Link</b-nav-item>-->

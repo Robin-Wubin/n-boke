@@ -5,27 +5,27 @@
                 <b-col class="login_col">
                     <b-form @submit="onSubmit" @reset="onReset" v-if="show" class="login_form">
                         <b-form-group id="login_username"
-                                      label="Your Name:"
+                                      label="用户名:"
                                       label-for="input_user_name">
                             <b-form-input id="input_user_name"
                                           type="text"
                                           v-model="form.name"
                                           required
-                                          placeholder="Enter Your Name">
+                                          placeholder="输入你的登录名">
                             </b-form-input>
                         </b-form-group>
                         <b-form-group id="login_password"
-                                      label="Your Password:"
+                                      label="密码:"
                                       label-for="input_password">
                             <b-form-input id="input_password"
                                           type="password"
                                           v-model="form.password"
                                           required
-                                          placeholder="Enter Your Password">
+                                          placeholder="输入你的密码">
                             </b-form-input>
                         </b-form-group>
-                        <b-button type="submit" class="float-right" variant="primary">Login</b-button>
-                        <b-button type="reset" variant="danger">Reset</b-button>
+                        <b-button type="submit" class="float-right" variant="primary">登录</b-button>
+                        <b-button type="reset" variant="danger">重置</b-button>
                     </b-form>
                 </b-col>
             </b-row>

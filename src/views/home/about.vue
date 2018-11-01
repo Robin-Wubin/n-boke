@@ -111,6 +111,7 @@
     }
     .about_content li span{
         width: 80px;
+        flex-shrink: 0;
     }
     .about_content li div{
         padding-left: 15px;
