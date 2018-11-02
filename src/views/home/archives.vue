@@ -45,7 +45,7 @@
         <b-row v-if="archives.length<=0">
             <b-col lg="12">
                 <b-row class="mb-4">
-                    <b-col lg="4" offset-lg="4" class="blank">
+                    <b-col lg="4" offset-lg="4" class="blank_type">
                         - 博主还没创建分类 -
                     </b-col>
                 </b-row>
@@ -150,6 +150,12 @@
         font-size: 9px;
         color: #888;
         padding: 15px 0;
+    }
+    .blank_type{
+        text-align: center;
+        font-size: 9px;
+        color: #888;
+        padding: 105px 0;
     }
     @media (min-width: 768px){
         .archives{
