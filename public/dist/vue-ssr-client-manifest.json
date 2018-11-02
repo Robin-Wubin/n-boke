@@ -1,7 +1,7 @@
 {
   "publicPath": "/dist/",
   "all": [
-    "9.7c64b21cb799b50b7fce.js",
+    "9.3aa684001cc3b078a718.js",
     "674f50d287a8c48dc19ba404d20fe713.eot",
     "fee66e712a8a08eef5805a46892932ad.woff",
     "b06871f281fee6b241d60582ae9369b9.ttf",
@@ -28,16 +28,16 @@
     "19.6c25ff33c5821a24ef9e.js",
     "vendor.f31be3b5351f9da44b30.js",
     "app.0b9070be4f5dd7f4d43d.js",
-    "manifest.19134f9358c3dffec08a.js",
+    "manifest.d64f9a6fcfe782a10ad5.js",
     "common.0b9070be4f5dd7f4d43d.css"
   ],
   "initial": [
-    "manifest.19134f9358c3dffec08a.js",
+    "manifest.d64f9a6fcfe782a10ad5.js",
     "vendor.f31be3b5351f9da44b30.js",
     "app.0b9070be4f5dd7f4d43d.js"
   ],
   "async": [
-    "9.7c64b21cb799b50b7fce.js",
+    "9.3aa684001cc3b078a718.js",
     "0.559b15a7897c3a5ab609.js",
     "1.2258b4e97843525cdd16.js",
     "2.c24360b26d8d5734e6f2.js",
@@ -1841,7 +1841,7 @@
     "b44cfe50": [
       21
     ],
-    "ecf70a26": [
+    "397935bc": [
       0
     ],
     "0c56d99c": [
