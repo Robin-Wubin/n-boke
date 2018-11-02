@@ -113,8 +113,11 @@
         width: 80px;
         flex-shrink: 0;
     }
+    .about_content li span i{
+        width: 18px;
+        text-align: center;
+    }
     .about_content li div{
-        padding-left: 15px;
         flex-grow: 1;
     }
 </style>
