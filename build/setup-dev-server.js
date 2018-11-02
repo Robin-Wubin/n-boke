@@ -17,7 +17,6 @@ module.exports = function setupDevServer (app, templatePath, cb) {
   let template;
   let clientManifest;
   const isProd = process.env.NODE_ENV === 'production';
-  console.log(process.env.NODE_ENV);
   let ready;
   const readyPromise = new Promise(r => { ready = r });
   const update = () => {
