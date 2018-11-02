@@ -1,24 +1,24 @@
-const fs = require('fs')
-const path = require('path')
-const MFS = require('memory-fs')
-const webpack = require('webpack')
-const chokidar = require('chokidar')
-const clientConfig = require('./webpack.client.config')
-const serverConfig = require('./webpack.server.config')
+const fs = require('fs');
+const path = require('path');
+const MFS = require('memory-fs');
+const webpack = require('webpack');
+const chokidar = require('chokidar');
+const clientConfig = require('./webpack.client.config');
+const serverConfig = require('./webpack.server.config');
 
 const readFile = (fs, file) => {
   try {
     return fs.readFileSync(path.join(clientConfig.output.path, file), 'utf-8')
   } catch (e) {}
-}
+};
 
 module.exports = function setupDevServer (app, templatePath, cb) {
-  let bundle
-  let template
-  let clientManifest
+  let bundle;
+  let template;
+  let clientManifest;
 
-  let ready
-  const readyPromise = new Promise(r => { ready = r })
+  let ready;
+  const readyPromise = new Promise(r => { ready = r });
   const update = () => {
     if (bundle && clientManifest) {
       ready();
@@ -27,15 +27,15 @@ module.exports = function setupDevServer (app, templatePath, cb) {
         clientManifest
       })
     }
-  }
+  };
 
   // read template from disk and watch
-  template = fs.readFileSync(templatePath, 'utf-8')
+  template = fs.readFileSync(templatePath, 'utf-8');
   chokidar.watch(templatePath).on('change', () => {
-    template = fs.readFileSync(templatePath, 'utf-8')
-    console.log('index.html template updated.')
-    update()
-  })
+    template = fs.readFileSync(templatePath, 'utf-8');
+    console.log('index.html template updated.');
+    update();
+  });
 
   // modify client config to work with hot middleware
   // clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app]

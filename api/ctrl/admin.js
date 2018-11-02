@@ -978,7 +978,7 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let setting = new mongo(global.mongoDB, "app.setting");
-                        let userInfo = await setting.findOne({key:"userInfo"});
+                        let userInfo = await setting.findOne({type:"setting", key:"userInfo"});
                         userInfo = userInfo ? userInfo.value : {social:{}};
                         ctx.body = await ctx.code('0000', {userInfo});
                     } catch (e) {
@@ -1008,8 +1008,11 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let body = ctx.request.body;
+                        console.log("body", body);
                         let setting = new mongo(global.mongoDB, "app.setting");
-                        await setting.update({type:"setting", key:"userInfo"}, {$set:{value:body}});
+                        let result = await setting.update({type:"setting", key:"userInfo"}, {$set:{value:body}});
+                        let newBody = await setting.findOne({type:"setting", key:"userInfo"});
+                        console.log("result", result.result, newBody.value);
                         ctx.body = await ctx.code('0000');
                     } catch (e) {
                         throw e;

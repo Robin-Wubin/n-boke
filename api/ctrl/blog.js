@@ -282,7 +282,7 @@ module.exports = {
                 async (ctx) => {
                     try {
                         let setting = new mongo(global.mongoDB, "app.setting");
-                        let userInfo = await setting.findOne({key:"userInfo"});
+                        let userInfo = await setting.findOne({type:"setting", key:"userInfo"});
                         userInfo = userInfo ? userInfo.value : {social:{}};
                         ctx.body = await ctx.code('0000', userInfo);
                     } catch (e) {
