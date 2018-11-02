@@ -1,6 +1,6 @@
 <template>
     <b-container class="archives">
-        <b-row v-for="(item, index) of archives" :key="index">
+        <b-row v-if="archives.length>0" v-for="(item, index) of archives" :key="index">
             <b-col lg="12" class="categorys-title">
                 <router-link :to="{ path: '/list/type/' + item._id + '/1'}">{{item.name}}</router-link>  <b-badge class="ml-2">{{item.count}}</b-badge>
             </b-col>
@@ -42,6 +42,15 @@
                 </b-row>
             </b-col>
         </b-row>
+        <b-row v-if="archives.length<=0">
+            <b-col lg="12">
+                <b-row class="mb-4">
+                    <b-col lg="4" offset-lg="4" class="blank">
+                        - 博主还没创建分类 -
+                    </b-col>
+                </b-row>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -59,6 +68,9 @@
                 setting: 'getSettingInfo'
             })
         },
+        mounted(){
+            console.log(this.archives);
+        }
     }
 </script>
 
