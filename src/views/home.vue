@@ -8,7 +8,7 @@
         </b-alert>
         <b-navbar toggleable="md" variant="faded" type="light" :class="'n_boke_header animated ' + headDire ">
             <b-container>
-                <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+                <b-navbar-toggle target="nav_collapse" class="ml-2"></b-navbar-toggle>
                 <b-navbar-brand href="/">{{setting.basic.name}}</b-navbar-brand>
                 <b-collapse is-nav id="nav_collapse">
                     <b-navbar-nav>
