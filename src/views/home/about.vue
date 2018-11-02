@@ -119,5 +119,6 @@
     }
     .about_content li div{
         flex-grow: 1;
+        word-break: break-all;
     }
 </style>
