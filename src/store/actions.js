@@ -27,23 +27,19 @@ export const setAdminInfo = ({ commit, state }) => {
     }
 };
 export const setTypeList = ({ commit, state }) => {
-    if(state.type_list.length!==0){
-        return new Promise((resolve, reject)=>{resolve(null)})
-    } else {
-        let opt = {};
-        opt.baseURL=Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-        opt.url='/api/admin/type/list';
-        opt.method='get';
-        return request(opt).then((response) => {
-            if (response.data.code === '0000') {
-                commit('SET_TYPE_LIST', response.data.data);
-            } else {
-                console.log(response.data)
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    let opt = {};
+    opt.baseURL=Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+    opt.url='/api/admin/type/list';
+    opt.method='get';
+    return request(opt).then((response) => {
+        if (response.data.code === '0000') {
+            commit('SET_TYPE_LIST', response.data.data);
+        } else {
+            console.log(response.data)
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
 };
 export const getBlogList = ({ commit, state }, params) => {
     let page = params.page ? params.page : 1;
@@ -121,23 +117,19 @@ export const getRecentComment = ({ commit, state }) => {
     }
 };
 export const getRecentPost = ({ commit, state }) => {
-    if(state.recent_post){
-        return new Promise((resolve, reject)=>{resolve(null)});
-    } else {
-        let opt = {};
-        opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
-        opt.url = '/api/blog/recent';
-        opt.method = 'get';
-        return request(opt).then((response) => {
-            if (response.data.code === '0000') {
-                commit('SET_RECENT_POST', response.data.data);
-            } else {
-                console.log(response.data)
-            }
-        }).catch((error) => {
-            console.log(error)
-        })
-    }
+    let opt = {};
+    opt.baseURL = Vue.prototype.$isServer ? 'http://127.0.0.1:3000/' : '';
+    opt.url = '/api/blog/recent';
+    opt.method = 'get';
+    return request(opt).then((response) => {
+        if (response.data.code === '0000') {
+            commit('SET_RECENT_POST', response.data.data);
+        } else {
+            console.log(response.data)
+        }
+    }).catch((error) => {
+        console.log(error)
+    })
 };
 export const searchBlogList = ({ commit, state }, params, query) => {
     let page = params.page ? params.page : 1;
